@@ -275,10 +275,11 @@ This sprint covers \textbf{Domain 2:}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=6in]{./media/MES_Sprint-2-Repport/diagrams/useCase/Screenshot_2026-03-16_124631.png}
+  \includegraphics[width=6in]{./media/MES_Sprint-2-Repport/diagrams/useCase/sprint2.png}
   \caption{UML Use Case Diagram --- Machine \& Production Management.}
   \label{fig:s2-use-case-diagram-s2}
 \end{figure}
+
 
 The UML Use Case Diagram (Figure~\ref{fig:s2-use-case-diagram-s2}) shows the two
 primary actors (\userrole{Operator} and \userrole{Supervisor}) and their
@@ -366,28 +367,129 @@ Figure~\ref{fig:s2-seq-fetch-ops-status} presents the fetch operations status fl
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-machines.png}
-  \caption{Fetch Machines --- Sequence Diagram.}
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-machines.png}
+  \caption{SD-09: Fetch Machines.}
   \label{fig:s2-seq-fetch-machines}
 \end{figure}
 
+%=====SD-09==========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in workCenterIds resolved from userData;
+%     end
+
+%     loop Every 5 seconds per work center
+%         Flutter->>AL: FetchMachines request
+%         AL->>BC: Filter Machine Center by workCenterNo
+%         BC-->>AL: machine list
+%         loop For each machine
+%             AL->>BC: Get latest MES Machine Status row
+%             BC-->>AL: machine data
+%             AL->>BC: Get Work Center name
+%             BC-->>AL: name
+%         end
+%         AL-->>Flutter: request response
+%         Flutter->>Flutter: Rebuild MachineCard grid
+%         Flutter-->>User: Updated machine list
+%     end
+%====================================================================
+
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/waiting-orders.png}
-  \caption{Get Machine Orders --- Sequence Diagram.}
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/waiting-orders.png}
+  \caption{SD-10: Get Machine Orders.}
   \label{fig:s2-seq-machine-orders}
 \end{figure}
+
+%=====SD-10==========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in
+%     end
+
+%     User->>Flutter: Open Orders tab
+%     Flutter->>AL: getMachineOrders request
+%     AL->>BC: Filter ProdOrderRoutingLine
+%     BC-->>AL: routing lines
+%     loop For each routing line
+%         AL->>BC: Check if operation started - skip if yes
+%         AL->>BC: Get ProdOrderLine
+%         BC-->>AL: line detail
+%     end
+%     AL-->>Flutter: orders data
+%     Flutter-->>User: OrderCard list
+%====================================================================
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/start-order.png}
-  \caption{Start Operation --- Sequence Diagram.}
+  \caption{SD-11: Start Operation.}
   \label{fig:s2-seq-start-operation}
+\end{figure}
+
+
+%=====SD-11==========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
+%     end
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-10 — machine orders loaded user selects a Released order
+%     end
+
+%     User->>Flutter: Tap Start on OrderCard
+%     Flutter->>AL: startOperation request
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-02 — AL validates token and resolves operatorId
+%     end
+
+%     AL->>BC: check the order is released
+%     BC-->>AL: routing line
+%     AL->>BC: Check that the Operation is not running
+%     AL->>BC: Check that the machine is not working
+%     BC-->>AL: clear
+%     alt Not Released or already running
+%         AL-->>Flutter: error message
+%         Flutter-->>User: Show error snackbar
+%     else Valid
+%         AL->>BC: Insert MES Operation Execution
+%         BC-->>AL: executionId
+%         AL->>BC: Insert MES Operation State
+%         AL->>BC: Insert MES Operation Progression
+%         AL->>BC: set machine as working
+%         AL->>BC: Insert MES User Execution Interaction
+%         BC-->>AL: ok
+%         AL-->>Flutter: request response
+%         Flutter->>User: redirect to Progress tab
+%     end
+%====================================================================
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[height=0.30\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/placeholder-image.png}
+  \caption{Fetch Operation progress --- Sequence Diagram.}
+  \label{fig:s2-seq-fetch-progress}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/placeholder-image.png}
+  \includegraphics[height=0.30\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/placeholder-image.png}
   \caption{Fetch Operation History --- Sequence Diagram.}
   \label{fig:s2-seq-fetch-history}
 \end{figure}

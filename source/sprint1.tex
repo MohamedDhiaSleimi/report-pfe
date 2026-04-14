@@ -327,12 +327,12 @@ including all success and error branches.
 \end{figure}%
 
 %=====SD-01==========================================================
-%sequenceDiagram
+% sequenceDiagram
 %    actor User
 %    participant Flutter
 %    participant AL
 %    participant BC
-%
+
 %    User->>Flutter: Enter AuthID + password
 %    Flutter->>AL: Login endpoint
 %    AL->>BC: Find the User 
@@ -370,14 +370,13 @@ including all success and error branches.
 %     participant Flutter
 %     participant AL
 %     participant BC
-%
-%     Flutter->>AL: any protected request (token, payload)
+
 %     AL->>BC: Get MES Auth Token
 %     BC-->>AL: token record
-%     AL->>AL: Check Validity
-%     AL->>BC: Get MES User (token.UserId)
+%     AL->>AL: Check token Validity
+%     AL->>BC: Get MES User record
 %     BC-->>AL: MES User record
-%     AL->>AL: Check IsActive = true
+%     AL->>AL: Check IsActive
 %     alt Token invalid / expired / revoked / user inactive
 %         AL-->>Flutter: error message
 %         Flutter-->>User: Show error & redirect to LoginPage
@@ -405,12 +404,12 @@ including all success and error branches.
 %     end
 
 %     User->>Flutter: Tap Logout
-%     Flutter->>AL: Logout(token)
-%     AL->>BC: Get MES Auth Token where Token = GUID
+%     Flutter->>AL: Logout request
+%     AL->>BC: Get Token record
 %     BC-->>AL: token record
-%     AL->>BC: Set Revoked = true, Modify
+%     AL->>BC: Revoke token
 %     BC-->>AL: ok
-%     AL-->>Flutter: {success: true}
+%     AL-->>Flutter: success message
 %     Flutter->>Flutter: Clear token + userData from AuthProvider
 %     Flutter-->>User: Navigate to LoginPage
 %====================================================================
@@ -425,7 +424,7 @@ including all success and error branches.
 
 %======SD-04=========================================================
 % sequenceDiagram
-%     participant User
+%     actor User
 %     participant Flutter
 %     participant AL
 %     participant BC
@@ -468,7 +467,7 @@ including all success and error branches.
 
 %=====SD:05==========================================================
 % sequenceDiagram
-%     participant User
+%     actor User
 %     participant Flutter
 %     participant AL
 %     participant BC
@@ -477,7 +476,7 @@ including all success and error branches.
 %         Note over User,BC: ref SD-01 — user is logged in as Admin
 %     end
 
-%     User->>Flutter: Fill AddUserDialog and submit
+%     User->>Flutter: Add a User
 %     Flutter->>AL: AdminCreateUser request
 
 %     rect rgb(220,235,255)
@@ -506,7 +505,7 @@ including all success and error branches.
 
 %=====SD-06==========================================================
 % sequenceDiagram
-%     participant User
+%     actor User
 %     participant Flutter
 %     participant AL
 %     participant BC
