@@ -1,0 +1,12 @@
+diff --git a/complete_report.tex b/complete_report.tex
+index d958af8..6a75dba 100644
+--- a/complete_report.tex
++++ b/complete_report.tex
+@@ -373,6 +373,7 @@ performance, serving both operators and management alike.
+ 
+ 
+ 
++
+ % ---------------------------------------------------------------------------
+ % GENERAL CONCLUSION
+ % ---------------------------------------------------------------------------
