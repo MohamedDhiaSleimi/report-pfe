@@ -392,22 +392,17 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 \subsection{Use Case Diagram}
 
 \noindent
-\begin{minipage}[t]{0.6\textwidth}
-	\vspace{0pt}
-	This sprint adds production execution actors and interactions centred on the \userrole{Operator} and \userrole{Supervisor} roles. The primary use cases are: Declare Production, Pause Operation, Resume Operation, Finish Operation, Cancel Operation, View BOM Components, View Operation Detail, View Machine History, and Change Password.
-	
-	The \userrole{Supervisor} role is a superset of \userrole{Operator}: both roles can declare production, pause, resume, and view detail; only the Supervisor may close (finish or cancel) a production order in the intended business flow, although the current implementation enforces this at the UI layer through the \texttt{canCloseProductionOrder} flag rather than at the API level. The resulting use case diagram is shown in Figure~\ref{fig:s3-use-case-diagram-s3}.
-	
-	
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.35\textwidth}
-	\vspace{0pt}
-	\centering
-	\includegraphics[width=\linewidth]{./media/MES_Sprint-3-Repport/diagrams/useCase/Screenshot_2026-03-26_130252.png}
-	\captionof{figure}{UML Use Case Diagram --- Sprint 3}
-	\label{fig:s3-use-case-diagram-s3}
-\end{minipage}
+\vspace{0pt}
+This sprint adds production execution actors and interactions centred on the \userrole{Operator} and \userrole{Supervisor} roles. The primary use cases are: Declare Production, Pause Operation, Resume Operation, Finish Operation, Cancel Operation, View BOM Components, View Operation Detail, View Machine History, and Change Password.
+
+The \userrole{Supervisor} role is a superset of \userrole{Operator}: both roles can declare production, pause, resume, and view detail; only the Supervisor may close (finish or cancel) a production order in the intended business flow, although the current implementation enforces this at the UI layer through the \texttt{canCloseProductionOrder} flag rather than at the API level. The resulting use case diagram is shown in Figure~\ref{fig:s3-use-case-diagram-s3}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[height=0.575\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/useCase/sprint3.png}
+  \caption{UML Use Case Diagram --- Sprint 3}
+  \label{fig:s3-use-case-diagram-s3}
+\end{figure}
 
 \subsection{Textual Use Case Description}
 
@@ -419,7 +414,7 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	\endfirsthead
 	\midrule
 	\endhead
-	\midrule
+	
 	\multicolumn{2}{r}{\small Continued on next page} \\
 	\endfoot
 	\bottomrule
@@ -523,14 +518,66 @@ record or returns a validation error.
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/declare-production.png}
-  \caption{Sequence Diagram --- Declare Production.}
+  \caption{SD-12: Declare Production.}
   \label{fig:s3-seq-declare-production}
 \end{figure}
 
-Figure~\ref{fig:s3-seq-fetch-bom} shows the BOM retrieval sequence, in which the
-application queries \techname{Business Central} for the production order components
-scoped to the current routing operation, including planned, scanned, consumed, and
-remaining quantities per component.
+
+%=====SD-12==========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
+%     end
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-11 — operation is in Running state
+%     end
+
+%     User->>Flutter: Declare Production
+%     opt Supervisor declaring for an operator (proxy)
+%         User->>Flutter: Select operator
+%         Flutter->>AL: include operatorId in declareProduction
+%         AL->>BC: Get supervisor MES User record
+%         AL->>BC: Get supervisor Work Centers
+%         AL->>BC: Get operator Work Centers
+%         AL->>AL: Check at least one shared work center
+%         alt No shared work center
+%             AL-->>Flutter: error message
+%             Flutter-->>User: Show error
+%         end
+%     end
+
+%     Flutter->>AL: declareProduction request
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-02 — AL validates token and resolves declaredById
+%     end
+
+%     AL->>BC: Get MES Operation Execution
+%     BC-->>AL: execution record
+%     AL->>BC: Get latest MES Operation Progression
+%     BC-->>AL: latest progression
+%     AL->>AL: input > 0 and totalProduced + input <= orderQuantity
+%     alt Validation failed
+%         AL-->>Flutter: error message
+%         Flutter-->>User: Show error
+%     else Valid
+%         AL->>BC: Insert MES Operation Progression
+%         AL->>BC: Insert/skip MES User Execution Interaction
+%         AL->>BC: Insert/skip MES User Execution Interaction
+%         BC-->>AL: ok
+%         AL-->>Flutter: success message
+%         Flutter->>Flutter: triggerRefresh — live data + cycles streams re-emit
+%         Flutter-->>User: Navigate to DeclarationLabelPage(declaredQty)
+%     end
+%====================================================================
+
+
+need to update
 
 \begin{figure}[H]
   \centering
@@ -539,28 +586,13 @@ remaining quantities per component.
   \label{fig:s3-seq-fetch-bom}
 \end{figure}
 
-Figure~\ref{fig:s3-seq-fetch-production-cycle} illustrates the production cycle
-retrieval sequence, in which the application fetches MES Operation Progression
-records ordered from newest to oldest, with operator names resolved from the
-Employee table.
+need to update
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/fetch-production-cycle.png}
   \caption{Sequence Diagram --- Fetch Production Cycles.}
   \label{fig:s3-seq-fetch-production-cycle}
-\end{figure}
-
-Figure~\ref{fig:s3-seq-fetch-operation-live-data} presents the live operation data
-retrieval sequence, in which \techname{Business Central} returns the current
-operation status, total produced quantity, scrap quantity, and progress percentage,
-or an empty response when the operation is finished, cancelled, or not yet started.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/fetch-operation-live-data.png}
-  \caption{Sequence Diagram --- Fetch Operation Live Data.}
-  \label{fig:s3-seq-fetch-operation-live-data}
 \end{figure}
 
 
@@ -575,30 +607,303 @@ status record, and returns a structured success/error response.
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/pause-operation.png}
-  \caption{Sequence Diagram --- Pause Operation.}
+  \caption{SD-13: Pause Operation.}
   \label{fig:s3-seq-pause-operation}
 \end{figure}
+
+%=====SD-13==========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
+%     end
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-11 — operation is in Running state
+%     end
+
+%     User->>Flutter: Tap Pause on OperationCard
+%     Flutter->>AL: pauseOperation request
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-02 — AL validates token and resolves mesUserId
+%     end
+
+%     AL->>BC: Get MES Operation Execution
+%     BC-->>AL: execution record
+%     AL->>BC: Get latest MES Operation State
+%     BC-->>AL: latest state row
+%     AL->>AL: Check if Running
+%     alt Not Running
+%         AL-->>Flutter: error message
+%         Flutter-->>User: Show error snackbar
+%     else Valid
+%         AL->>BC: Insert MES Operation State Status = Paused
+%         AL->>BC: Insert MES Machine Status Status = Idle
+%         AL->>BC: Insert/skip MES User Execution Interaction
+%         BC-->>AL: ok
+%         AL-->>Flutter: success message 
+%         Flutter->>Flutter: triggerRefresh
+%         Flutter-->>User: OperationCard badge changes to Paused
+%     end
+%====================================================================
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/resume-operation.png}
-  \caption{Sequence Diagram --- Resume Operation.}
+  \caption{SD-14: Resume Operation.}
   \label{fig:s3-seq-resume-operation}
 \end{figure}
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/finish-operation.png}
-  \caption{Sequence Diagram --- Finish Operation.}
-  \label{fig:s3-seq-finish-operation}
-\end{figure}
+%=====SD-14==========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
+%     end
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-13 — operation is in Paused state
+%     end
+
+%     User->>Flutter: Tap Resume on OperationCard
+%     Flutter->>AL: resumeOperation request
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-02 — AL validates token and resolves mesUserId
+%     end
+
+%     AL->>BC: Get MES Operation Execution
+%     BC-->>AL: execution record
+%     AL->>BC: Get latest MES Operation State
+%     BC-->>AL: latest state row
+%     AL->>AL: Check if Paused
+%     AL->>BC: Check if machine is idle
+%     BC-->>AL: clear
+%     alt Not Paused, or another operation already Running on machine
+%         AL-->>Flutter: error message
+%         Flutter-->>User: Show error snackbar
+%     else Valid
+%         AL->>BC: Insert MES Operation State Status = Running
+%         AL->>BC: Insert MES Machine Status Status = Working
+%         AL->>BC: Insert/skip MES User Execution Interaction
+%         BC-->>AL: ok
+%         AL-->>Flutter: success message
+%         Flutter->>Flutter: triggerRefresh
+%         Flutter-->>User: OperationCard badge changes to Running
+%     end
+%====================================================================
+
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/cancel-operation.png}
-  \caption{Sequence Diagram --- Cancel Operation.}
-  \label{fig:s3-seq-cancel-operation}
+  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/finish_cancel-operation.png}
+  \caption{SD-15: Finish/Cancel Operation.}
+  \label{fig:s3-seq-finish_cancel-operation}
 \end{figure}
+
+%=====SD-15==========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
+%     end
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-11 — operation was started (Running or Paused)
+%     end
+
+%     User->>Flutter: Tap Finish (or Cancel)
+%     Flutter->>AL: finishOperation or cancelOperation request
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-02 — AL validates token and resolves mesUserId
+%     end
+
+%     AL->>BC: Get MES Operation Execution
+%     BC-->>AL: execution record
+%     AL->>BC: Get latest MES Operation State
+%     BC-->>AL: latest state
+%     AL->>AL: Check if Finished or Cancelled
+%     alt Already closed
+%         AL-->>Flutter: error message
+%         Flutter-->>User: Show error snackbar
+%     else Valid
+%         AL->>BC: Insert MES Operation State Status = Finished/Cancelled
+%         AL->>BC: Update MES Operation Execution — set EndTime = now
+%         AL->>BC: Insert MES Machine Status Status = Idle
+%         AL->>BC: Insert/skip MES User Execution Interaction
+%         BC-->>AL: ok
+%         AL-->>Flutter: success message
+%         Flutter-->>User: Operation appears as Finished/Cancelled in history
+%     end
+%====================================================================
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/declare-scrap.png}
+  \caption{SD-16: declare scrap.}
+  \label{fig:s3-seq-declare-scrap}
+\end{figure}
+
+%=====SD-16==========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
+%     end
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-11 — operation is in Running state
+%     end
+
+%     User->>Flutter: Declare Scrap 
+%     Flutter->>AL: declareScrap request
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-02 — AL validates token and resolves operatorId + declaredById
+%     end
+
+%     AL->>BC: Get MES Operation Execution
+%     BC-->>AL: execution record
+%     AL->>BC: Get Operation State
+%     BC-->>AL: latest state row
+%     AL->>AL: Check if Finished, Cancelled, or Paused
+%     AL->>BC: Get Scrap record — validate exists
+%     BC-->>AL: scrap record
+%     alt Validation failed
+%         AL-->>Flutter: error message
+%         Flutter-->>User: Show error
+%     else Valid
+%         AL->>BC: Insert MES Operation Scrap
+%         AL->>BC: Insert/skip MES User Execution Interaction's
+%         AL->>BC: Get Operation Progression
+%         BC-->>AL: latest progression
+%         AL->>BC: Insert Operation Progression
+%         BC-->>AL: ok
+%         AL-->>Flutter: success message
+%         Flutter->>Flutter: triggerRefresh
+%         Flutter-->>User: Update info in OperationDetailPage
+%     end
+%====================================================================
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/scan-component.png}
+  \caption{SD-17: scan component.}
+  \label{fig:s3-seq-scan-component}
+\end{figure}
+
+%=====SD-17==========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
+%     end
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-11 — operation was started executionId is available
+%     end
+
+%     User->>Flutter: scan barcode(s)
+%     Flutter->>AL: resolveBarcode request
+%     AL->>BC: Look up Item record by barcode code
+%     BC-->>AL: item details
+%     AL-->>Flutter: request response
+%     Flutter->>Flutter: Accumulate scanned items
+%     User->>Flutter: Tap Confirm Scans
+%     Flutter->>AL: insertScans request
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-02 — AL validates token and resolves operatorId + declaredById
+%     end
+
+%     AL->>BC: Get MES Operation Execution
+%     BC-->>AL: execution record
+%     loop For each scan in scansJson
+%         AL->>BC: Insert MES Component Consumption
+%         AL->>BC: Insert/skip MES User Execution Interaction
+%     end
+%     BC-->>AL: ok
+%     AL-->>Flutter: success message
+%     Flutter->>Flutter: Refresh Components
+%     Flutter-->>User: Updated scanned quantities
+%====================================================================
+
+Figure~\ref{fig:s3-seq-fetch-operation-live-data} presents the live operation data
+retrieval sequence, in which \techname{Business Central} returns the current
+operation status, total produced quantity, scrap quantity, and progress percentage,
+or an empty response when the operation is finished, cancelled, or not yet started.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/fetch-operation-live-data.png}
+  \caption{SD-18: Fetch Operation Live Data.}
+  \label{fig:s3-seq-fetch-operation-live-data}
+\end{figure}
+
+%=====SD-18==========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in
+%     end
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-11 — operation was started executionId is known
+%     end
+
+%     User->>Flutter: Navigate to OperationDetailPage
+%     Note over Flutter: Three StreamBuilders mount simultaneously
+
+%     par Live status + quantities stream
+%         Flutter->>AL: fetchOperationLiveData request
+%         AL->>BC: Get MES Operation Execution
+%         AL->>BC: Get latest MES Operation State — check Running or Paused
+%         AL->>BC: Get latest MES Operation Progression 
+%         BC-->>AL: operation data
+%         AL-->>Flutter: operation data
+%     and Production cycles stream
+%         Flutter->>AL: fetchProductionCycles request
+%         AL->>BC: Get MES Operation Execution
+%         AL->>BC: Loop MES Operation Progression DESC
+%         BC-->>AL: cycles list
+%         AL-->>Flutter: cycles data
+%     and BOM stream
+%         Flutter->>AL: fetchBom equest
+%         AL->>BC: Get MES Operation Execution
+%         AL->>BC: Get ProdOrderRoutingLine — routingLinkCode
+%         AL->>BC: Loop ProdOrderComponents filtered by routing link
+%         AL->>BC: Sum MES Component Consumption per itemNo
+%         AL->>BC: Resolve QtyPerUnit from ItemUnitOfMeasure
+%         BC-->>AL: BOM rows with planned and scanned quantities
+%         AL-->>Flutter: components data
+%     end
+
+%     Flutter->>Flutter: Merge liveData into operationData, render all widgets
+%     Flutter-->>User: all data is visible
+%     Note over Flutter,BC: Any write (SD-12 to SD-17) calls triggerRefresh() — all three streams re-fetch automatically
+%====================================================================
+
 
 \subsection{Class Diagram}
 
@@ -628,7 +933,7 @@ model.
 
 \subsection{Backend Implementation}
 \subsubsection{Tables and Entities}
-
+\needspace{10\baselineskip}
 \begin{longtable}{@{} P{0.21\linewidth} P{0.17\linewidth} P{0.57\linewidth} @{}}
 	\caption{MES Operation Execution (Table 50110) --- Field Dictionary}
 	\label{tab:s3-table-execution} \\
