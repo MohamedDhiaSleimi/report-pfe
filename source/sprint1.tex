@@ -321,52 +321,296 @@ including all success and error branches.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/seqdiags/Login/Design-Diag.png}%
-	\caption{Login --- Sequence Diagram.}%
-	\label{fig:s1-seq-hl-login}%
+	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/login.png}%
+	\caption{SD-01: Login.}%
+	\label{fig:s1-seq-login}%
 \end{figure}%
+
+%=====SD-01==========================================================
+%sequenceDiagram
+%    actor User
+%    participant Flutter
+%    participant AL
+%    participant BC
+%
+%    User->>Flutter: Enter AuthID + password
+%    Flutter->>AL: Login endpoint
+%    AL->>BC: Find the User 
+%    BC-->>AL: MES User record
+%    alt Invalid credentials or inactive user
+%        AL-->>Flutter: error message
+%        Flutter-->>User: Show error dialog
+%    else Valid
+%        AL->>BC: Create Token
+%        BC-->>AL: token record
+%        AL->>BC: Get the Users info
+%        BC-->>AL: userData
+%        AL-->>Flutter: {userData + token}
+%        Flutter->>Flutter: Store token + userData in AuthProvider
+%        alt needToChangePw = true
+%            Flutter-->>User: Navigate to ChangePasswordPage
+%        else role = Admin
+%            Flutter-->>User: Navigate to AdminPage
+%        else role = Operator / Supervisor
+%            Flutter-->>User: Navigate to MachineListPage
+%        end
+%    end
+%====================================================================
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/seqdiags/Logout/Design-Diag.png}%
-	\caption{Logout --- Sequence Diagram.}%
-	\label{fig:s1-seq-hl-logout}%
+	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/token-validation.png}%
+	\caption{SD-02: Token Validation.}%
+	\label{fig:s1-seq-Token-Validation}%
 \end{figure}%
+
+%======SD-02=========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+%
+%     Flutter->>AL: any protected request (token, payload)
+%     AL->>BC: Get MES Auth Token
+%     BC-->>AL: token record
+%     AL->>AL: Check Validity
+%     AL->>BC: Get MES User (token.UserId)
+%     BC-->>AL: MES User record
+%     AL->>AL: Check IsActive = true
+%     alt Token invalid / expired / revoked / user inactive
+%         AL-->>Flutter: error message
+%         Flutter-->>User: Show error & redirect to LoginPage
+%     else Token valid
+%         AL->>BC: Update token LastSeenAt
+%     end
+%====================================================================
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/seqdiags/ChangePw/Design-Diag.png}%
-	\caption{Change Password --- Sequence Diagram.}%
-	\label{fig:s1-seq-hl-ChangePw}%
+	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/logout.png}%
+	\caption{SD-02: Logout}%
+	\label{fig:s1-seq-logout}%
 \end{figure}%
+
+%======SD-03=========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
+%     end
+
+%     User->>Flutter: Tap Logout
+%     Flutter->>AL: Logout(token)
+%     AL->>BC: Get MES Auth Token where Token = GUID
+%     BC-->>AL: token record
+%     AL->>BC: Set Revoked = true, Modify
+%     BC-->>AL: ok
+%     AL-->>Flutter: {success: true}
+%     Flutter->>Flutter: Clear token + userData from AuthProvider
+%     Flutter-->>User: Navigate to LoginPage
+%====================================================================
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/seqdiags/AdminCreateUser/Design-Diag.png}%
-	\caption{Admin --- Create User --- Sequence Diagram.}%
-	\label{fig:s1-seq-hl-AdminCreateUser}%
+	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/change-password.png}%
+	\caption{SD-03: Change Password}%
+	\label{fig:s1-seq-ChangePw}%
 \end{figure}%
+
+
+%======SD-04=========================================================
+% sequenceDiagram
+%     participant User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
+%     end
+
+%     User->>Flutter: Enter current password + new password
+%     Flutter->>Flutter: Validate passwords match and meet strength rules
+%     Flutter->>AL: ChangePassword request
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-02 — AL validates token before proceeding
+%     end
+
+%     AL->>BC: Get MES User (from token)
+%     BC-->>AL: MES User record (storedHash, salt)
+%     AL->>AL: check old password
+%     AL->>AL: IsPasswordStrong(newPw)
+%     alt Validation failed
+%         AL-->>Flutter: error message
+%         Flutter-->>User: Show error dialog
+%     else Valid
+%         AL->>BC: Update MES User with new password
+%         AL->>BC: Revoke all tokens of the user
+%         BC-->>AL: ok
+%         AL-->>Flutter: success message
+%         Flutter->>Flutter: Update AuthProvider 
+%         Flutter-->>User: Navigate to AdminPage / MachineListPage
+%     end
+%====================================================================
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/seqdiags/AdminSetPw/Design-Diag.png}%
-	\caption{Admin --- Set Password --- Sequence Diagram.}%
-	\label{fig:s1-seq-hl-AdminSetPw}%
+	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/admin-create-user.png}%
+	\caption{SD-05: Admin - Create User.}%
+	\label{fig:s1-seq-AdminCreateUser}%
 \end{figure}%
+
+%=====SD:05==========================================================
+% sequenceDiagram
+%     participant User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in as Admin
+%     end
+
+%     User->>Flutter: Fill AddUserDialog and submit
+%     Flutter->>AL: AdminCreateUser request
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-02 — AL validates token and checks Role = Admin
+%     end
+
+%     AL->>BC: Insert MES User with IsActive and NeedToChangePw as true
+%     BC-->>AL: ok
+%     loop For each work center in workCenterListJson
+%         AL->>BC: Insert MES User Work Center
+%     end
+%     BC-->>AL: ok
+%     AL-->>Flutter: success message
+%     Flutter->>Flutter: triggerRefresh — MES user stream re-emits
+%     Flutter-->>User: New user appears in user list
+%====================================================================
+
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/placeholder-image.png}%
-	\caption{Admin --- Change Role / Work Centre --- Sequence Diagram.}%
-	\label{fig:s1-seq-hl-AdminChangeRole}%
+	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/admin-set-password.png}%
+	\caption{SD-06: Admin - Set Password.}%
+	\label{fig:s1-seq-AdminSetPw}%
 \end{figure}%
+
+
+%=====SD-06==========================================================
+% sequenceDiagram
+%     participant User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in as Admin
+%     end
+
+%     User->>Flutter: generate a password
+%     Flutter->>AL: AdminSetPassword request
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-02 — AL validates token and checks Role = Admin
+%     end
+
+%     AL->>BC: Update MES User with  NeedToChangePw = true
+%     AL->>BC: Revoke all tokens of the user
+%     BC-->>AL: ok
+%     AL-->>Flutter: success message
+%     Flutter-->>User: Show info (copyable)
+%====================================================================
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/placeholder-image.png}%
-	\caption{Admin --- Toggle Account Active Status --- Sequence Diagram.}%
-	\label{fig:s1-seq-hl-AdminToggleActive}%
+	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/admin-change-role_departement.png}%
+	\caption{SD-07: Admin - Change Role / Work Centre.}%
+	\label{fig:s1-seq-AdminChangeRole}%
 \end{figure}%
+
+%=====SD-07===============================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in as Admin
+%     end
+
+%     User->>Flutter: select new role + work centers
+%     Flutter->>AL: AdminChangeUserRole request
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-02 — AL validates token and checks Role = Admin
+%     end
+
+%     AL->>BC: Get MES User
+%     BC-->>AL: record
+%     AL->>AL: check WC Cardinality
+%     alt Cardinality violation
+%         AL-->>Flutter: error message
+%         Flutter-->>User: Show error
+%     else Valid
+%         AL->>BC: Update MES User
+%         AL->>BC: remove All Work Center assignement for user
+%         loop For each wcNo in workCenterListJson
+%             AL->>BC: Insert MES User Work Center
+%         end
+%         BC-->>AL: ok
+%         AL-->>Flutter: success message
+%         Flutter->>Flutter: triggerRefresh
+%         Flutter-->>User: Updated role and departments in user row
+%     end
+%====================================================================
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/admin-toggle-account-active-status.png}%
+	\caption{SD-08: Admin - Toggle Account Active Status.}%
+	\label{fig:s1-seq-AdminToggleActive}%
+\end{figure}%
+
+%=====SD-08==========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in as Admin
+%     end
+
+%     User->>Flutter: Activate or Deactivate user
+%     Flutter->>AL: AdminSetActive request
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-02 — AL validates token and checks Role = Admin
+%     end
+
+%     AL->>BC: Get MES User
+%     BC-->>AL: record
+%     AL->>BC: Set IsActive
+%     alt Deactivating
+%         AL->>BC: Revok all tokens of the User
+%     end
+%     BC-->>AL: ok
+%     AL-->>Flutter: success message
+%     Flutter->>Flutter: triggerRefresh
+%     Flutter-->>User: User row shows updated status
+%====================================================================
+
 
 \subsection{Class Diagram}
 
