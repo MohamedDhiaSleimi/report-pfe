@@ -1,0 +1,418 @@
+% =============================================================================
+% COMPLETE MES PROJECT REPORT — MASTER FILE
+% =============================================================================
+
+% ─── Hyperref / URL options must precede \documentclass ───────────────────────
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+
+\documentclass[12pt,a4paper]{report}
+
+% =============================================================================
+% PACKAGES
+% =============================================================================
+
+% --- Core ---
+\usepackage{seqsplit}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{amsmath,amssymb}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{%
+  \usepackage[protrusion=true,expansion=false]{microtype}%
+}{}
+
+% --- Font: Times New Roman equivalent ---
+\usepackage{mathptmx}
+
+% --- Line spacing (guide: 1.5) ---
+\usepackage{setspace}
+\onehalfspacing
+
+% --- Paragraph spacing ---
+\makeatletter
+\@ifundefined{KOMAClassName}{%
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{%
+    \setlength{\parindent}{0pt}%
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}%
+  }%
+}{%
+  \KOMAoptions{parskip=half}%
+}
+\makeatother
+
+% --- Section heading formatting ---
+\usepackage{titlesec}
+\titlespacing*{\chapter}      {0pt}{12pt plus 2pt minus 1pt}{6pt plus 1pt minus 1pt}
+\titlespacing*{\section}      {0pt}{6pt plus 2pt minus 1pt}{6pt plus 1pt minus 1pt}
+\titlespacing*{\subsection}   {0pt}{6pt plus 2pt minus 1pt}{6pt plus 1pt minus 1pt}
+\titlespacing*{\subsubsection}{0pt}{6pt plus 2pt minus 1pt}{6pt plus 1pt minus 1pt}
+
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\fontsize{18}{20}\selectfont}
+  {\chaptername\ \thechapter}{12pt}{}
+
+\titleformat{\section}
+  {\normalfont\bfseries\fontsize{14}{16}\selectfont}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\bfseries\fontsize{13}{15}\selectfont}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\bfseries\fontsize{12}{14}\selectfont}{\thesubsubsection}{1em}{}
+
+% --- Tables ---
+\usepackage{needspace}
+\usepackage{xcolor}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc}
+\usepackage{etoolbox}
+\usepackage{ragged2e}
+
+% P column: ragged-right + relaxed hyphenation
+\newcolumntype{P}[1]{>{\RaggedRight\arraybackslash\hyphenpenalty=200\exhyphenpenalty=200}p{#1}}
+
+% Patch longtable for correct spacing
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+
+% --- Graphics ---
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+% --- Captions ---
+\usepackage[labelfont=bf, font=small, labelsep=period, justification=centering]{caption}
+\usepackage{subcaption}
+
+% Figure / table numbering as Chapter.N
+\counterwithin{figure}{chapter}
+\counterwithin{table}{chapter}
+
+% --- Missing figure placeholder ---
+\usepackage[]{todonotes}
+
+% --- TOC ---
+\usepackage{tocloft}
+\setlength{\cftsecindent}{0pt}
+\setlength{\cftsubsecindent}{0pt}
+\setlength{\cftsubsubsecindent}{0pt}
+\setlength{\cftsubsecnumwidth}{2.5em}
+\setlength{\cftsubsubsecnumwidth}{3.2em}
+
+% --- minitoc: per-chapter sub-TOCs ---
+\usepackage{minitoc}
+\setcounter{minitocdepth}{3}
+\nomtcrule
+\nomtcpagenumbers
+
+% --- Miscellaneous ---
+\usepackage{needspace}
+\setlength{\emergencystretch}{3em}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\AtBeginEnvironment{itemize}{\sloppy}
+\AtBeginEnvironment{enumerate}{\sloppy}
+
+% --- Hyperlinks ---
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{}
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX},
+  pdftitle={MES System --- Complete Project Report},
+  pdfauthor={Mohamed Dhia SLEIMI \& Mustapha BOUZIRI},
+  pdfsubject={End-of-Studies Project Report --- ISET Rades / Mavision}
+}
+
+% --- Page geometry (guide: top/bottom 2.5cm, left 3cm, right 2cm) ---
+\usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=2cm, headheight=15pt]{geometry}
+
+\raggedbottom
+
+% --- Header and footer ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small MES System --- End-of-Studies Project}
+\fancyhead[R]{\small \leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
+}
+
+% =============================================================================
+% SEMANTIC COMMANDS  (defined once here; NOT redefined in body files)
+% =============================================================================
+\newcommand{\businessrule}[1]{\texttt{#1}}
+\newcommand{\modulename}[1]{\texttt{#1}}
+\newcommand{\apiendpoint}[1]{\texttt{#1}}
+\newcommand{\techname}[1]{\textsf{#1}}
+\newcommand{\uilabel}[1]{\textit{#1}}
+\newcommand{\domainterm}[1]{\emph{#1}}
+\newcommand{\userrole}[1]{#1}
+
+% --- Project metadata ---
+\newcommand{\InstituteName}{Higher Institute Of Technological Studies Rades}
+\newcommand{\CompanyName}{Mavision}
+\newcommand{\ProjectName}{MES System}
+\newcommand{\StudentOne}{Mohamed Dhia \textsc{SLEIMI}}
+\newcommand{\StudentTwo}{Mustapha \textsc{BOUZIRI}}
+
+\author{}
+\date{}
+
+% =============================================================================
+\begin{document}
+
+% ── Global graphic search paths ─────────────────────────────────────────────
+% Each chapter resets this with \graphicspath{} before its \input.
+% This default covers the title-page logo (./media/iset_rads_logo.jpg).
+\graphicspath{{./media/}}
+
+% ---------------------------------------------------------------------------
+% TITLE PAGE
+% ---------------------------------------------------------------------------
+\thispagestyle{empty}
+\begin{titlepage}
+  \begin{center}
+
+    \fontsize{20pt}{20pt}\selectfont
+    \includegraphics[width=2cm]{./media/iset_rads_logo.jpg}\\[6pt]
+    \begin{tabular}{c}
+      Tunisian Republic            \\
+      Ministry of Higher Education \\
+      \InstituteName{}             \\
+    \end{tabular}
+
+    \vspace{10pt}
+    \rule{\textwidth}{2pt}\\
+    \vspace{10pt}
+    {\normalsize\textit{End-of-Studies Project Report}}\\
+    \vspace{10pt}
+    {\bf\large \InstituteName{}}\\
+    \vspace{10pt}
+    {\normalsize\textit{by}}\\
+    \vspace{10pt}
+    {\fontsize{18pt}{22pt}\selectfont
+      \textbf{%
+        \StudentOne{}\\
+        \StudentTwo{}%
+      }\\
+    }
+
+    \vspace{30pt}
+    {\fontsize{27pt}{32pt}\selectfont
+      \rule{0.5\textwidth}{.4pt}\\
+      \vspace{10pt}
+      \textbf{\ProjectName{}}\\
+      \vspace{6pt}
+      \fontsize{16pt}{18pt}\selectfont
+      Complete Project Report\\
+      \vspace{10pt}
+      \rule{0.5\textwidth}{.4pt}
+    }
+
+    \vspace{30pt}
+    \normalsize\textbf{\textit{made at}}\\
+    \vspace{10pt}
+    \CompanyName{}
+
+  \end{center}
+\end{titlepage}
+
+% ---------------------------------------------------------------------------
+% FRONT MATTER — roman pagination
+% ---------------------------------------------------------------------------
+\pagenumbering{roman}
+
+% ── Acknowledgements ────────────────────────────────────────────────────────
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+First and foremost, We would like to thank our academic supervisor,
+\textbf{Ms.~\texttt{Marwa CHAABANI}}, for their expert guidance and
+unwavering commitment. Their in-depth knowledge, availability and unconditional support
+have been of paramount importance in the completion of this project.
+
+We would also like to express our gratitude to our professional supervisor at
+\textbf{Mavision}, \textbf{Mr.~\texttt{Mourad YOUNSI}}. Their
+contribution to this project, both on a technical and organisational level, has been
+invaluable. Their strategic vision, domain expertise and availability greatly facilitated
+our progress and allowed us to gain an enriching professional experience.
+
+\newpage
+
+% ── Global Table of Contents ────────────────────────────────────────────────
+\dominitoc   % build minitoc data (must come before \tableofcontents)
+\tableofcontents
+\newpage
+
+% ── List of Figures ─────────────────────────────────────────────────────────
+\listoffigures
+\newpage
+
+% ── List of Tables ──────────────────────────────────────────────────────────
+\listoftables
+\newpage
+
+% ---------------------------------------------------------------------------
+% GENERAL INTRODUCTION — arabic pagination starts here
+% ---------------------------------------------------------------------------
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\chapter*{General Introduction}
+\addcontentsline{toc}{chapter}{General Introduction}
+\markboth{General Introduction}{}
+\graphicspath{{../MES_introduction-repport/media/}}
+In an industrial context undergoing rapid digital transformation, manufacturing
+companies face the necessity of optimising their production processes, reducing
+downtime and ensuring complete traceability of workshop operations.
+Manufacturing Execution Systems, known by the acronym MES
+(\textit{Manufacturing Execution System}), represent a direct response to these
+challenges by bridging the gap between decision-making layers (ERP) and the
+production floor.
+
+It is within this context that the present end-of-studies project was carried out at
+\textbf{Mavision}. The project consists of the design and development of an integrated
+MES system, structured around two main components: a business back-end developed in
+AL language on the Microsoft Dynamics 365 Business Central platform, and a
+cross-platform mobile/web application developed with the Flutter framework. The system
+enables machine management, production order tracking, real-time production reporting,
+as well as user and role-based access management.
+
+This report is structured into several chapters. The first chapter introduces the
+host organisation and presents the general framework of the project, highlighting the
+limitations of existing solutions and the relevance of the proposed solution. The
+second chapter focuses on requirements analysis and specification, as well as the
+technology choices made. The subsequent chapters trace the various development phases,
+exploring the conceptual aspects and illustrating the results obtained at the end of
+each sprint.
+
+Through this approach, we aim to demonstrate how a well-designed digital solution can
+transform workshop production management by providing visibility, responsiveness and
+performance, serving both operators and management alike.
+
+%% CHAPTERS:BEGIN
+
+% ---------------------------------------------------------------------------
+% Global Project Framework
+% ---------------------------------------------------------------------------
+\chapter{Global Project Framework}
+\graphicspath{{./media/MES_chapter-1-repport/}}
+\input{chapter1.tex}
+
+% ---------------------------------------------------------------------------
+% Requirements Analysis and Specification
+% ---------------------------------------------------------------------------
+\chapter{Requirements Analysis and Specification}
+\graphicspath{{./media/MES_chapter-2-repport/}}
+\input{chapter2.tex}
+
+% ---------------------------------------------------------------------------
+% MES Sprint 1 Repport
+% ---------------------------------------------------------------------------
+\chapter{MES Sprint 1 Repport}
+\graphicspath{{./media/MES_Sprint-1-Repport/}}
+\input{sprint1.tex}
+
+% ---------------------------------------------------------------------------
+% MES Sprint 2 Repport
+% ---------------------------------------------------------------------------
+\chapter{MES Sprint 2 Repport}
+\graphicspath{{./media/MES_Sprint-2-Repport/}}
+\input{sprint2.tex}
+
+% ---------------------------------------------------------------------------
+% MES Sprint 3 Repport
+% ---------------------------------------------------------------------------
+\chapter{MES Sprint 3 Repport}
+\graphicspath{{./media/MES_Sprint-3-Repport/}}
+\input{sprint3.tex}
+
+% ---------------------------------------------------------------------------
+% MES Sprint 4 Report
+% ---------------------------------------------------------------------------
+\chapter{MES Sprint 4 Report}
+\graphicspath{{./media/MES_Sprint-4-Report/}}
+\input{sprint4.tex}
+
+%% CHAPTERS:END
+
+
+
+
+
+
+
+
+
+
+% ---------------------------------------------------------------------------
+% GENERAL CONCLUSION
+% ---------------------------------------------------------------------------
+\chapter*{General Conclusion}
+\addcontentsline{toc}{chapter}{General Conclusion}
+\markboth{../General Conclusion}{}
+
+This report has presented the full lifecycle of the MES (\textit{Manufacturing
+Execution System}) project developed at \textbf{\CompanyName{}} over the course
+of four sprints. Starting from a blank slate, the team designed and implemented
+a complete shop-floor execution system natively integrated with Microsoft
+Dynamics 365 Business Central.
+
+Sprint~1 established the security and identity foundation: a token-based
+authentication system, role-based access control, and a full administrator
+interface for user and account management. Sprint~2 delivered real-time machine
+monitoring, production order management, and a complete operation history trail.
+Sprint~3 completed the production execution loop with cycle declarations, pause,
+resume, and close flows, Bill of Materials visibility, component scanning, scrap
+tracking, and label printing. Sprint~4 added the administration layer with a
+machine performance dashboard, a paginated activity log, multi-language support
+covering English, French, and Arabic, and in-app onboarding tutorials.
+
+Across all four sprints, the append-only data model ensures a tamper-evident
+audit trail from every machine state change through to every production cycle
+declaration. The reactive stream architecture in the Flutter frontend provides
+operators and supervisors with a consistent, real-time view of the production
+floor without manual refreshes.
+
+The project demonstrates that a tightly integrated MES solution can be built
+on top of Microsoft Dynamics 365 Business Central using OData V4 unbound
+actions, without requiring additional third-party middleware. The extensible
+layered architecture positions the system for future enhancements such as
+statistical reporting, alert management, and additional language support.
+
+% ---------------------------------------------------------------------------
+% BIBLIOGRAPHY
+% ---------------------------------------------------------------------------
+\bibliographystyle{plain}
+\bibliography{references}
+
+\begin{thebibliography}{9}
+%% BIBLIOGRAPHY:BEGIN 
+% -- auto-merged bibliography entries --
+\bibitem{mavision}
+	Mavision, \textit{Official Website}, \url{https://www.mavision.tn},
+	visited April 2025.
+%% BIBLIOGRAPHY:END
+\end{thebibliography}
+\end{document}
