@@ -1,0 +1,857 @@
+\minitoc
+\newpage
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+Requirements analysis and specification is a crucial phase in the information system
+development process. It consists, first and foremost, of clarifying the functional
+and non-functional requirements of the system. This step then allows a complete
+understanding of the subject in order to position oneself clearly, precisely and
+without ambiguity.
+
+% ── 2.1 ─────────────────────────────────────────────────────
+\section{Requirements Analysis}
+
+This step allows us to understand the overall context of our project, that is to say
+to identify the main features and determine the actors who will interact with the
+system.
+
+\subsection{Identification of Actors}
+
+Actors are entities external to the system (people, hardware, systems) that are
+likely to exchange information with it. The following is a list of the actors who
+will interact with our system:
+
+\begin{longtable}{@{}P{0.21\linewidth}P{0.75\linewidth}@{}}
+	\caption{List of MES application users}
+	\label{tab:mescha-acteurs} \\
+	\toprule
+	\textbf{Actor} & \textbf{Description} \\
+	\midrule
+	\endfirsthead
+	
+	\toprule
+	\textbf{Actor} & \textbf{Description} \\
+	\midrule
+	\endhead
+	
+	\multicolumn{2}{r}{\small Continued on next page} \\
+	\endfoot
+	
+	\endlastfoot
+	
+	Administrator  &                      
+	This is the person responsible for the MES platform. They manage all users
+	(supervisors, operators), passwords and account statuses. They have access to all
+	application features as well as the administration pages in Business Central. \\[6pt]
+	
+	Supervisor     &                      
+	This is an intermediate user. They can monitor the progress of production operations
+	on their work centre, view machine status and track the progress of production
+	orders. \\[6pt]
+	
+	Operator       &                      
+	This is the end user of the MES application. Assigned to a work centre
+	(\textit{Work Center}), they can view the production orders assigned to their machine,
+	start, pause or resume an operation, and declare produced quantities. \\
+	
+\end{longtable}
+
+\subsection{Identification of Requirements}
+
+At this stage, we will theoretically define the specific requirements of our
+application, clearly distinguishing functional requirements from non-functional
+requirements.
+
+\subsubsection{Functional Requirements}
+
+Each actor of the platform has specific expectations referred to as functional
+requirements. To define the functional scope, it is necessary that the conceptual
+solution meets these functional requirements.
+
+\begin{itemize}
+	\item \textbf{Authentication}: This feature allows any user to log in to the
+	      platform using their Auth~ID and password. Upon first login, the user is prompted
+	      to change their temporary password. A secure session token (GUID, 12~h validity) is
+	      issued upon each successful login.
+	      	      
+	\item \textbf{User Management}: This feature allows the administrator to:
+	      \begin{itemize}
+	      	\item View the complete list of MES users.
+	      	\item Create a new operator or supervisor account by linking it to a Business
+	      	      Central employee and assigning them a work centre.
+	      	\item Generate and assign a temporary password.
+	      	\item Activate or deactivate an account (automatic revocation of active tokens).
+	      \end{itemize}
+	      	      
+	\item \textbf{Machine Management}: This feature allows users to:
+	      \begin{itemize}
+	      	\item View the list of machines in a work centre with their current status
+	      	      (Idle, Starting, OutOfOrder).
+	      	\item View the production order currently running on each machine.
+	      \end{itemize}
+	      	      
+	\item \textbf{Production Order Management}: This feature allows the operator to:
+	      \begin{itemize}
+	      	\item View production orders (Planned, Firm, Released) assigned to their machine.
+	      	\item Filter and sort orders by status or date.
+	      	\item View the details of an order (item, quantity, planned dates, operation
+	      	      description).
+	      \end{itemize}
+	      	      
+	\item \textbf{Production Operation Management}: This feature is the core of the
+	      system. It allows the operator to:
+	      \begin{itemize}
+	      	\item Start an operation (validation of prerequisites: released order, free machine,
+	      	      previous operation completed if applicable).
+	      	\item Pause or resume an ongoing operation.
+	      	\item Declare produced quantities (validation: quantity $> 0$, no excess of the
+	      	      ordered quantity).
+	      	\item View progress in real time (produced quantity, completion percentage,
+	      	      operation status).
+	      \end{itemize}
+	      	      
+	\item \textbf{Progress Dashboard}: Allows the operator and supervisor to view all
+	      active operations (Running / Paused) on a given machine, with their respective
+	      progress.
+	      	      
+	\item \textbf{Password Change}: Allows any logged-in user to change their password
+	      by entering their old password and the new one.
+\end{itemize}
+
+\subsubsection{Non-Functional Requirements}
+
+To define the non-functional scope, it is necessary that the conceptual solution meets
+these non-functional requirements:
+
+\begin{itemize}
+	\item \textbf{Performance}: The platform performs efficiently in terms of handling
+	      routine operations (login, order consultation, production declaration). Machine
+	      status updates are refreshed every 5 seconds via a streaming mechanism.
+	      	      
+	\item \textbf{Security}: Implementation of a token-based authentication system
+	      (signed GUID, 12~h expiry) and role management (Admin, Supervisor, Operator) to
+	      control access to features. Passwords are stored as SHA-256 hashes with a salt.
+	      	      
+	\item \textbf{Maintainability}: The AL back-end code is organised in layers
+	      (Tables, Enums, Codeunits, API Pages) and the Flutter code follows a layered
+	      architecture (Data, Domain, Presentation) with the Provider pattern, facilitating
+	      updates and the addition of new features.
+	      	      
+	\item \textbf{Ergonomics}: The user interface is adaptive (mobile, tablet, PC)
+	      thanks to responsive layouts dedicated to each form factor, minimising the learning
+	      curve for workshop operators.
+	      	      
+	\item \textbf{Portability}: The Flutter application is compiled for Android, iOS,
+	      Web, Linux, macOS and Windows from a single codebase. The Business Central back-end
+	      is deployable both on-premises and in SaaS (cloud) mode.
+\end{itemize}
+
+% ── 2.2 ─────────────────────────────────────────────────────
+\section{Project Management with Scrum}
+
+\subsection{Backlog Features}
+
+% ===================== DOMAIN 1: AUTHENTICATION & USER MANAGEMENT =====================
+\section*{Domain 1: Authentication \& User Management}
+\label{domain1}
+
+\vspace{0.3cm}
+
+\begin{longtable}{p{1.5cm} p{5cm} p{6.5cm} p{2cm}}
+	\hline
+	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
+	\hline
+	\endfirsthead
+	
+	\hline
+	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
+	\hline
+	\endhead
+	
+	\multicolumn{4}{r}{\small Continued on next page} \\
+	\endfoot
+	
+	\endlastfoot
+	
+	\textbf{US-1.1} &
+	As a User (\userrole{Operator} / \userrole{Supervisor} / \userrole{Administrator}),
+	I need to log into the system with my credentials so that I can access
+	features appropriate to my role.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item User can enter username and password.
+	\item System validates credentials against the \techname{ERP}.
+	\item Session token is created upon successful authentication.
+	\item User is redirected to the appropriate dashboard based on role.
+	\end{itemize} &
+	High \\
+	\midrule
+	
+	\textbf{US-1.2} &
+	As an \userrole{Administrator}, I need to assign access to each user so
+	that users only access features appropriate to their role.
+	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Ability to assign a user as \userrole{Operator} or \userrole{Supervisor} or \userrole{Administrator}.
+	\item Unauthorized actions are blocked with clear error messages.
+	\end{itemize} &
+	High \\
+	\midrule
+	
+	\textbf{US-1.3} &
+	As an \userrole{Administrator}, I need to search users.
+	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Ability to filter users based on their role.
+	\item Ability to search users based on name or email.
+	\end{itemize} &
+	High \\
+	\midrule
+	
+	\textbf{US-1.4} &
+	As an \userrole{Administrator}, I need to see a list of all \techname{MES}
+	users with their details so that I can manage accounts.
+	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item The user list displays each account's full name, email, role, and work centre.
+	\item Clicking a user row opens a password management dialog for that account.
+	\item The list refreshes automatically after a new user is created.
+	\end{itemize} & High \\ \midrule
+	
+	\textbf{US-1.5} &
+	As an \userrole{Administrator}, I need to generate and assign a temporary
+	password to a user so that they can log in for the first time.
+	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Admin can generate a random secure password for any user.
+	\item The generated password is sent to the \techname{ERP} via \texttt{AdminSetPassword}.
+	\item The target account is flagged \domainterm{Need To Change Password} after the password is set.
+	\item Success or failure is reported to the admin with a clear message.
+	\end{itemize} & High \\ \midrule
+	
+	\textbf{US-1.6} &
+	As an \userrole{Administrator}, I need to change the role and work-centre
+	assignment of an existing user so that access rights stay current.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Admin can select a new role for any user.
+	\item Work-centre list updates based on the selected role.
+	\item All active tokens for the target user are revoked on save.
+	\item The user list refreshes after a successful change.
+	\end{itemize}
+	&
+	High \\ \midrule
+	
+	\textbf{US-1.7} &
+	As an \userrole{Administrator}, I need to activate or deactivate a user
+	account so that access can be revoked without deleting the account.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Admin can toggle the active status of any user.
+	\item Deactivation immediately revokes all active tokens.
+	\item An admin cannot deactivate their own account.
+	\item The user row updates its visual status indicator immediately.
+	\end{itemize}
+	&
+	High \\
+	\bottomrule
+\end{longtable}
+
+
+% ===================== DOMAIN 2: MACHINE MONITORING =====================
+\section*{Domain 2: Machine Monitoring}
+\label{domain2}
+
+\vspace{0.3cm}
+
+\begin{longtable}{ p{1.5cm} p{5cm} p{6.5cm} p{2cm} }
+	\toprule
+	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
+	\midrule
+	\endfirsthead
+	
+	\toprule
+	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
+	\midrule
+	\endhead
+	
+	\multicolumn{4}{r}{\small Continued on next page} \\
+	\endfoot
+	
+	\endlastfoot
+	
+	\textbf{US-2.1} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need to see the list
+	of machines in my work centre with their current status so that I can see
+	which machines are currently active.
+	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Machine list is scoped to the authenticated user's work centre.
+	\item Each card shows machine name, current status (\domainterm{Idle},
+	\domainterm{Starting}, \domainterm{OutOfOrder}), and active production
+	order number.
+	\item The list refreshes automatically every 5 seconds.
+	\end{itemize} &
+	High \\
+	\midrule
+	
+	\textbf{US-2.2} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need to view the
+	production orders assigned to a machine so that I know what work needs
+	to be done.
+	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Only \domainterm{Planned}, \domainterm{Firm Planned}, or
+	\domainterm{Released} orders are shown.
+	\item Each card displays order number, item description, planned quantity,
+	planned start and end dates, and operation number.
+	\item Orders can be searched and filtered by status, and sorted by planned
+	start date.
+	\end{itemize} &
+	High \\
+	\midrule
+	
+	\textbf{US-2.3} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need to start a
+	production operation so that the system records that the order has begun.
+	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Only \domainterm{Released} routing lines may be started.
+	\item An operation cannot be started if it is already running.
+	\item A machine cannot run two operations simultaneously.
+	\item A new MES Operation Status record is created with status
+	\domainterm{Running}.
+	\end{itemize} & High \\ \midrule
+	
+	\textbf{US-2.4} &
+	As a \userrole{Supervisor} or \userrole{Operator}, I need to monitor the
+	current status of all active operations on a machine so that I can follow
+	the progress of each order.
+	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item The Operations Progress tab shows all operations whose latest status
+	record is \domainterm{Running} or \domainterm{Paused}.
+	\item Each card shows order number, operation number, current status, and
+	last updated timestamp.
+	\item Data refreshes automatically every 5 seconds.
+	\end{itemize} & High \\ \midrule
+	
+	\textbf{US-2.5} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need a tabbed view
+	for a machine so that I can navigate between pending orders and active
+	operation progress without leaving the machine context.
+	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Selecting a machine from the list opens a dedicated machine page.
+	\item The page provides at least two tabs: \domainterm{Orders} and
+	\domainterm{Progress}.
+	\item Switching tabs preserves the state of each tab without reloading data.
+	\item The active tab is visually highlighted in the navigation bar.
+	\end{itemize} & High \\ \midrule
+	
+	\textbf{US-2.6} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need to filter and
+	sort production orders so that I can quickly find the most relevant work.
+	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Orders can be searched by order number, item description, or date.
+	\item Orders can be filtered by status (\domainterm{All}, \domainterm{Planned},
+	\domainterm{Firm Planned}, \domainterm{Released}).
+	\item Orders can be sorted by planned start date ascending or descending.
+	\item On mobile, the status filter is accessible via a compact popup menu.
+	\end{itemize} & High \\ \midrule
+	
+	\textbf{US-2.7} &
+	As a \userrole{Supervisor} or \userrole{Operator}, I need to view the
+	history of completed operations for a machine so that I can audit past
+	production.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item The History tab shows all operations with status
+	\domainterm{Finished} or \domainterm{Cancelled}.
+	\item Each card shows order number, status badge, product name, produced
+	quantity, start time, and end time.
+	\item The list supports free-text search and sort by start date.
+	\item Tapping a card navigates to the full operation detail page.
+	\end{itemize}
+	&
+	High \\
+	\bottomrule
+\end{longtable}
+
+
+\section*{Domain 3: Production Execution \& Traceability}
+\label{domain3}
+
+\vspace{0.3cm}
+
+\begin{longtable}{p{1.5cm} p{5cm} p{6.5cm} p{2cm}}
+	\hline
+	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
+	\hline
+	\endfirsthead
+	\hline
+	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
+	\hline
+	\endhead
+	\multicolumn{4}{r}{\small Continued on next page} \\
+	\endfoot
+	\endlastfoot
+	
+	\textbf{US-3.1} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need to declare the
+	quantity produced in a cycle so that the system records production progress.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Declared quantity must be positive and not exceed remaining quantity.
+	\item Each declaration creates a new progression cycle record.
+	\item Cumulative quantity and progress percentage update immediately.
+	\end{itemize}
+	& High \\ \midrule
+	
+	\textbf{US-3.2} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need to pause and
+	resume an active operation so that interruptions are tracked accurately.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item A Running operation can be paused; a Paused one can be resumed.
+	\item A machine cannot resume if another operation is already running.
+	\end{itemize}
+	& High \\ \midrule
+	
+	\textbf{US-3.3} &
+	As a \userrole{Supervisor}, I need to finish or cancel an operation so that
+	the machine is released and the order is closed.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Finishing a complete order (100\%) shows a green confirmation dialog.
+	\item Cancelling an incomplete order shows a red warning dialog.
+	\item Closing sets the execution end time and inserts an Idle machine status.
+	\end{itemize}
+	& High \\ \midrule
+	
+	\textbf{US-3.4} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need a dedicated
+	operation detail page with live data in one place.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Shows status, order number, product, required and produced quantities.
+	\item Live data streams without a manual refresh.
+	\item Adapts between mobile and desktop layouts.
+	\end{itemize}
+	& High \\ \midrule
+	
+	\textbf{US-3.5} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need to see all
+	production cycles declared for an operation.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Cycle table lists operator, quantity, cumulative total, and timestamp.
+	\item Records ordered newest-first with pagination.
+	\item Refreshes after each new declaration.
+	\end{itemize}
+	& High \\ \midrule
+	
+	\textbf{US-3.6} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need a visual chart
+	of declarations over time to identify performance trends.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Line chart plots cycle quantity vs.\ declaration time.
+	\item Touch tooltip shows operator, quantity, cumulative total, timestamp.
+	\item Auto-scrolls to most recent data point on load and refresh.
+	\end{itemize}
+	& Medium \\ \midrule
+	
+	\textbf{US-3.7} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need to see the Bill
+	of Materials for an operation to know which components are required.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Components linked to the current routing step are colour-coded by
+	availability (Available / Low Stock / Missing).
+	\item Shared components not linked to this step are shown in neutral style.
+	\item BOM data refreshes after every consumption event.
+	\end{itemize}
+	& High \\ \midrule
+	
+	\textbf{US-3.8} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need to report
+	scrapped units with a reason code so that waste is accurately tracked.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Scrap can only be declared when the operation is Running.
+	\item A reason code must be selected before submission.
+	\item Each declaration records quantity, code, and operator.
+	\end{itemize}
+	& High \\ \midrule
+	
+	\textbf{US-3.9} &
+	As a \userrole{Supervisor}, I need to declare production on behalf of an
+	operator so that output is attributed to the correct person.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Supervisor role sees an operator selector in the declare dialog.
+	\item Selected operator's ID is written to the Declared By field.
+	\item If no operator is selected, the supervisor's ID is used.
+	\end{itemize}
+	& Medium \\ \midrule
+	
+	\textbf{US-3.10} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need to scan
+	components into an operation so that consumption is recorded against the BOM.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Live camera feed reads DataMatrix barcodes.
+	\item Internal format parsed locally; external resolved via API.
+	\item Duplicate scan increments quantity on the existing row.
+	\item Confirming scans inserts consumption records and refreshes the BOM.
+	\end{itemize}
+	& High \\ \midrule
+	
+	\textbf{US-3.11} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need to print a label
+	for a production order so that produced parts are correctly identified.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Label includes DataMatrix barcode encoding order, machine, item data.
+	\item PDF generation supports landscape/portrait toggle.
+	\item Print button available only when operation is Finished or progress
+	$\geq$ 100\%.
+	\end{itemize}
+	& Medium \\ \midrule
+	
+	\textbf{US-3.12} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need a label printed
+	for each declared unit so that individual pieces carry traceable information.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item One PDF page per declared unit with a label counter.
+	\item Same DataMatrix encoding as the production label.
+	\item Launched automatically after a successful production declaration.
+	\end{itemize}
+	& Medium \\
+	\bottomrule
+\end{longtable}
+
+
+% ===================== DOMAIN 4: ADMINISTRATION =====================
+\section*{Domain 4: Administration \& Monitoring}
+\label{domain4}
+
+\vspace{0.3cm}
+
+\begin{longtable}{p{1.5cm} p{5cm} p{6.5cm} p{2cm}}
+	\hline
+	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
+	\hline
+	\endfirsthead
+	\hline
+	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
+	\hline
+	\endhead
+	\multicolumn{4}{r}{\small Continued on next page} \\
+	\endfoot
+	\endlastfoot
+	
+	\textbf{US-4.1} &
+	As an \userrole{Administrator}, I need a performance dashboard for all
+	machines so that I can monitor production health across the facility.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Dashboard shows uptime \%, operation count, total produced, and scrap
+	per machine.
+	\item Configurable time-range (hours back) filter.
+	\item Responsive grid: 1 col mobile, 2 col tablet, 3 col desktop.
+	\end{itemize}
+	& High \\ \midrule
+	
+	\textbf{US-4.2} &
+	As an \userrole{Administrator}, I need a filterable, paginated activity log
+	of all system actions so that I can audit operator and machine activity.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Log entries include type, operator, machine, action, and timestamp.
+	\item Filterable by action type and time range.
+	\item Paginated at 15 rows per page.
+	\end{itemize}
+	& High \\ \midrule
+	
+	\textbf{US-4.3} &
+	As an \userrole{Administrator}, I need a persistent sidebar navigation so
+	that I can move between admin sections without losing context.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Sidebar has sections for Users \& Roles, Machine Dashboard,
+	Activity Logs, and Settings.
+	\item All pages kept alive simultaneously via IndexedStack.
+	\item Active section is visually highlighted.
+	\end{itemize}
+	& High \\ \midrule
+	
+	\textbf{US-4.4} &
+	As any user, I need the application available in English, French, and Arabic
+	so that I can use it in my preferred language.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Language selector on login screen and in profile page.
+	\item All UI strings externalised; no hard-coded text.
+	\item Arabic locale activates RTL layout automatically.
+	\item Language preference persisted across sessions.
+	\end{itemize}
+	& High \\ \midrule
+	
+	\textbf{US-4.5} &
+	As a first-time user, I need guided coach-mark tutorials so that I can learn
+	the interface without external documentation.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Tutorials shown exactly once per install per screen.
+	\item Coach marks cover: machine list, machine detail tabs, operation
+	detail, and admin dashboard.
+	\item Localised skip button text.
+	\end{itemize}
+	& Medium \\
+	\bottomrule
+\end{longtable}
+
+
+\section*{Remaining}
+
+\vspace{0.3cm}
+
+\begin{longtable}{p{1.5cm} p{5cm} p{6.5cm} p{2cm}}
+	\toprule
+	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
+	\midrule
+	\endfirsthead
+	
+	\toprule
+	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
+	\midrule
+	\endhead
+	
+	\multicolumn{4}{r}{\small Continued on next page} \\
+	\endfoot
+	
+	\endlastfoot
+	
+	\textbf{US-x.1}
+	\label{usx.1} &
+	As a Supervisor, I need to create a new production order so that I can respond to urgent production needs.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Form captures: Machine, ProductNo, Planned Quantity, Start Time
+	\item Validates product exists in ERP
+	\item Validates machine can produce the product
+	\item Order is saved to ERP database
+	\item Order appears in machine's ``Orders to be done'' within a short time frame
+	\item Audit trail captures order creation
+	\end{itemize}
+	&
+	Medium \\
+	\midrule
+	
+	\textbf{US-x.2}
+	\label{usx.6} &
+	As an Operator, I need to be able to declare production on another machine of the same type so that I can continue working when my terminal is broken.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Operator can access machines of same type as their assigned machines
+	\item System validates operator is authorized for that machine type
+	\item Declaration process identical to US-4.1
+	\item Audit trail shows which machine declaration was made from
+	\end{itemize}
+	&
+	Low \\
+	\midrule
+	
+\end{longtable}
+
+
+% ── 2.3 ─────────────────────────────────────────────────────
+
+\section{Sprint Plan}
+
+The project was organised into four two-week sprints, each delivering a
+functional increment verified by a sprint review with the professional supervisor.
+
+\begin{longtable}{@{} P{0.10\linewidth} P{0.30\linewidth} P{0.55\linewidth} @{}}
+	\caption{MES project sprint plan}
+	\label{tab:mescha-sprint_plan} \\
+	\toprule
+	\textbf{Sprint} & \textbf{Domain}                                   & \textbf{Scope} \\
+	\midrule
+	\endfirsthead
+	\toprule
+	\textbf{Sprint} & \textbf{Domain}                                   & \textbf{Scope} \\
+	\midrule
+	\endhead
+	\multicolumn{3}{r}{\small Continued on next page} \\
+	\endfoot
+	
+	Sprint~1        & Authentication \& User Management                 &                
+	Secure login, session token management, role-based access control,
+	administrator user creation, password generation and reset,
+	role and work-centre change, account activation/deactivation. \\ \midrule
+	
+	Sprint~2        & Machine Monitoring \& Production Order Management &                
+	Real-time machine status tracking, production order list per machine,
+	operation start, tabbed machine view with Orders / Progress / History tabs,
+	order filtering and sorting, completed operation history. \\ \midrule
+	
+	Sprint~3        & Production Execution \& Traceability              &                
+	Production cycle declarations, pause/resume/finish/cancel operations,
+	operation detail page with live data, production chart, Bill of Materials
+	visibility, component barcode scanning, scrap declaration,
+	supervisor proxy declaration, and label printing. \\ \midrule
+	
+	Sprint~4        & Administration, System Configuration              &                
+	Administrator dashboard and activity log, admin navigation shell,
+	multi-language support (EN/FR/AR) and RTL layout,
+	in-app onboarding tutorials. \\
+	\bottomrule
+\end{longtable}
+
+\section{Global Application Architecture}
+
+\subsection{Physical Architecture}
+
+The physical architecture of the MES system rests on two main nodes:
+
+\begin{itemize}
+	\item \textbf{Business Central Server (on-premises / SaaS)}: hosts the AL extension
+	      that exposes OData V4 endpoints and the business REST APIs. In on-premises mode, the
+	      server runs on a BC210 instance accessible on port 7048. In SaaS mode, the base URLs
+	      follow the schema
+	      \texttt{api.businesscentral.dynamics.com/v2.0/<tenantId>/<environment>/ODataV4/}.
+	      	      
+	\item \textbf{Flutter Client (mobile / web / desktop)}: application compiled for
+	      Android, iOS, Web or desktop, communicating with the BC server via HTTP POST requests
+	      to OData V4 endpoints and custom APIs.
+\end{itemize}
+
+% IMAGE PLACEHOLDER - physical architecture diagram (BC server + Flutter clients)
+\begin{figure}[H]
+	\centering
+	\missingfigure{Physical architecture diagram: Business Central server (OData
+		V4) $\leftrightarrow$ network $\leftrightarrow$ Flutter clients (Android / iOS / Web)}
+	\caption{MES System Physical Architecture}
+	\label{fig:mescha-archi_physique}
+\end{figure}
+
+\subsection{Software Architecture}
+
+The software architecture of the system is organised around two distinct parts.
+
+\subsubsection{AL Back-end (Business Central)}
+
+The back-end is structured in six layers:
+
+\begin{itemize}
+	\item \textbf{Tables (1-Tables)}: define the persistent data model ---
+	      MES User, MES Auth Token, MES Machine Status, MES Operation Status, MES Operation
+	      Progression.
+	\item \textbf{Enums (2-Enum)}: define the enumerated types --- MES User Role
+	      (Operator, Supervisor, Admin), MES Machine Status (Idle, Starting, OutOfOrder),
+	      MES Operation Status (Running, Paused, Finished).
+	\item \textbf{Codeunits (3-CodeUnit)}: contain the business logic --- MES Auth Mgt
+	      (authentication, tokens), MES Password Mgt (SHA-256 hashing), MES Machine Actions
+	      (machine and operation management), MES Unbound Actions (OData V4 facade).
+	\item \textbf{API Pages (4-API)}: expose data for reading/writing via the BC REST
+	      API --- employees, MES users, work centres.
+	\item \textbf{Permission Sets (5-PermissionSet)}: define access rights to AL objects
+	      for BC users.
+	\item \textbf{Pages (6-Pages)}: administration and debugging interfaces in the BC
+	      client (lists, cards, API debug page).
+\end{itemize}
+
+\subsubsection{Flutter Front-end}
+
+The Flutter front-end follows a three-layer architecture:
+
+\begin{itemize}
+	\item \textbf{Data}: contains data models (models) and HTTP services (services) that
+	      communicate with BC endpoints via the \texttt{http} library.
+	\item \textbf{Domain}: contains the providers (Provider pattern) that expose the
+	      application state to widgets --- AuthProvider, MesUserProvider,
+	      MesMachinesProvider, MachineordersProvider, etc.
+	\item \textbf{Presentation}: contains the pages and widgets of the user interface,
+	      organised by functional domain (auth, admin, machine) with dedicated responsive
+	      layouts (mobile, tablet, PC).
+\end{itemize}
+
+% IMAGE PLACEHOLDER - layered software architecture diagram
+\begin{figure}[H]
+	\centering
+	\missingfigure{Layered software architecture diagram: BC AL (Tables /
+		Enums / Codeunits / API Pages) $\leftrightarrow$ OData V4 $\leftrightarrow$ Flutter
+	(Data / Domain / Presentation)}
+	\caption{MES System Software Architecture}
+	\label{fig:mescha-archi_logicielle}
+\end{figure}
+
+% ── 2.5 ─────────────────────────────────────────────────────
+\section{Work Environment}
+
+\subsection{Software Environment}
+
+Table~\ref{tab:mescha-env_logiciel} summarises the main tools and technologies used in
+this project.
+
+\begin{longtable}{@{}>{\centering\arraybackslash}m{0.09\linewidth}>{\centering\arraybackslash}m{0.38\linewidth}>{\centering\arraybackslash}m{0.49\linewidth}@{}}
+	\caption{MES project software environment}
+	\label{tab:mescha-env_logiciel} \\
+	\toprule
+	\textbf{Logo}                                                                   & \textbf{Tool / Technology}              & \textbf{Role in the project} \\
+	\midrule
+	\endfirsthead
+	
+	\toprule
+	\textbf{Logo}                                                                   & \textbf{Tool / Technology}              & \textbf{Role in the project} \\
+	\midrule
+	\endhead
+	
+	\multicolumn{3}{r}{\small Continued on next page} \\
+	\endfoot
+	
+	\endlastfoot
+	
+	% IMAGE PLACEHOLDER - insert logos in the left column
+	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/Microsoft-Business-Central-Logo.png} & Microsoft Dynamics 365 Business Central &                              
+	ERP platform hosting the AL back-end and business data \\[6pt]
+	\midrule
+	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/AL-language-logo.png}                & AL Language (Application Language)      &                              
+	Development of the BC extension (tables, codeunits, API pages) \\[6pt]
+	\midrule
+	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/flutter-dart-logo.png}               & Flutter (Dart)                          &                              
+	Development of the cross-platform mobile/web application \\[6pt]
+	\midrule
+	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/VSCode-logo.png}                     & Visual Studio Code                      &                              
+	Primary development environment (AL and Flutter) \\[6pt]
+	\midrule
+	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/github-logo.png}                     & Git / GitHub                            &                              
+	Version control and collaboration \\[6pt]
+	\midrule
+	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/postman-logo.png}                    & Postman                                 &                              
+	Testing and validation of OData V4 endpoints \\[6pt]
+	\midrule
+\end{longtable}
+
+\subsection{Development Environment}
+
+% TODO: describe the machines used, OS, tool versions
+\texttt{[DEVELOPMENT\_ENVIRONMENT: description of the workstations used (OS, RAM, CPU),
+		tool versions (Flutter SDK, Dart SDK, BC version, VS Code AL Language and Flutter
+		extensions), and any specific configuration required (docker, BC on-prem instance,
+	etc.). to be done later]}
+	
+\phantomsection
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+	
+In this chapter, we analysed and specified the functional and non-functional
+requirements of the MES system, identified the actors and their interactions, and
+presented the overall architecture of the solution. We also described the work
+environment and the adopted Scrum methodology. The following chapters detail the work
+carried out sprint by sprint, presenting the conceptual aspects and the results
+obtained at the end of each iteration.
+	
+% ============================================================
+	
+	
+% ============================================================
+%  BIBLIOGRAPHY
+% ============================================================
