@@ -154,7 +154,7 @@ these non-functional requirements:
 \subsection{Backlog Features}
 
 % ===================== DOMAIN 1: AUTHENTICATION & USER MANAGEMENT =====================
-\section*{Domain 1: Authentication \& User Management}
+\subsubsection{Domain 1: Authentication \& User Management}
 \label{domain1}
 
 \vspace{0.3cm}
@@ -176,6 +176,16 @@ these non-functional requirements:
 	\endlastfoot
 	
 	\textbf{US-1.1} &
+	As an \userrole{Administrator}, I need to assign access to each user so
+	that users only access features appropriate to their role.
+	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Ability to assign a user as \userrole{Operator} or \userrole{Supervisor} or \userrole{Administrator}.
+	\item Unauthorized actions are blocked with clear error messages.
+	\end{itemize} &
+	High \\
+	\midrule
+	
+	\textbf{US-1.2} &
 	As a User (\userrole{Operator} / \userrole{Supervisor} / \userrole{Administrator}),
 	I need to log into the system with my credentials so that I can access
 	features appropriate to my role.
@@ -185,16 +195,6 @@ these non-functional requirements:
 	\item System validates credentials against the \techname{ERP}.
 	\item Session token is created upon successful authentication.
 	\item User is redirected to the appropriate dashboard based on role.
-	\end{itemize} &
-	High \\
-	\midrule
-	
-	\textbf{US-1.2} &
-	As an \userrole{Administrator}, I need to assign access to each user so
-	that users only access features appropriate to their role.
-	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item Ability to assign a user as \userrole{Operator} or \userrole{Supervisor} or \userrole{Administrator}.
-	\item Unauthorized actions are blocked with clear error messages.
 	\end{itemize} &
 	High \\
 	\midrule
@@ -257,7 +257,7 @@ these non-functional requirements:
 
 
 % ===================== DOMAIN 2: MACHINE MONITORING =====================
-\section*{Domain 2: Machine Monitoring}
+\subsubsection{Domain 2: Machine Monitoring}
 \label{domain2}
 
 \vspace{0.3cm}
@@ -372,7 +372,7 @@ these non-functional requirements:
 \end{longtable}
 
 
-\section*{Domain 3: Production Execution \& Traceability}
+\subsubsection{Domain 3: Production Execution \& Traceability}
 \label{domain3}
 
 \vspace{0.3cm}
@@ -528,7 +528,7 @@ these non-functional requirements:
 
 
 % ===================== DOMAIN 4: ADMINISTRATION =====================
-\section*{Domain 4: Administration \& Monitoring}
+\subsubsection{Domain 4: Administration \& Monitoring}
 \label{domain4}
 
 \vspace{0.3cm}
@@ -791,7 +791,7 @@ The Flutter front-end follows a three-layer architecture:
 Table~\ref{tab:mescha-env_logiciel} summarises the main tools and technologies used in
 this project.
 
-\begin{longtable}{@{}>{\centering\arraybackslash}m{0.09\linewidth}>{\centering\arraybackslash}m{0.38\linewidth}>{\centering\arraybackslash}m{0.49\linewidth}@{}}
+\begin{longtable}{@{}>{\centering\arraybackslash}P{0.09\linewidth}>{\centering\arraybackslash}m{0.38\linewidth}>{\centering\arraybackslash}m{0.49\linewidth}@{}}
 	\caption{MES project software environment}
 	\label{tab:mescha-env_logiciel} \\
 	\toprule
@@ -833,10 +833,9 @@ this project.
 \subsection{Development Environment}
 
 % TODO: describe the machines used, OS, tool versions
-\texttt{[DEVELOPMENT\_ENVIRONMENT: description of the workstations used (OS, RAM, CPU),
-		tool versions (Flutter SDK, Dart SDK, BC version, VS Code AL Language and Flutter
-		extensions), and any specific configuration required (docker, BC on-prem instance,
-	etc.). to be done later]}
+\textit{[To be completed: include workstation specifications (OS, RAM, CPU), tool versions
+(Flutter SDK, Dart SDK, Business Central version, VS Code extensions), and any specific
+configuration details such as Docker setup or BC on-premises instance parameters.]}
 	
 \phantomsection
 \section*{Conclusion}
