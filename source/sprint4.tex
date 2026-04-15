@@ -194,7 +194,7 @@ cross-cutting accessibility features available on every screen.
 
 \begin{figure}[H]
       \centering
-      \includegraphics[width=6in]{./media/MES_Sprint-4-Report/placeholder-image.png}
+      \includegraphics[width=6in]{./media/MES_Sprint-4-Report/diagrams/useCase/sprint4.png}
       \caption{UML Use Case Diagram --- Administration \& UX.}
       \label{fig:s4-use-case-s4}
 \end{figure}
@@ -263,36 +263,70 @@ the Sprint~1--3 tables, and returns a JSON array.
 
 \begin{figure}[H]
       \centering
-      \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/placeholder-image.png}
-      \caption{Sequence Diagram --- Fetch Machine Dashboard.}
+      \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/diagrams/sequence/machine-dashboard.png}
+      \caption{SD-19: Fetch Machine Dashboard.}
       \label{fig:s4-seq-fetch-dashboard}
 \end{figure}
 
+%=====SD-19==========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in as Admin
+%     end
+
+%     User->>Flutter: Open Machine Dashboard
+%     Flutter->>AL: fetchMachineDashboard request
+
+%     AL->>BC: Loop all Machine Center records
+%     loop For each machine
+%         AL->>BC: Count Operation for machine
+%         AL->>BC: Calculate sum TotalProducedQuantity
+%         AL->>BC: Calculate sum ScrapQuantity
+%         AL->>BC: Calculate uptime percentage
+%     end
+%     BC-->>AL: per-machine KPI rows
+%     AL-->>Flutter: request data
+%     Flutter-->>User: show data
+%====================================================================
+
 \begin{figure}[H]
       \centering
-      \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/placeholder-image.png}
-      \caption{Sequence Diagram --- Fetch Activity Log.}
+      \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/diagrams/sequence/activity-log.png}
+      \caption{SD-20: Fetch Activity Log.}
       \label{fig:s4-seq-fetch-activity-log}
 \end{figure}
 
-\subsection{Class Diagram}
+%=====SD-20==========================================================
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant AL
+%     participant BC
 
-The UML Class Diagram (Figure~\ref{fig:s4-class-diagram-s4}) shows the four
-Flutter-side models introduced in this sprint. \modulename{MachineDashboardModel}
-and \modulename{ActivityLogModel} are read-only projection models derived from
-the Sprint~1--3 tables; they have no corresponding AL table and are populated
-entirely from aggregated API responses. \modulename{MesScrapCode} is a lightweight
-reference model populated from the standard \techname{Business Central} Scrap Code
-table. \modulename{ItemBarcodeModel} represents a scanned component item and
-includes a \texttt{toJson()} serialiser used when submitting scan batches to the
-\apiendpoint{insertScans} endpoint.
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — user is logged in as Admin
+%     end
 
-\begin{figure}[H]
-      \centering
-      \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/placeholder-image.png}
-      \caption{UML Class Diagram --- Administration \& Scanning Models.}
-      \label{fig:s4-class-diagram-s4}
-\end{figure}
+%     User->>Flutter: Open Activity Log
+%     Flutter->>AL: fetchMachineDashboard request
+
+%     AL->>BC: Filter MES Operation State rows 
+%     AL->>BC: Filter MES Operation Progression rows
+%     AL->>BC: Filter MES Operation Scrap rows
+%     AL->>BC: Filter MES Component Consumption rows
+%     loop For each event row
+%         AL->>BC: Join MES User to Employee 
+%         AL->>BC: Join MES Operation Execution
+%     end
+%     BC-->>AL: flat event list
+%     AL-->>Flutter: request response
+%     Flutter-->>User: activity table
+%====================================================================
 
 % ---------------------------------------------------------------------------
 % 4. IMPLEMENTATION
