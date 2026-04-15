@@ -16,3 +16,4 @@
 *.mtc*
 *.pdf
 *.diff
+*digest.txt*
