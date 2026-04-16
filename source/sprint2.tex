@@ -153,8 +153,7 @@ This sprint covers \textbf{Domain 2:}
   production.
   & \noindent\textit{Business Central (AL):}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-    \item Created function \texttt{fetchOperationsStatusAndProgress()} in codeunit \techname{MES Machine Fetch}.
-    \item Exposed \texttt{fetchOperationsStatusAndProgress()} in codeunit \techname{MES Web Service}.
+    \item Created function \texttt{fetchOperationsStatusAndProgress()} in codeunit \techname{MES Machine Fetch} and Exposed it in codeunit \techname{MES Web Service}.
   \end{itemize}
 \\ & &
   \noindent\textit{Flutter:}
@@ -275,7 +274,7 @@ This sprint covers \textbf{Domain 2:}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=6in]{./media/MES_Sprint-2-Repport/diagrams/useCase/sprint2.png}
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/useCase/sprint2.png}
   \caption{UML Use Case Diagram --- Machine \& Production Management.}
   \label{fig:s2-use-case-diagram-s2}
 \end{figure}
@@ -305,7 +304,6 @@ textual description of the \textit{Start Operation} use case.
   \midrule
   \endhead
   
-  \midrule
   \multicolumn{2}{r}{\small Continued on next page}\\
   \endfoot
   
@@ -355,15 +353,7 @@ textual description of the \textit{Start Operation} use case.
 \end{longtable}
 
 \subsection{Sequence Diagrams}
-
-The following sequence diagrams illustrate the communication flow between the
-\techname{Flutter} frontend, the \techname{Business Central} OData layer, and the
-\techname{AL} business logic for each machine and operation flow.
-
-Figure~\ref{fig:s2-seq-fetch-machines} shows the fetch machines flow.
-Figure~\ref{fig:s2-seq-machine-orders} illustrates the get machine orders flow.
-Figure~\ref{fig:s2-seq-start-operation} depicts the start operation flow.
-Figure~\ref{fig:s2-seq-fetch-ops-status} presents the fetch operations status flow.
+the following figures demonstrate the sequence diagrams of the sprint 2 \{[to-be-updated]: need a more detailed preamble and a smaller one dedicated to each diagram, kil madame chaabani ta3tina eld'accord final 3al diagrams\}
 
 \begin{figure}[H]
   \centering
@@ -374,13 +364,12 @@ Figure~\ref{fig:s2-seq-fetch-ops-status} presents the fetch operations status fl
 
 %=====SD-09==========================================================
 % sequenceDiagram
-%     actor User
 %     participant Flutter
 %     participant AL
 %     participant BC
 
 %     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-01 — user is logged in workCenterIds resolved from userData;
+%         Note over Flutter,BC: ref SD-01 — user is logged in workCenterIds resolved from userData;
 %     end
 
 %     loop Every 5 seconds per work center
@@ -395,7 +384,6 @@ Figure~\ref{fig:s2-seq-fetch-ops-status} presents the fetch operations status fl
 %         end
 %         AL-->>Flutter: request response
 %         Flutter->>Flutter: Rebuild MachineCard grid
-%         Flutter-->>User: Updated machine list
 %     end
 %====================================================================
 
@@ -482,25 +470,57 @@ Figure~\ref{fig:s2-seq-fetch-ops-status} presents the fetch operations status fl
 
 \begin{figure}[H]
   \centering
-  \includegraphics[height=0.30\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/placeholder-image.png}
-  \caption{Fetch Operation progress --- Sequence Diagram.}
+  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-operation-progress.png}
+  \caption{SD-23: Fetch Operation progress.}
   \label{fig:s2-seq-fetch-progress}
 \end{figure}
 
+%=====SD-23==========================================================
+% sequenceDiagram
+%   participant Flutter
+%   participant AL as AL Extension
+%   participant BC as Business Central
+
+%   rect rgb(220,240,200)
+%     Note over Flutter, BC: ref SD-11 — operation was started executionId is known
+%   end
+%   loop On trigger or every 5 s
+%     Flutter->>AL: fetchOngoingOperationsState request
+%     AL->>BC: Get Operations by machine
+%     AL->>BC: Get current state of each operation
+%     AL->>BC: get total Qte made per operation
+%     BC-->>AL: Operation info
+%     AL-->>Flutter: Operations data per machine
+%   end
+%====================================================================
+
 \begin{figure}[H]
   \centering
-  \includegraphics[height=0.30\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/placeholder-image.png}
-  \caption{Fetch Operation History --- Sequence Diagram.}
+  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-operation-history.png}
+  \caption{SD-24: Fetch Operation History}
   \label{fig:s2-seq-fetch-history}
 \end{figure}
 
-Figure~\ref{fig:s2-seq-fetch-history} shows the history retrieval sequence. The
-\techname{Flutter} frontend calls the same
-\apiendpoint{fetchOperationsStatusAndProgress} endpoint used by the active
-monitoring view, but with \texttt{fetchFinished = true}. The
-\techname{Business Central} backend returns only executions whose latest status
-record is \domainterm{Finished} or \domainterm{Cancelled}, along with resolved
-start and end timestamps.
+%=====SD-24==========================================================
+% sequenceDiagram
+%   actor User
+%   participant Flutter
+%   participant AL as AL Extension
+%   participant BC as Business Central
+
+%   rect rgb(200,220,240)
+%     note over Flutter,BC: ref: ref SD-01 — user is logged in and holds a valid token
+%   end
+%   User->>Flutter: open the machineDetailPage
+%   Flutter->>AL: fetchOperationsHistory request
+%   AL->>BC: get machine operations
+%   AL->>BC: get finished and cancelled operations
+%   AL->>BC: get production quantities
+%   AL->>BC: get start/end times
+%   BC-->>AL: Historical operation rows
+%   AL-->>Flutter: completed operations data
+%   Flutter->>User: show the operations history
+%====================================================================
 
 \subsection{Class Diagram}
 
@@ -512,7 +532,7 @@ production management domain shows the \modulename{MES Machine Status} and
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/class/sprint2-diagram.png}
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/class/sprint2.png}
   \caption{UML Class Diagram --- Machine \& Production Management.}
   \label{fig:s2-class-diagram-s2}
 \end{figure}

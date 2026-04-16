@@ -248,7 +248,7 @@ use cases available exclusively to the \userrole{Administrator}.
 	\label{fig:s1-use-case-diagram}
 \end{figure}
 
-\Needspace{15\baselineskip}
+\Needspace{10\baselineskip}
 \subsection{Textual Use Case Description}
 
 \begin{longtable}{@{} P{0.22\linewidth} P{0.78\linewidth} @{}}
@@ -620,7 +620,7 @@ attributes and associations.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=6in]{./media/MES_Sprint-1-Repport/placeholder-image.png}
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/class/sprint1.png}
 	\caption{UML Class Diagram.}
 	\label{fig:s1-class-diagram}
 \end{figure}
@@ -842,37 +842,40 @@ consisting of Screens and Widgets; a \textbf{\domainterm{State Management Layer}
 built on Providers; a \textbf{\domainterm{Service Layer}} for API communication;
 and a \textbf{\domainterm{Model Layer}} for Data Models.
 
-The data flow follows a unidirectional pattern from the \domainterm{UI Layer}
-through the \domainterm{State Management Layer} (\modulename{Provider} pattern)
-and \domainterm{Service Layer} to the \techname{Business Central} REST API backend,
-as illustrated in Figure~\ref{fig:s1-flutter-architecture}.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=2.71913in]{./media/MES_Sprint-1-Repport/image13.png}
-	\caption{\techname{Flutter} layered architecture.}
-	\label{fig:s1-flutter-architecture}
-\end{figure}
+\noindent
+\begin{minipage}[t]{0.6\textwidth}
+	The data flow follows a unidirectional pattern from the \domainterm{UI Layer}
+	through the \domainterm{State Management Layer} (\modulename{Provider} pattern)
+	and \domainterm{Service Layer} to the \techname{Business Central} REST API backend,
+	as illustrated in Figure~\ref{fig:s1-flutter-architecture-s1}.
+	\subsubsection{Service Layer (API Communication)}
 
-\subsubsection{Service Layer (API Communication)}
+	The \domainterm{Service Layer} is responsible for handling all \domainterm{HTTP}
+	communication between \techname{Flutter} and the \techname{Business Central} backend.
 
-The \domainterm{Service Layer} is responsible for handling all \domainterm{HTTP}
-communication between \techname{Flutter} and the \techname{Business Central} backend.
+	Two services were implemented: the \modulename{api\_service} manages
+	authentication requests such as \uilabel{login}, \uilabel{logout}, and
+	\uilabel{password change}, while the \modulename{mes\_user\_service} handles MES
+	user operations including fetching and creating new users.
 
-Two services were implemented: the \modulename{api\_service} manages
-authentication requests such as \uilabel{login}, \uilabel{logout}, and
-\uilabel{password change}, while the \modulename{mes\_user\_service} handles MES
-user operations including fetching and creating new users.
+	\textbf{\modulename{api\_service.dart}}
 
-\textbf{\modulename{api\_service.dart}}
+	The class declaration and constructor show the base URL configuration and
+	\domainterm{HTTP} client initialisation used by all authentication endpoints.
+	The \uilabel{login} method sends user credentials and device ID to the \apiendpoint{/login} endpoint and parses the returned session token, role, and \domainterm{needChangePassword} flag. The \uilabel{logout} method sends the active session token to the \apiendpoint{/logout} endpoint to trigger server-side token revocation.
 
-The class declaration and constructor show the base URL configuration and
-\domainterm{HTTP} client initialisation used by all authentication endpoints.
-The \uilabel{login} method sends user credentials and device ID to the
-\apiendpoint{/login} endpoint and parses the returned session token, role, and
-\domainterm{needChangePassword} flag. The \uilabel{logout} method sends the active
-session token to the \apiendpoint{/logout} endpoint to trigger server-side token
-revocation. The \uilabel{change password} method submits the current password,
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.38\textwidth}
+  \vspace{0pt}
+  \centering
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/image13.png}
+  \captionof{figure}{\techname{Flutter} layered architecture.}
+  \label{fig:s1-flutter-architecture-s1}
+\end{minipage}
+
+The \uilabel{change password} method submits the current password,
 new password, and session token to the \apiendpoint{/changePassword} endpoint.
 Shared error-handling and response-parsing utilities are used by all methods in
 the service class to propagate structured exceptions to the

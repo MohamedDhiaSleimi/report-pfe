@@ -582,19 +582,60 @@ need to update
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/fetch-BOM.png}
-  \caption{Sequence Diagram --- Fetch Bill of Materials.}
+  \caption{SD-21: Fetch Bill of Materials.}
   \label{fig:s3-seq-fetch-bom}
 \end{figure}
+
+%=====SD-21==========================================================
+% sequenceDiagram
+%     participant Flutter
+%     participant AL as AL Extension
+%     participant BC as Business Central
+
+%     rect rgb(220,240,200)
+%         Note over Flutter,BC: ref SD-11 — operation was started executionId is available
+%     end
+
+%     loop On trigger
+%       Flutter->>AL: fetchBom request
+%       AL->>BC: Get MES Operation Execution
+%       AL->>BC: Get ProdOrderRoutingLine — routingLinkCode
+%       AL->>BC: Loop ProdOrderComponents filtered by routing link
+%       AL->>BC: Sum Qte scanned per item
+%       AL->>BC: Resolve QtyPerUnit from ItemUnitOfMeasure
+%       BC-->>AL: BOM rows
+%       AL-->>Flutter: components JSON
+%     end
+%====================================================================
 
 need to update
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/fetch-production-cycle.png}
-  \caption{Sequence Diagram --- Fetch Production Cycles.}
+  \caption{SD-22: Fetch Production Cycles.}
   \label{fig:s3-seq-fetch-production-cycle}
 \end{figure}
 
+%=====SD-22==========================================================
+% sequenceDiagram
+%     participant Flutter
+%     participant AL as AL Extension
+%     participant BC as Business Central
+
+%     rect rgb(220,240,200)
+%         Note over Flutter,BC: ref SD-11 — operation was started executionId is available
+%     end
+
+%     loop On trigger
+%       Flutter->>AL: fetchProductionCycles request
+%       AL->>BC: Get Operation
+%       AL->>BC: Get operation progress history 
+%       AL->>BC: Get User names
+%       BC-->>AL: Cycle list
+%       AL-->>Flutter: cycles JSON
+%     end
+%====================================================================
 
 Figures~\ref{fig:s3-seq-pause-operation} through~\ref{fig:s3-seq-cancel-operation}
 illustrate the remaining operation lifecycle transition flows: pause, resume,
@@ -883,25 +924,17 @@ or an empty response when the operation is finished, cancelled, or not yet start
 %         BC-->>AL: operation data
 %         AL-->>Flutter: operation data
 %     and Production cycles stream
-%         Flutter->>AL: fetchProductionCycles request
-%         AL->>BC: Get MES Operation Execution
-%         AL->>BC: Loop MES Operation Progression DESC
-%         BC-->>AL: cycles list
-%         AL-->>Flutter: cycles data
+%         rect rgb(220,235,255)
+%             Note over Flutter,BC: ref SD-21 — Production cycle stream need to have been started
+%         end
 %     and BOM stream
-%         Flutter->>AL: fetchBom equest
-%         AL->>BC: Get MES Operation Execution
-%         AL->>BC: Get ProdOrderRoutingLine — routingLinkCode
-%         AL->>BC: Loop ProdOrderComponents filtered by routing link
-%         AL->>BC: Sum MES Component Consumption per itemNo
-%         AL->>BC: Resolve QtyPerUnit from ItemUnitOfMeasure
-%         BC-->>AL: BOM rows with planned and scanned quantities
-%         AL-->>Flutter: components data
+%         rect rgb(220,235,255)
+%             Note over Flutter,BC: ref SD-22 - BOM stream need to have been started
+%         end
 %     end
 
 %     Flutter->>Flutter: Merge liveData into operationData, render all widgets
 %     Flutter-->>User: all data is visible
-%     Note over Flutter,BC: Any write (SD-12 to SD-17) calls triggerRefresh() — all three streams re-fetch automatically
 %====================================================================
 
 
@@ -921,7 +954,7 @@ model.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/placeholder-image.png}
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/class/sprint3.png}
   \caption{UML Class Diagram --- Production Execution \& Traceability.}
   \label{fig:s3-class-diagram-s3}
 \end{figure}
@@ -933,7 +966,7 @@ model.
 
 \subsection{Backend Implementation}
 \subsubsection{Tables and Entities}
-\needspace{10\baselineskip}
+
 \begin{longtable}{@{} P{0.21\linewidth} P{0.17\linewidth} P{0.57\linewidth} @{}}
 	\caption{MES Operation Execution (Table 50110) --- Field Dictionary}
 	\label{tab:s3-table-execution} \\
@@ -945,6 +978,7 @@ model.
 	\textbf{Name} & \textbf{Type} & \textbf{Description} \\
 	\midrule
 	\endhead
+	
 	\multicolumn{3}{r}{\small Continued on next page} \\
 	\endfoot
 	\bottomrule
