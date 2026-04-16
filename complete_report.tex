@@ -182,6 +182,7 @@
 
 % =============================================================================
 \begin{document}
+\dominitoc   % build minitoc data (must come before \tableofcontents)
 
 % ── Global graphic search paths ─────────────────────────────────────────────
 % Each chapter resets this with \graphicspath{} before its \input.
@@ -244,9 +245,15 @@
 % ---------------------------------------------------------------------------
 \pagenumbering{roman}
 
-% ── Acknowledgements ────────────────────────────────────────────────────────
+%─Acknowledgements────────────────────────────────────────────────────────
 \chapter*{Acknowledgements}
-\addcontentsline{toc}{chapter}{Acknowledgements}
+\addstarredchapter{Acknowledgements}
+\markboth{Acknowledgements}{}
+
+% \chapter*{General Introduction}
+% \addstarredchapter{General Introduction}
+% \markboth{General Introduction}{}
+
 First and foremost, We would like to thank our academic supervisor,
 \textbf{Ms.~\texttt{Marwa CHAABANI}}, for their expert guidance and
 unwavering commitment. Their in-depth knowledge, availability and unconditional support
@@ -261,7 +268,6 @@ our progress and allowed us to gain an enriching professional experience.
 \newpage
 
 % ── Global Table of Contents ────────────────────────────────────────────────
-\dominitoc   % build minitoc data (must come before \tableofcontents)
 \tableofcontents
 \newpage
 
@@ -280,9 +286,9 @@ our progress and allowed us to gain an enriching professional experience.
 \setcounter{page}{1}
 
 \chapter*{General Introduction}
-\addcontentsline{toc}{chapter}{General Introduction}
+\addstarredchapter{General Introduction}
 \markboth{General Introduction}{}
-\graphicspath{{../MES_introduction-repport/media/}}
+
 In an industrial context undergoing rapid digital transformation, manufacturing
 companies face the necessity of optimising their production processes, reducing
 downtime and ensuring complete traceability of workshop operations.
@@ -386,8 +392,8 @@ performance, serving both operators and management alike.
 % GENERAL CONCLUSION
 % ---------------------------------------------------------------------------
 \chapter*{General Conclusion}
-\addcontentsline{toc}{chapter}{General Conclusion}
-\markboth{../General Conclusion}{}
+\addstarredchapter{General Conclusion}
+\markboth{General Conclusion}{}
 
 This report has presented the full lifecycle of the MES (\textit{Manufacturing
 Execution System}) project developed at \textbf{\CompanyName{}} over the course
