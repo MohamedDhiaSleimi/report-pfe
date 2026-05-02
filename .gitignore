@@ -15,4 +15,5 @@
 *.maf
 *.mtc*
 *.diff
+*.xdv
 *digest.txt*

@@ -1,4 +1,4 @@
-% =============================================================================
+%=============================================================================
 % COMPLETE MES PROJECT REPORT — MASTER FILE
 % =============================================================================
 
@@ -17,9 +17,6 @@
 \usepackage{enumitem}
 \usepackage{float}
 \usepackage{amsmath,amssymb}
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{textcomp}
 
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \IfFileExists{microtype.sty}{%
@@ -27,7 +24,16 @@
 }{}
 
 % --- Font: Times New Roman equivalent ---
-\usepackage{mathptmx}
+\usepackage{fontspec}
+\usepackage{polyglossia}
+
+\setmainlanguage{english}
+\setotherlanguage{french}
+\setotherlanguage{arabic}
+
+\setmainfont{Times New Roman}
+\newfontfamily\arabicfont[Script=Arabic,Scale=1.1]{Amiri}
+
 
 % --- Line spacing (guide: 1.5) ---
 \usepackage{setspace}
@@ -64,6 +70,9 @@
   {\normalfont\bfseries\fontsize{13}{15}\selectfont}{\thesubsection}{1em}{}
 \titleformat{\subsubsection}
   {\normalfont\bfseries\fontsize{12}{14}\selectfont}{\thesubsubsection}{1em}{}
+
+% Guide: sub-subsections use letter counter (1.1.1.a)
+\renewcommand{\thesubsubsection}{\thesubsection.\alph{subsubsection}}
 
 % --- Tables ---
 \usepackage{needspace}
@@ -240,6 +249,30 @@
   \end{center}
 \end{titlepage}
 
+
+\cleardoublepage
+\thispagestyle{empty}
+\begin{center}{\large\bfseries Résumé}\end{center}
+\noindent\textbf{Français :} [Résumé en français, 100–150 mots.] \\[4pt]
+\noindent\textbf{Mots-clés :} MES, Flutter, Microsoft Dynamics 365 Business Central, AL, production, traçabilité \\[12pt]
+\noindent\textbf{English :} [Abstract in English, 100–150 words.] \\[4pt]
+\noindent\textbf{Keywords:} MES, Flutter, Microsoft Dynamics 365 Business Central, AL, production, traceability \\[12pt]
+\begin{Arabic}
+  \begin{RTL}
+    \noindent\textbf{العربية:} ملخص باللغة العربية، \LR{100--150} كلمة . \\[4pt]
+    \noindent\textbf{الكلمات المفتاحية:} نظام تنفيذ التصنيع، فلاتر، مايكروسوفت داينامكس \LR{365}
+  \end{RTL}
+\end{Arabic}
+\newpage
+
+%── ─ Dédicaces ────────────────────────────────────────────────────────────────
+\chapter*{Dédicaces}
+\addstarredchapter{Dédicaces}
+\markboth{Dédicaces}{}
+[Dédicace de \StudentOne{}] \\[12pt]
+[Dédicace de \StudentTwo{}]
+\newpage
+
 % ---------------------------------------------------------------------------
 % FRONT MATTER — roman pagination
 % ---------------------------------------------------------------------------
@@ -249,10 +282,6 @@
 \chapter*{Acknowledgements}
 \addstarredchapter{Acknowledgements}
 \markboth{Acknowledgements}{}
-
-% \chapter*{General Introduction}
-% \addstarredchapter{General Introduction}
-% \markboth{General Introduction}{}
 
 First and foremost, We would like to thank our academic supervisor,
 \textbf{Ms.~\texttt{Marwa CHAABANI}}, for their expert guidance and
@@ -271,12 +300,39 @@ our progress and allowed us to gain an enriching professional experience.
 \tableofcontents
 \newpage
 
+% ── List of Tables ──────────────────────────────────────────────────────────
+\listoftables
+\newpage
+
 % ── List of Figures ─────────────────────────────────────────────────────────
 \listoffigures
 \newpage
 
-% ── List of Tables ──────────────────────────────────────────────────────────
-\listoftables
+
+\chapter*{List of Abbreviations}
+\addstarredchapter{List of Abbreviations}
+\markboth{List of Abbreviations}{}
+\begin{longtable}{@{} P{0.18\linewidth} P{0.78\linewidth} @{}}
+  \toprule
+  \textbf{Abbreviation} & \textbf{Definition} \\
+  \midrule
+  \endfirsthead
+  \toprule \textbf{Abbreviation} & \textbf{Definition} \\ \midrule
+  \endhead
+  \multicolumn{2}{r}{\small Continued on next page} \\ \endfoot \endlastfoot
+  AL      & Application Language (Microsoft Dynamics 365 Business Central) \\
+  API     & Application Programming Interface \\
+  BOM     & Bill of Materials \\
+  ERP     & Enterprise Resource Planning \\
+  GUID    & Globally Unique Identifier \\
+  MES     & Manufacturing Execution System \\
+  OData   & Open Data Protocol \\
+  RTL     & Right-to-Left \\
+  SCRUM   & (no acronym — Scrum is a proper noun) \\
+  SHA-256 & Secure Hash Algorithm 256-bit \\
+  UML     & Unified Modelling Language \\
+  \bottomrule
+\end{longtable}
 \newpage
 
 % ---------------------------------------------------------------------------
