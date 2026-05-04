@@ -43,22 +43,22 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	production progress.
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created table \techname{MES Operation Progression}.
-		\item Created the functions:
+		\item Create table \techname{MES Operation Progression}.
+		\item Create the functions:
 		\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 			\item \texttt{TryDeclareProduction()} in codeunit \techname{MESMachineValidation}.
 			\item \texttt{InsertNewProgressionCycle()} in codeunit \techname{MESMachineInsert}.
 			\item \texttt{declareProduction()} in codeunit \techname{MESMachineWrite}.
 		\end{itemize} 
-		\item Exposed \texttt{declareProduction()} through the codeunit \techname{MES Web Service}.
-		\item Created page \techname{MES Operation Progression} list page.
+		\item Expose \texttt{declareProduction()} through the codeunit \techname{MES Web Service}.
+		\item Create page \techname{MES Operation Progression} list page.
 	\end{itemize}
 	\\ & &
 	\noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created \techname{ErpMachineOrdersService} to consume the \texttt{declareProduction} API and \techname{MachineordersProvider} to manage it.
-		\item Created widget \techname{DeclareProductionDialog}.
-		\item Added the \texttt{Declare Production} action in \techname{ActionButtonsContainer}.
+		\item Create \techname{ErpMachineOrdersService} to consume the \texttt{declareProduction} API and \techname{MachineordersProvider} to manage it.
+		\item Create widget \techname{DeclareProductionDialog}.
+		\item Add the \texttt{Declare Production} action in \techname{ActionButtonsContainer}.
 	\end{itemize}\\
 	\midrule
 	\textbf{US-3.2}
@@ -67,20 +67,20 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	accurately.
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created the functions:
+		\item Create the functions:
 		\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*] 
 			\item \texttt{TryPauseOperation()} and \texttt{TryResumeOperation()} in codeunit \techname{MESMachineValidation}.
 			\item \texttt{ExecuteOperationTransition()}, \texttt{pauseOperation()}, and \texttt{resumeOperation()} in codeunit \techname{MESMachineWrite}. 
 		\end{itemize}
-		\item exposed \texttt{pauseOperation()} and \texttt{resumeOperation()} throught codeunit \techname{MES Web Service}.
+		\item Expose \texttt{pauseOperation()} and \texttt{resumeOperation()} throught codeunit \techname{MES Web Service}.
 	\end{itemize}
 	\\ & &
 	\noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implemented \techname{ErpMachineOrdersService} to consume the new endpoints 
-		\item Implemented \techname{MachineordersProvider} to manage its state.
-		\item Created widget \techname{OperationActionButtons}.
-		\item Implemented pause/resume operation toggle handling in \techname{OrdersProgressionPage}.
+		\item Implement \techname{ErpMachineOrdersService} to consume the new endpoints 
+		\item Implement \techname{MachineordersProvider} to manage its state.
+		\item Create widget \techname{OperationActionButtons}.
+		\item Implement pause/resume operation toggle handling in \techname{OrdersProgressionPage}.
 	\end{itemize} \\
 	\midrule
 	\textbf{US-3.3}
@@ -89,21 +89,21 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	system.
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created the functions:
+		\item Create the functions:
 		\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 			\item \texttt{TryCloseOperation()} in codeunit \techname{MESMachineValidation}.
 			\item \texttt{InsertOperationStatus()} and \texttt{InsertIdleMachineStatus()} in codeunit \techname{MESMachineInsert}.
 			\item \texttt{finishOperation()} and \texttt{cancelOperation()} in codeunit \techname{MESMachineWrite}. 
 		\end{itemize}
-		\item Exposed \texttt{finishOperation()} and \texttt{cancelOperation()} in codeunit \techname{MES Web Service}.
+		\item Expose \texttt{finishOperation()} and \texttt{cancelOperation()} in codeunit \techname{MES Web Service}.
 	\end{itemize}
 
 	\noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Updated \techname{ErpMachineOrdersService} to consume the new endpoints.
-		\item Updated \techname{MachineordersProvider} to manage its state.
-		\item Updated \techname{ActionButtonsContainer} to handle finish/cancel operation flow.
-		\item Implemented finish/cancel button state logic in \techname{ActionButtonsContainer}.
+		\item Update \techname{ErpMachineOrdersService} to consume the new endpoints.
+		\item Update \techname{MachineordersProvider} to manage its state.
+		\item Update \techname{ActionButtonsContainer} to handle finish/cancel operation flow.
+		\item Implement finish/cancel button state logic in \techname{ActionButtonsContainer}.
 	\end{itemize} \\
 	\midrule
 	\textbf{US-3.4}
@@ -112,21 +112,21 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	in one place.
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created table \techname{MES Operation Execution}.
-		\item Created function \texttt{InsertMESOperationExecution()} in codeunit \techname{MESMachineInsert}.
-		\item Created function \texttt{fetchOperationLiveData()} in codeunit \techname{MESMachineFetch}.
-		\item Exposed \texttt{fetchOperationLiveData()} through codeunit \techname{MES Web Service}.
-		\item Created page \techname{MES Operation Execution}.
+		\item Create table \techname{MES Operation Execution}.
+		\item Create function \texttt{InsertMESOperationExecution()} in codeunit \techname{MESMachineInsert}.
+		\item Create function \texttt{fetchOperationLiveData()} in codeunit \techname{MESMachineFetch}.
+		\item Expose \texttt{fetchOperationLiveData()} through codeunit \techname{MES Web Service}.
+		\item Create page \techname{MES Operation Execution}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created model \techname{OperationStatusAndProgressModel}.
-		\item Updated \techname{ErpMachineOrdersService} to consume the new endpoints.
-		\item Updated \techname{MachineordersProvider} to manage its state.
-		\item Created page \techname{OperationDetailPage}.
-		\item Created widget \techname{OperationAppbar}.
-		\item Created widget \techname{CurrentOrderInfoContainer}.
+		\item Create model \techname{OperationStatusAndProgressModel}.
+		\item Update \techname{ErpMachineOrdersService} to consume the new endpoints.
+		\item Update \techname{MachineordersProvider} to manage its state.
+		\item Create page \techname{OperationDetailPage}.
+		\item Create widget \techname{OperationAppbar}.
+		\item Create widget \techname{CurrentOrderInfoContainer}.
 	\end{itemize}\\
 	\midrule
 	
@@ -136,17 +136,17 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	declaration's quantity, operator, and timestamp.
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created function \texttt{fetchProductionCycles()} in codeunit \techname{MESMachineFetch}.
-		\item Exposed \texttt{fetchProductionCycles()} throught codeunit \techname{MES Web Service}.
+		\item Create function \texttt{fetchProductionCycles()} in codeunit \techname{MESMachineFetch}.
+		\item Expose \texttt{fetchProductionCycles()} throught codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created model \techname{ProductionCycleModel}.
-		\item Added \texttt{fromJson()} and computed getters to \techname{ProductionCycleModel}.
-		\item updated \techname{ErpMachineOrdersService} to consume the new endpoints.
-		\item Updated \techname{MachineordersProvider} to manage its state.
-		\item Created widget \techname{ProductionCycle}.
+		\item Create model \techname{ProductionCycleModel}.
+		\item Add \texttt{fromJson()} and computed getters to \techname{ProductionCycleModel}.
+		\item Update \techname{ErpMachineOrdersService} to consume the new endpoints.
+		\item Update \techname{MachineordersProvider} to manage its state.
+		\item Create widget \techname{ProductionCycle}.
 	\end{itemize} \\
 \midrule
 	
@@ -156,7 +156,7 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	and performance patterns.
 	& \noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created widget \techname{ProductionChart}.
+		\item Create widget \techname{ProductionChart}.
 	\end{itemize}\\
 	\midrule
 	\textbf{US-3.7}
@@ -165,20 +165,20 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	components are required and how much has already been consumed.
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created table \techname{MES Component Consumption}.
-		\item Created function \texttt{fetchBom()} in codeunit \techname{MESMachineFetch}.
-		\item Exposed \texttt{fetchBom()} through codeunit \techname{MES Web Service}.
-		\item Created page \techname{MES Component Consumption}.
+		\item Create table \techname{MES Component Consumption}.
+		\item Create function \texttt{fetchBom()} in codeunit \techname{MESMachineFetch}.
+		\item Expose \texttt{fetchBom()} through codeunit \techname{MES Web Service}.
+		\item Create page \techname{MES Component Consumption}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created model \techname{ComponentConsumptionModel}.
-		\item Created \techname{MesComponentConsumptionService} to consume the \texttt{fetchBom()} API.
-		\item Created \techname{MesComponentConsumptionProvider} to manage BOM stream and refresh state.
-		\item Created widget \techname{RequiredComponent}.
-		\item Implemented BOM streaming and refresh flow in \techname{MesComponentConsumptionService} and \techname{MesComponentConsumptionProvider}.
-		\item Implemented component status display and operation-based filtering in \techname{RequiredComponent}.
+		\item Create model \techname{ComponentConsumptionModel}.
+		\item Create \techname{MesComponentConsumptionService} to consume the \texttt{fetchBom()} API.
+		\item Create \techname{MesComponentConsumptionProvider} to manage BOM stream and refresh state.
+		\item Create widget \techname{RequiredComponent}.
+		\item Implement BOM streaming and refresh flow in \techname{MesComponentConsumptionService} and \techname{MesComponentConsumptionProvider}.
+		\item Implement component status display and operation-based filtering in \techname{RequiredComponent}.
 	\end{itemize}\\
 	\midrule
 	\textbf{US-3.8}
@@ -186,18 +186,18 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	scrapped units with a reason code so that waste is accurately tracked.
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created table \techname{MES Component Consumption}.
-		\item Created function \texttt{declareScrap()} in codeunit \techname{MES Machine Write}.
-		\item Exposed \texttt{declareScrap()} through codeunit \techname{MES Machine Write}.
-		\item Created \techname{MES scrap Code API} to fetch scrap codes from the standard \techname{Business Central} \modulename{Scrap Code}.
+		\item Create table \techname{MES Operation Scrap}.
+		\item Create function \texttt{declareScrap()} in codeunit \techname{MES Machine Write}.
+		\item Expose \texttt{declareScrap()} through codeunit \techname{MES Web Service}.
+		\item Create \techname{MES scrap Code API} to fetch scrap codes from the standard \techname{Business Central} \modulename{Scrap Code}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created model \techname{MesScrapCode}.
-		\item Created \techname{MesScrapService} to consume the scrap code fetch and \texttt{declareScrap()} APIs.
-		\item Created \techname{MesScrapProvider} to manage scrap code and scrap declaration state.
-		\item Created dialog \techname{DeclareScrapDialog}.
+		\item Create model \techname{MesScrapCode}.
+		\item Create \techname{MesScrapService} to consume the scrap code fetch and \texttt{declareScrap()} APIs.
+		\item Create \techname{MesScrapProvider} to manage scrap code and scrap declaration state.
+		\item Create dialog \techname{DeclareScrapDialog}.
 	\end{itemize}\\
 	\midrule
 	\textbf{US-3.9}
@@ -205,14 +205,14 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	operator so that output is attributed to the correct person.
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Added field \texttt{Declared By} to transactional tables \techname{MES Operation Progression} and \techname{MES Component Consumption}.
+		\item Add field \texttt{Declared By} to transactional tables \techname{MES Operation Progression} and \techname{MES Component Consumption}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created widget \techname{OperatorSelector}.
-		\item Updated \techname{DeclareProductionDialog} to support supervisor declaration on behalf of an operator.
-		\item Connected \techname{OperatorSelector} to \techname{MesUserProvider} and passed \texttt{onBehalfOfUserId} to \techname{MachineordersProvider.declareProduction()}.
+		\item Create widget \techname{OperatorSelector}.
+		\item Update \techname{DeclareProductionDialog} to support supervisor declaration on behalf of an operator.
+		\item Connect \techname{OperatorSelector} to \techname{MesUserProvider} and pass \texttt{onBehalfOfUserId} to \techname{MachineordersProvider.declareProduction()}.
 	\end{itemize} \\
 	\midrule
 	\textbf{US-3.10}
@@ -220,19 +220,20 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	components into an operation so that consumption is recorded against the BOM.
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created the function \texttt{insertScans()} in codeunit \techname{MES Machine Write}.
-		\item Created the functions \texttt{fetchAllItemBarcodes()} and \texttt{resolveBarcode()} in codeunit \techname{MES Machine Fetch}.
-		\item Exposed the three function through codeunit \techname{MES Web Service}.
+		\item Create the function \texttt{insertScans()} in codeunit \techname{MES Machine Write}.
+		\item Create the functions \texttt{fetchAllItemBarcodes()} and \texttt{resolveBarcode()} in codeunit \techname{MES Machine Fetch}.
+		\item Expose the three function through codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created model \techname{ItemBarcodeModel}.
-		\item Created \techname{MesBarcodeService} to consume the APIs \texttt{fetchAllBarcodes()}, \texttt{insertScans()}, and \texttt{resolveBarcode()}.
-		\item Created \techname{MesBarcodeProvider} to manage barcode state and API calls.
-		\item Created widget \techname{ScannerWidget}.
-		\item Created page \techname{BarcodeListPage}.
-		\item Updated widget \techname{RequiredComponent} to integrate item scanning, search, filtering, and BOM refresh after scan submission.
+		\item Create model \techname{ItemBarcodeModel}.
+		\item Create \techname{MesBarcodeService} to consume the APIs \texttt{fetchAllBarcodes()}, \texttt{insertScans()}, and \texttt{resolveBarcode()}.
+		\item Create \techname{MesBarcodeProvider} to manage barcode state and API calls.
+		\item Create widget \techname{ScannerWidget}.
+		\item Create page \techname{BarcodeListPage}.
+		\item Update widget \techname{RequiredComponent} to integrate item scanning, search, filtering, and BOM refresh after scan submission.
+		\item Implement on\-device camera scanning via \techname{mobile\_scanner} in \techname{ScannerWidget}
 	\end{itemize}\\
 	\midrule
 	\textbf{US-3.11}
@@ -240,9 +241,9 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	for the active production order so that produced parts are correctly identified.
 	& \noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created page \techname{PrintLabelPage}.
-		\item Updated \techname{ActionButtonsContainer} to integrate the \uilabel{Print Label} action.
-		\item Implemented label generation, preview, print flow, and orientation toggle in \techname{PrintLabelPage}.
+		\item Create page \techname{PrintLabelPage}.
+		\item Update \techname{ActionButtonsContainer} to integrate the \uilabel{Print Label} action.
+		\item Implement label generation, preview, print flow, and orientation toggle in \techname{PrintLabelPage}.
 	\end{itemize} \\
 	\midrule
 	\textbf{US-3.12}
@@ -250,8 +251,8 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	for each declared unit so that individual pieces carry traceable information.
 	& \noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created page \techname{DeclarationLabelPage}.
-		\item Implemented declaration label generation, preview, orientation toggle, and per-unit PDF export in \techname{DeclarationLabelPage}.
+		\item Create page \techname{DeclarationLabelPage}.
+		\item Implement declaration label generation, preview, orientation toggle, and per-unit PDF export in \techname{DeclarationLabelPage}.
 	\end{itemize} \\
 \end{longtable}
 

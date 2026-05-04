@@ -45,17 +45,17 @@ This sprint covers \textbf{Domain 4:}
       machines so that I can monitor production health across the facility.
       & \noindent\textit{Business Central (AL):}
       \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-            \item Created function \texttt{fetchMachineDashboard()} in codeunit \techname{MES Machine Fetch}.
-            \item exposed the function through the codeunit \techname{MES Web Service}.
+            \item Create function \texttt{fetchMachineDashboard()} in codeunit \techname{MES Machine Fetch}.
+            \item Expose the function through the codeunit \techname{MES Web Service}.
       \end{itemize}
       \\ & &
       \noindent\textit{Flutter:}
       \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-            \item Created model \techname{MachineDashboardModel}.
-            \item Created \techname{LogService} to consume the \texttt{fetchMachineDashboard} API and \techname{LogProvider} to manage its state.
-            \item Created page \techname{MachineDashboardPage}.
-            \item Created widget \techname{AdminMachineCard}.
-            \item Implemented machine dashboard search and time-range filtering in \techname{MachineDashboardPage}.
+            \item Create model \techname{MachineDashboardModel}.
+            \item Create \techname{LogService} to consume the \texttt{fetchMachineDashboard} API and \techname{LogProvider} to manage its state.
+            \item Create page \techname{MachineDashboardPage}.
+            \item Create widget \techname{AdminMachineCard}.
+            \item Implement machine dashboard search and time-range filtering in \techname{MachineDashboardPage}.
       \end{itemize} \\  
       \midrule 
       \textbf{US-4.2}
@@ -63,16 +63,16 @@ This sprint covers \textbf{Domain 4:}
       system actions so that I can audit operator and machine activity.
       & \noindent\textit{Business Central (AL):}
       \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-            \item Created function \texttt{fetchActivityLog()} in codeunit \techname{MES Machine Fetch}.
-            \item added the wrapper of the function to \techname{MES Web Service}.
+            \item Create function \texttt{fetchActivityLog()} in codeunit \techname{MES Machine Fetch}.
+            \item Add the wrapper of the function to \techname{MES Web Service}.
       \end{itemize}
       \\ & &
       \noindent\textit{Flutter:}
       \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-            \item Created model \techname{ActivityLogModel}.
-            \item Created \techname{LogService} to consume the \texttt{fetchActivityLog()} API and \techname{LogProvider} to manage its state.
-            \item Created page \techname{ActivityLogPage}.
-            \item Implemented activity log search, type filtering, time-range filtering, and pagination in \techname{ActivityLogPage}.
+            \item Create model \techname{ActivityLogModel}.
+            \item Create \techname{LogService} to consume the \texttt{fetchActivityLog()} API and \techname{LogProvider} to manage its state.
+            \item Create page \techname{ActivityLogPage}.
+            \item Implement activity log search, type filtering, time-range filtering, and pagination in \techname{ActivityLogPage}.
       \end{itemize} \\
       \midrule
       \textbf{US-4.3}
@@ -80,9 +80,9 @@ This sprint covers \textbf{Domain 4:}
       navigate between all admin sections without losing context.
       & \noindent\textit{Flutter:}
       \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-            \item Created page \techname{AdminPage}.
-            \item Created widget \techname{SidebarItem}.
-            \item Implemented sidebar navigation and profile-page navigation in \techname{AdminPage}.
+            \item Create page \techname{AdminPage}.
+            \item Create widget \techname{SidebarItem}.
+            \item Implement sidebar navigation and profile-page navigation in \techname{AdminPage}.
       \end{itemize} \\
       \midrule            
       \textbf{US-4.4}
@@ -90,12 +90,12 @@ This sprint covers \textbf{Domain 4:}
       Arabic so that I can use it in my preferred language.
       & \noindent\textit{Flutter:}
       \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-            \item Integrated the \texttt{easy\_localization} package.
-            \item Created translation JSON files for \texttt{en}, \texttt{fr}, and \texttt{ar}.
-            \item Created widget \techname{LanguageSelector}.
-            \item Implemented language selection in \techname{ProfilePage}.
-            \item Added the \techname{EasyLocalization} wrapper in \texttt{main()}.
-            \item Implemented right-to-left layout support through \texttt{MaterialApp}.
+            \item Integrate the \texttt{easy\_localization} package.
+            \item Create translation JSON files for \texttt{en}, \texttt{fr}, and \texttt{ar}.
+            \item Create widget \techname{LanguageSelector}.
+            \item Implement language selection in \techname{ProfilePage}.
+            \item Add the \techname{EasyLocalization} wrapper in \texttt{main()}.
+            \item Implement right-to-left layout support through \texttt{MaterialApp}.
       \end{itemize} \\
       \midrule
       \textbf{US-4.5}
@@ -103,13 +103,10 @@ This sprint covers \textbf{Domain 4:}
       learn the interface without external documentation.
       & \noindent\textit{Flutter:}
       \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-            \item Integrated the \texttt{tutorial\_coach\_mark} package.
-            \item Implemented tutorial persistence using \techname{SharedPreferences}.
-            \item Created \techname{MachineListTutorial}.
-            \item Created \techname{MachineDetailTabsTutorial}.
-            \item Created \techname{OperationDetailTutorial}.
-            \item Created \techname{AdminDashboardTutorial}.
-            \item Implemented tutorial target styling and localisation.
+            \item Integrate the \texttt{tutorial\_coach\_mark} package.
+            \item Implement tutorial persistence using \techname{SharedPreferences}.
+            \item Create \techname{MachineListTutorial}, \techname{MachineDetailTabsTutorial}, \techname{OperationDetailTutorial}, and \techname{AdminDashboardTutorial}.
+            \item Implement tutorial target styling and localisation.
       \end{itemize} \\
 \end{longtable}
 % ---------------------------------------------------------------------------

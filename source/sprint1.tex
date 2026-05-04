@@ -47,18 +47,18 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	that users only access features appropriate to their role.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implemented the functions \texttt{AdminCreateUser()}, and \texttt{AdminSetActive()} in codeunit \techname{MES Unbound Actions}.
-		\item Exposed \texttt{AdminCreateUser()}, and \texttt{AdminSetActive()} through codeunit \techname{MES Web Service}.
-		\item Created API page \techname{MES User Create API}.
+		\item Implement the functions \texttt{AdminCreateUser()}, and \texttt{AdminSetActive()} in codeunit \techname{MES Unbound Actions}.
+		\item Expose \texttt{AdminCreateUser()}, and \texttt{AdminSetActive()} through codeunit \techname{MES Web Service}.
+		\item Create API page \techname{MES User Create API}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Updated \techname{ApiService} to consume the new endpoints.
-		\item Implemented  \techname{MesUserService} to consume \texttt{fetchMesUsers()} and \texttt{createMesUser()} endpoints.
-		\item Created provider \techname{MesUserProvider} to manage its state.
-		\item Created widget \techname{AddUserDialog}.
-		\item Implemented role-based navigation in \techname{\_AuthGate}.
+		\item Update \techname{ApiService} to consume the new endpoints.
+		\item Implement  \techname{MesUserService} to consume \texttt{fetchMesUsers()} and \texttt{createMesUser()} endpoints.
+		\item Create provider \techname{MesUserProvider} to manage its state.
+		\item Create widget \techname{AddUserDialog}.
+		\item Implement role-based navigation in \techname{\_AuthGate}.
 	\end{itemize} \\
 	\midrule
 		\textbf{US-1.2}
@@ -67,30 +67,30 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	features appropriate to my role.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created the tables \techname{MES USER} and \techname{MES AuthToken}.
-		\item Created enum \techname{MES UserRole}.
-		\item Implemented functions \texttt{MakeSalt()}, \texttt{HashPassword()}, and \texttt{VerifyPassword()} in codeunit \techname{MES Password Mgt}.
-		\item Implemented functions \texttt{CreateUser()}, \texttt{SetPassword()}, \texttt{ValidateCredentials()}, \texttt{IssueNewToken()}, \texttt{ValidateToken()}, \texttt{TouchToken()}, \texttt{Logout()}, \texttt{ValidateChangePassword()}, \texttt{ValidateAdminToken()}, \texttt{SetActive()}, and \texttt{CleanupExpiredTokens()} in codeunit \techname{MESAuthMgt}.
-		\item Implemented functions \texttt{Login()}, \texttt{Logout()}, \texttt{Me()}, and \texttt{ChangePassword()} in codeunit \techname{MES Unbound Actions}.
-		\item Exposed \texttt{Login()}, \texttt{Logout()}, \texttt{Me()}, and \texttt{ChangePassword()} in codeunit \techname{MES Web Service}.
+		\item Create the tables \techname{MES USER} and \techname{MES AuthToken}.
+		\item Create enum \techname{MES UserRole}.
+		\item Implement functions \texttt{MakeSalt()}, \texttt{HashPassword()}, and \texttt{VerifyPassword()} in codeunit \techname{MES Password Mgt}.
+		\item Implement functions \texttt{CreateUser()}, \texttt{SetPassword()}, \texttt{ValidateCredentials()}, \texttt{IssueNewToken()}, \texttt{ValidateToken()}, \texttt{TouchToken()}, \texttt{Logout()}, \texttt{ValidateChangePassword()}, \texttt{ValidateAdminToken()}, \texttt{SetActive()}, and \texttt{CleanupExpiredTokens()} in codeunit \techname{MESAuthMgt}.
+		\item Implement functions \texttt{Login()}, \texttt{Logout()}, \texttt{Me()}, and \texttt{ChangePassword()} in codeunit \techname{MES Unbound Actions}.
+		\item Expose \texttt{Login()}, \texttt{Logout()}, \texttt{Me()}, and \texttt{ChangePassword()} in codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implemented \techname{ApiService} to consume the new endpoints.
-		\item Created provider \techname{AuthProvider} to manage its state.
-		\item Implemented authentication routing in \techname{\_AuthGate}.
-		\item Created page \techname{LoginPage}.
-		\item Created \techname{AppConstants}.
+		\item Implement \techname{ApiService} to consume the new endpoints.
+		\item Create provider \techname{AuthProvider} to manage its state.
+		\item Implement authentication routing in \techname{\_AuthGate}.
+		\item Create page \techname{LoginPage}.
+		\item Create \techname{AppConstants}.
 	\end{itemize}\\
 	\midrule
 	\textbf{US-1.3}
 	& As an \userrole{Administrator}, I need to search users.
 	& \noindent\textit{Flutter}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implemented user search in \techname{AddUserPage}.
-		\item Implemented role filtering in \techname{AddUserPage}.
-		\item Combined role and search filters in \techname{AddUserPage}.
+		\item Implement user search in \techname{AddUserPage}.
+		\item Implement role filtering in \techname{AddUserPage}.
+		\item Combine role and search filters in \techname{AddUserPage}.
 	\end{itemize} \\
 	\midrule
 	\textbf{US-1.4}
@@ -98,17 +98,17 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	users with their details so that I can manage accounts.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created the function \techname{fetchAllMESUsers} in codeunit \techname{MES Unbound Actions}.
-		\item Exposed \techname{fetchAllMESUsers} through codeunit \techname{MES Unbound Actions}.
+		\item Create the function \techname{fetchAllMESUsers} in codeunit \techname{MES Unbound Actions}.
+		\item Expose \techname{fetchAllMESUsers} through codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created model \techname{MesUser}.
-		\item Implemented \texttt{MesUserService} to consume the new end point.
-		\item Implemented \texttt{MesUserProvider} to manage its state and its streams.
-		\item Implemented user list display in \techname{AddUserPage}.
-		\item created the widgets \techname{GeneratePasswordDialog} and \techname{EmployeeAvatar}.
+		\item Create model \techname{MesUser}.
+		\item Implement \texttt{MesUserService} to consume the new end point.
+		\item Implement \texttt{MesUserProvider} to manage its state and its streams.
+		\item Implement user list display in \techname{AddUserPage}.
+		\item Create the widgets \techname{GeneratePasswordDialog} and \techname{EmployeeAvatar}.
 	\end{itemize} \\
 	\midrule
 	\textbf{US-1.5}
@@ -116,15 +116,15 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	password to a user so that they can log in for the first time.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implemented function \texttt{AdminSetPassword()} in codeunit \techname{MES Unbound Actions}.
-		\item Exposed \texttt{AdminSetPassword()} through codeunit \techname{MES Web Service}.
+		\item Implement function \texttt{AdminSetPassword()} in codeunit \techname{MES Unbound Actions}.
+		\item Expose \texttt{AdminSetPassword()} through codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Created widget \techname{GeneratePasswordDialog}.
-		\item Updaed \techname{ApiService} to consume \texttt{adminSetPassword()}.
-		\item Updated \techname{AuthProvider} to account for the new functions in the service.
+		\item Create widget \techname{GeneratePasswordDialog}.
+		\item Update \techname{ApiService} to consume \texttt{adminSetPassword()}.
+		\item Update \techname{AuthProvider} to account for the new functions in the service.
 	\end{itemize}\\
 	\midrule
 	\textbf{US-1.6}
@@ -132,15 +132,15 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	assignment of an existing user so that access rights stay current.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implemented function \texttt{AdminChangeUserRole()} in codeunit \techname{MES Unbound Actions}.
-		\item Exposed \texttt{AdminChangeUserRole()} through codeunit \techname{MES Web Service}.
+		\item Implement function \texttt{AdminChangeUserRole()} in codeunit \techname{MES Unbound Actions}.
+		\item Expose \texttt{AdminChangeUserRole()} through codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Update \techname{MesUserService} to consume \texttt{changeUserRole()}.
 		\item Update \techname{MesUserProvider} to account \texttt{changeUserRole()}.
-		\item Created widget \techname{ChangeRoleDialog}.
+		\item Create widget \techname{ChangeRoleDialog}.
 	\end{itemize}\\
 	\midrule
 	\textbf{US-1.7}
@@ -148,14 +148,13 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	account so that access can be revoked without deleting the account.
 	& \noindent\textit{Flutter}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Updated  \techname{ApiService} to account for \texttt{toggleUserActiveStatus()}.
-		\item Updated  \techname{AuthProvider} to account for \texttt{toggleUserActiveStatus()}.
-		\item Integrated activate and deactivate actions in \techname{AddUserPage}.
+		\item Update  \techname{ApiService} to account for \texttt{toggleUserActiveStatus()}.
+		\item Update  \techname{AuthProvider} to account for \texttt{toggleUserActiveStatus()}.
+		\item Integrate activate and deactivate actions in \techname{AddUserPage}.
 	\end{itemize}\\
 \end{longtable}
 
-% -----------------------------------------------------------------------
-\section{Business Rules}
+% -----------------------------------------------------------------------\section{Business Rules}
 % -----------------------------------------------------------------------
 
 

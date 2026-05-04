@@ -46,21 +46,21 @@ This sprint covers \textbf{Domain 2:}
   which machines are currently active.
   & \noindent\textit{Business Central (AL):}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-  \item Created table \techname{MES MachineStatus}.
-  \item Created enum \techname{MES Machine Status}.
-  \item Created function \texttt{FetchMachines()} in codeunit \techname{MES Machine Fetch}.
-  \item Exposed \texttt{FetchMachines()} through codeunit \techname{MES Web Service}.
-  \item Created page \techname{MES Machine List}.
+  \item Create table \techname{MES MachineStatus}.
+  \item Create enum \techname{MES Machine Status}.
+  \item Create function \texttt{FetchMachines()} in codeunit \techname{MES Machine Fetch}.
+  \item Expose \texttt{FetchMachines()} through codeunit \techname{MES Web Service}.
+  \item Create page \techname{MES Machine List}.
   \end{itemize}
   \\ & &
   \noindent\textit{Flutter:}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-  \item Created model \techname{MachineModel}.
-  \item Created service \techname{MESMachineListService} to consume the \texttt{FetchMachines()} API.
-  \item Created provider \techname{MesMachinesProvider}.
-  \item Created page \techname{MachineListPage}.
-  \item Created widget \techname{MachineCard}.
-  \item Implemented automatic machine list refresh in \techname{MESMachineListService}.
+  \item Create model \techname{MachineModel}.
+  \item Create service \techname{MESMachineListService} to consume the \texttt{FetchMachines()} API.
+  \item Create provider \techname{MesMachinesProvider}.
+  \item Create page \techname{MachineListPage}.
+  \item Create widget \techname{MachineCard}.
+  \item Implement automatic machine list refresh in \techname{MESMachineListService}.
   \end{itemize}\\
   \midrule
   \textbf{US-2.2}
@@ -69,18 +69,18 @@ This sprint covers \textbf{Domain 2:}
   to be done.
   & \noindent\textit{Business Central (AL):}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-    \item Created function \texttt{getMachineOrders()} in codeunit \techname{MES Machine Fetch}.
-    \item exposed  \texttt{getMachineOrders()} in codeunit \techname{MES Web Service}.
+    \item Create function \texttt{getMachineOrders()} in codeunit \techname{MES Machine Fetch}.
+    \item Expose  \texttt{getMachineOrders()} in codeunit \techname{MES Web Service}.
   \end{itemize}
 \\ & &
   \noindent\textit{Flutter:}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-    \item Created model \techname{MachineOrderModel}.
-    \item Created service \techname{ErpMachineOrdersService} to consume the \texttt{getMachineOrders()} API.
-    \item Created provider \techname{MachineordersProvider}.
-    \item Created page \techname{MachineOrderPage}.
-    \item Created widget \techname{OrderCard}.
-    \item Created model \techname{BadgeStyle}.
+    \item Create model \techname{MachineOrderModel}.
+    \item Create service \techname{ErpMachineOrdersService} to consume the \texttt{getMachineOrders()} API.
+    \item Create provider \techname{MachineordersProvider}.
+    \item Create page \techname{MachineOrderPage}.
+    \item Create widget \techname{OrderCard}.
+    \item Create model \techname{BadgeStyle}.
   \end{itemize}\\
   \midrule
   \textbf{US-2.3}
@@ -88,20 +88,20 @@ This sprint covers \textbf{Domain 2:}
   production operation so that the system records that the order has begun.
   & \noindent\textit{Business Central (AL):}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-    \item Created table \techname{MES Operation state}.
-    \item Created enum \techname{MES Operation Status}.
-    \item Created function \texttt{TryStartOperation()} in codeunit \techname{MES Machine Validation}.
-    \item Created function \texttt{InsertMESOperation()} in codeunit \techname{MES Machine Write}.
-    \item Exposed \texttt{InsertMESOperation()} through codeunit \techname{MES Web Service}.
-    \item Created page \techname{MES Operations}.
+    \item Create table \techname{MES Operation state}.
+    \item Create enum \techname{MES Operation Status}.
+    \item Create function \texttt{TryStartOperation()} in codeunit \techname{MES Machine Validation}.
+    \item Create function \texttt{InsertMESOperation()} in codeunit \techname{MES Machine Write}.
+    \item Expose \texttt{InsertMESOperation()} through codeunit \techname{MES Web Service}.
+    \item Create page \techname{MES Operations}.
   \end{itemize}
 
   \noindent\textit{Flutter:}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-    \item Implemented \techname{ErpMachineOrdersService} that Consumes the \texttt{startOperation} API.
+    \item Implement \techname{ErpMachineOrdersService} that Consumes the \texttt{startOperation} API.
     \item Implement \techname{MachineordersProvider} to manage its state.
-    \item Implemented start operation action handling in \techname{ActionButtons}.
-    \item Implemented automatic navigation to \techname{OrdersProgressionPage}
+    \item Implement start operation action handling in \techname{ActionButtons}.
+    \item Implement automatic navigation to \techname{OrdersProgressionPage}
   \end{itemize}\\
   \midrule
   \textbf{US-2.4}
@@ -110,17 +110,17 @@ This sprint covers \textbf{Domain 2:}
   the progress of each order.
   & \noindent\textit{Business Central (AL):}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-    \item Created function \texttt{fetchMachineOperationStatus()} in codeunit \techname{MES Machine Fetch}.
-    \item Exposed \texttt{fetchMachineOperationStatus()} through codeunit \techname{MES Web Service}.
+    \item Create function \texttt{fetchMachineOperationStatus()} in codeunit \techname{MES Machine Fetch}.
+    \item Expose \texttt{fetchMachineOperationStatus()} through codeunit \techname{MES Web Service}.
   \end{itemize}
 \\ & &
   \noindent\textit{Flutter:}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-    \item Updated \techname{ErpMachineOrdersService}to Consume the \texttt{fetchMachineOperationStatus}.
-    \item Created model \techname{OperationStatusStyle}.
-    \item Created page \techname{OrdersProgressionPage}.
-    \item Created the widgets \techname{OperationCard}, \techname{OperationStatusBadge}, widget \techname{OperationInfoGrid}, and \techname{OperationProgressBar}.
-    \item Implemented automatic refresh for operation status monitoring.
+    \item Update \techname{ErpMachineOrdersService}to Consume the \texttt{fetchMachineOperationStatus}.
+    \item Create model \techname{OperationStatusStyle}.
+    \item Create page \techname{OrdersProgressionPage}.
+    \item Create the widgets \techname{OperationCard}, \techname{OperationStatusBadge}, widget \techname{OperationInfoGrid}, and \techname{OperationProgressBar}.
+    \item Implement automatic refresh for operation status monitoring.
   \end{itemize} \\
   \midrule
   \textbf{US-2.5}
@@ -129,10 +129,10 @@ This sprint covers \textbf{Domain 2:}
   operation progress without leaving the machine context.
   & \noindent\textit{Flutter:}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-    \item Created page \techname{MachineMainPage}.
-    \item Created the widgets \techname{TopNavigationBar} and \techname{NavButton}.
-    \item Implemented tab navigation in \techname{MachineMainPage}.
-    \item Implemented navigation from \techname{MachineCard} to \techname{MachineMainPage}.
+    \item Create page \techname{MachineMainPage}.
+    \item Create the widgets \techname{TopNavigationBar} and \techname{NavButton}.
+    \item Implement tab navigation in \techname{MachineMainPage}.
+    \item Implement navigation from \techname{MachineCard} to \techname{MachineMainPage}.
   \end{itemize} \\
   \midrule
   \textbf{US-2.6}
@@ -140,8 +140,8 @@ This sprint covers \textbf{Domain 2:}
   sort production orders so that I can quickly find the most relevant work.
   & \noindent\textit{Flutter:}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-    \item Created widget \techname{GlobalSearchBar}.
-    \item Implemented order search, filtering, and sorting in \techname{MachineOrderPage}.
+    \item Create widget \techname{GlobalSearchBar}.
+    \item Implement order search, filtering, and sorting in \techname{MachineOrderPage}.
   \end{itemize} \\
   \midrule
   \textbf{US-2.7}
@@ -150,17 +150,17 @@ This sprint covers \textbf{Domain 2:}
   production.
   & \noindent\textit{Business Central (AL):}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-    \item Created function \texttt{fetchOperationsStatusAndProgress()} in codeunit \techname{MES Machine Fetch} and Exposed it in codeunit \techname{MES Web Service}.
+    \item Create function \texttt{fetchOperationsStatusAndProgress()} in codeunit \techname{MES Machine Fetch} and Expose it in codeunit \techname{MES Web Service}.
   \end{itemize}
 \\ & &
   \noindent\textit{Flutter:}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-    \item Updated \techname{ErpMachineOrdersService} to consume the \texttt{fetchMachineOperationStatusAndProgress} API.
-    \item Updated \techname{MachineordersProvider} to manage its state.
-    \item Created page \techname{MachineHistoryPage}.
-    \item Created the widgets \techname{HistoryCard}, \techname{HistoryBadgeAndId}, and \techname{HistoryInfoGrid}.
-    \item Implemented history search and sorting in \techname{MachineHistoryPage}.
-    \item Implemented navigation from \techname{HistoryCard} to \techname{OperationDetailPage}.
+    \item Update \techname{ErpMachineOrdersService} to consume the \texttt{fetchMachineOperationStatusAndProgress} API.
+    \item Update \techname{MachineordersProvider} to manage its state.
+    \item Create page \techname{MachineHistoryPage}.
+    \item Create the widgets \techname{HistoryCard}, \techname{HistoryBadgeAndId}, and \techname{HistoryInfoGrid}.
+    \item Implement history search and sorting in \techname{MachineHistoryPage}.
+    \item Implement navigation from \techname{HistoryCard} to \techname{OperationDetailPage}.
   \end{itemize}\\  
 \end{longtable}
 
