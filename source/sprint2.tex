@@ -350,7 +350,18 @@ textual description of the \textit{Start Operation} use case.
 \end{longtable}
 
 \subsection{Sequence Diagrams}
-the following figures demonstrate the sequence diagrams of the sprint 2 \{[to-be-updated]: need a more detailed preamble and a smaller one dedicated to each diagram, kil madame chaabani ta3tina eld'accord final 3al diagrams\}
+The following sequence diagrams illustrate the communication flow between the
+\techname{Flutter} frontend, the \techname{Business Central} OData layer, and
+the \techname{AL} business logic for the machine-listing and order-management
+flows introduced in Sprint~2.
+ 
+Figure~\ref{fig:s2-seq-fetch-machines} depicts the machine-list polling flow.
+The \techname{Flutter} client issues a \texttt{FetchMachines} request for each
+work centre resolved from the authenticated user's profile every five seconds.
+For every machine returned by \techname{Business Central}, the \techname{AL}
+layer fetches the latest \domainterm{MES Machine Status} row and the work-centre
+name before assembling the response, which the client uses to rebuild the
+\uilabel{MachineCard} grid.
 
 \begin{figure}[H]
   \centering
@@ -384,6 +395,14 @@ the following figures demonstrate the sequence diagrams of the sprint 2 \{[to-be
 %     end
 %====================================================================
 
+Figure~\ref{fig:s2-seq-machine-orders} presents the machine-orders retrieval flow,
+triggered when the user opens the \uilabel{Orders} tab. The \techname{AL} layer
+filters \domainterm{ProdOrderRoutingLine} records for the selected machine,
+skips any operation that has already been started, and enriches each remaining
+routing line with the corresponding \domainterm{ProdOrderLine} details before
+returning the list to the \techname{Flutter} client as a set of
+\uilabel{OrderCard} entries.
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/waiting-orders.png}
@@ -414,6 +433,15 @@ the following figures demonstrate the sequence diagrams of the sprint 2 \{[to-be
 %     AL-->>Flutter: orders data
 %     Flutter-->>User: OrderCard list
 %====================================================================
+
+Figure~\ref{fig:s2-seq-start-operation} illustrates the operation start flow.
+After the user selects a released order and taps \uilabel{Start}, the
+\techname{AL} layer confirms that the order is in the \domainterm{Released}
+state and that neither the operation nor the machine is currently running.
+On success, it creates the \domainterm{MES Operation Execution},
+\domainterm{MES Operation State}, and \domainterm{MES Operation Progression}
+records, marks the machine as working, and records the initial user interaction
+before redirecting the \techname{Flutter} client to the \uilabel{Progress} tab.
 
 \begin{figure}[H]
   \centering
@@ -465,6 +493,17 @@ the following figures demonstrate the sequence diagrams of the sprint 2 \{[to-be
 %     end
 %====================================================================
 
+Figures~\ref{fig:s2-seq-fetch-progress} and~\ref{fig:s2-seq-fetch-history} present
+the two polling flows that supply real-time and historical data to the
+\uilabel{MachineDetailPage}. Both are triggered either on demand or on a
+fixed five-second interval once an operation is active.
+ 
+Figure~\ref{fig:s2-seq-fetch-progress} describes the ongoing-operations state
+polling flow. The \techname{AL} layer retrieves all active operations for the
+machine, resolves their current state and cumulative produced quantity from
+\techname{Business Central}, and returns the aggregated data to the
+\techname{Flutter} client.
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-operation-progress.png}
@@ -490,6 +529,13 @@ the following figures demonstrate the sequence diagrams of the sprint 2 \{[to-be
 %     AL-->>Flutter: Operations data per machine
 %   end
 %====================================================================
+
+Figure~\ref{fig:s2-seq-fetch-history} presents the operation history retrieval
+flow, triggered when the user opens the \uilabel{MachineDetailPage}. The
+\techname{AL} layer queries \techname{Business Central} for finished and
+cancelled operations associated with the machine, enriches each record with
+production quantities and start and end times, and returns the assembled list
+so the \techname{Flutter} client can display the operations history.
 
 \begin{figure}[H]
   \centering
@@ -893,6 +939,26 @@ The \uilabel{Machine History Page} (Figure~\ref{fig:s2-ui-hist-page}) displays c
   \label{fig:s2-ui-hist-page}
 \end{figure}
 
+\section{Testing and Validation}
+\subsection{Integrations tests}
+For integration testing, we chose Postman, a powerful and user-friendly tool for API evaluation.
+Figure~\ref{fig:s2-test-postman-fetchMachines} shows a test case for the \apiendpoint{/fetchmachines} endpoint.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-2-Repport/tests/postman/fetchMachines.png}
+  \caption{Postman endpoint test --- fetchMachines.}
+  \label{fig:s2-test-postman-fetchMachines}
+\end{figure}
+
+Figure~\ref{fig:s2-test-postman-getMachinesOrders} shows a test case for the \apiendpoint{/getMachinesOrders} endpoint.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-2-Repport/tests/postman/getMachineOrders.png}
+  \caption{Postman endpoint test --- getMachinesOrders.}
+  \label{fig:s2-test-postman-getMachinesOrders}
+\end{figure}
 
 % ---------------------------------------------------------------------------
 % CONCLUSION

@@ -71,6 +71,10 @@
 \titleformat{\subsubsection}
   {\normalfont\bfseries\fontsize{12}{14}\selectfont}{\thesubsubsection}{1em}{}
 
+\newlength{\imgheight}
+\setlength{\imgheight}{0.5\linewidth}
+
+
 % Guide: sub-subsections use letter counter (1.1.1.a)
 \renewcommand{\thesubsubsection}{\thesubsection.\alph{subsubsection}}
 
@@ -273,10 +277,6 @@
 [Dédicace de \StudentTwo{}]
 \newpage
 
-% ---------------------------------------------------------------------------
-% FRONT MATTER — roman pagination
-% ---------------------------------------------------------------------------
-\pagenumbering{roman}
 
 %─Acknowledgements────────────────────────────────────────────────────────
 \chapter*{Acknowledgements}

@@ -57,9 +57,13 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 		\item Update \techname{ApiService} to consume the new endpoints.
 		\item Implement  \techname{MesUserService} to consume \texttt{fetchMesUsers()} and \texttt{createMesUser()} endpoints.
 		\item Create provider \techname{MesUserProvider} to manage its state.
+	\end{itemize}
+\\ & &
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+		
 		\item Create widget \techname{AddUserDialog}.
 		\item Implement role-based navigation in \techname{\_AuthGate}.
-	\end{itemize} \\
+	\end{itemize}\\
 	\midrule
 		\textbf{US-1.2}
 	& As a User (\userrole{Operator} / \userrole{Supervisor} / \userrole{Administrator}),
@@ -309,12 +313,15 @@ use cases available exclusively to the \userrole{Administrator}.
 
 \subsection{Sequence Diagrams}
 
-The following high-level sequence diagrams illustrate the communication flow
-between the \techname{Flutter} frontend, the \techname{Business Central} OData
-layer, and the \techname{AL} business logic for each authentication flow.
-Each diagram shows the frontend-to-API-to-Business-Central interaction,
-including all success and error branches.
-
+The following sequence diagrams illustrate the communication flow between the
+\techname{Flutter} frontend, the \techname{Business Central} OData layer, and
+the \techname{AL} business logic for each authentication flow.
+ 
+Figure~\ref{fig:s1-seq-login} depicts the login flow, in which the user submits
+credentials, the \techname{AL} layer validates them against the
+\techname{Business Central} user store, and the application either returns a
+structured error or issues a session token and redirects the user to the
+appropriate page based on their role and password-change flag.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/login.png}%
@@ -353,6 +360,15 @@ including all success and error branches.
 %    end
 %====================================================================
 
+Figure~\ref{fig:s1-seq-Token-Validation} presents the token validation flow,
+which is invoked by the \techname{AL} backend before processing any
+authenticated request. The backend retrieves the token record from
+\techname{Business Central}, verifies its validity and expiry, confirms
+that the associated user account is still active, and either updates the
+\texttt{LastSeenAt} timestamp or returns an error that forces the
+\techname{Flutter} client to redirect the user to the login page.
+ 
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/token-validation.png}%
@@ -380,6 +396,12 @@ including all success and error branches.
 %         AL->>BC: Update token LastSeenAt
 %     end
 %====================================================================
+
+Figure~\ref{fig:s1-seq-logout} illustrates the logout flow, in which the
+\techname{Flutter} client sends a logout request, the \techname{AL} layer
+retrieves and revokes the current session token in \techname{Business Central},
+and the client clears its local \techname{AuthProvider} state before
+navigating back to the login page.
 
 \begin{figure}[H]
 	\centering
@@ -409,6 +431,14 @@ including all success and error branches.
 %     Flutter->>Flutter: Clear token + userData from AuthProvider
 %     Flutter-->>User: Navigate to LoginPage
 %====================================================================
+
+Figure~\ref{fig:s1-seq-ChangePw} describes the change-password flow. The
+\techname{Flutter} client first validates locally that the two password
+fields match and satisfy the strength rules, then forwards the request to
+the \techname{AL} layer, which re-validates the token (SD-02), verifies
+the current password hash, checks the new password strength, and — on
+success — updates the credential record in \techname{Business Central}
+and revokes all existing tokens for the account.
 
 \begin{figure}[H]
 	\centering
@@ -454,6 +484,20 @@ including all success and error branches.
 %     end
 %====================================================================
 
+Figures~\ref{fig:s1-seq-AdminCreateUser} through~\ref{fig:s1-seq-AdminToggleActive}
+cover the four administrator user-management operations. All four follow the
+same pattern: the \techname{Flutter} client sends an admin-scoped request,
+the \techname{AL} layer validates the token and confirms that the caller
+holds the \userrole{Admin} role (SD-02), executes the requested
+\techname{Business Central} write operations, and triggers a reactive refresh
+so that the updated user list is reflected immediately in the UI.
+ 
+Figure~\ref{fig:s1-seq-AdminCreateUser} shows the user creation flow, in which
+the \techname{AL} layer inserts a new \domainterm{MES User} record with
+\texttt{IsActive} and \texttt{NeedToChangePw} set to \texttt{true}, then
+iterates over the supplied work-centre list to create the corresponding
+assignment records.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/admin-create-user.png}%
@@ -490,6 +534,11 @@ including all success and error branches.
 %     Flutter-->>User: New user appears in user list
 %====================================================================
 
+Figure~\ref{fig:s1-seq-AdminSetPw} depicts the admin set-password flow. The
+administrator generates a temporary credential, the \techname{AL} layer marks
+the target account as requiring a password change on next login, revokes all
+active tokens for that account, and returns the new credential to the
+\techname{Flutter} client as copyable text.
 
 \begin{figure}[H]
 	\centering
@@ -523,6 +572,12 @@ including all success and error branches.
 %     AL-->>Flutter: success message
 %     Flutter-->>User: Show info (copyable)
 %====================================================================
+
+Figure~\ref{fig:s1-seq-AdminSetPw} depicts the admin set-password flow. The
+administrator generates a temporary credential, the \techname{AL} layer marks
+the target account as requiring a password change on next login, revokes all
+active tokens for that account, and returns the new credential to the
+\techname{Flutter} client as copyable text.
 
 \begin{figure}[H]
 	\centering
@@ -568,6 +623,10 @@ including all success and error branches.
 %     end
 %====================================================================
 
+Figure~\ref{fig:s1-seq-AdminToggleActive} presents the account activation and
+deactivation flow. When deactivating an account, the \techname{AL} layer
+additionally revokes all active session tokens for that user, ensuring that
+any currently authenticated sessions are immediately invalidated.
 
 \begin{figure}[H]
 	\centering
@@ -998,6 +1057,18 @@ The menu exposes two actions: \uilabel{Change Role / Department}, which opens th
 \uilabel{Deactivate}, whose label switches dynamically based on the user's current
 \texttt{isActive} flag. Selecting \uilabel{Deactivate} immediately revokes all
 active sessions for that account; selecting \uilabel{Activate} re-enables login.
+
+\section{Testing and Validation}
+\subsection{Integration testing}
+For integration testing, we chose Postman, a powerful and user-friendly tool for API evaluation. Figure~\ref{fig:s1-test-postman-fetchAllMesUsers} shows a test case for the \apiendpoint{/mesUsers} endpoint.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/tests/postman/fetchAllMesUsers.png}
+	\caption{Postman endpoint test --- fetchAllMesUsers.}
+	\label{fig:s1-test-postman-fetchAllMesUsers}
+\end{figure}
+
 
 % -----------------------------------------------------------------------
 \phantomsection

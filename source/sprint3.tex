@@ -97,7 +97,7 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 		\end{itemize}
 		\item Expose \texttt{finishOperation()} and \texttt{cancelOperation()} in codeunit \techname{MES Web Service}.
 	\end{itemize}
-
+\\ & &
 	\noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Update \techname{ErpMachineOrdersService} to consume the new endpoints.
@@ -233,6 +233,9 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 		\item Create widget \techname{ScannerWidget}.
 		\item Create page \techname{BarcodeListPage}.
 		\item Update widget \techname{RequiredComponent} to integrate item scanning, search, filtering, and BOM refresh after scan submission.
+	\end{itemize}
+	\\ & &
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Implement on\-device camera scanning via \techname{mobile\_scanner} in \techname{ScannerWidget}
 	\end{itemize}\\
 	\midrule
@@ -503,15 +506,20 @@ The \userrole{Supervisor} role is a superset of \userrole{Operator}: both roles 
 \subsection{Sequence Diagrams}
 
 The following sequence diagrams illustrate the communication flow between the
-\techname{Flutter} frontend, the \techname{Business Central} OData layer, and the
-\techname{AL} business logic for each machine and operation flow.
-Figures~\ref{fig:s3-seq-declare-production} through~\ref{fig:s3-seq-fetch-operation-live-data}
-present the four main interaction sequences.
+\techname{Flutter} frontend, the \techname{Business Central} OData layer, and
+the \techname{AL} business logic for the production and operation-lifecycle
+flows introduced in Sprint~3.
 
-Figure~\ref{fig:s3-seq-declare-production} depicts the production declaration flow,
-in which the operator submits a quantity, the application validates it locally,
-and \techname{Business Central} either persists a new MES Operation Progression
-record or returns a validation error.
+Figure~\ref{fig:s3-seq-declare-production} depicts the production declaration
+flow. The operator submits a quantity; the \techname{Flutter} client validates
+the input locally, then forwards the request to the \techname{AL} layer,
+which re-validates the token (SD-02), checks that the declared amount is
+positive and does not exceed the remaining order quantity, and — on success —
+inserts a new immutable \domainterm{MES Operation Progression} record and
+records the relevant user interaction entries. When a \userrole{Supervisor}
+declares production on behalf of an operator, the \techname{AL} layer
+additionally verifies that the two users share at least one work centre before
+proceeding.
 
 \begin{figure}[H]
   \centering
@@ -575,7 +583,18 @@ record or returns a validation error.
 %====================================================================
 
 
-need to update
+Figures~\ref{fig:s3-seq-fetch-bom} and~\ref{fig:s3-seq-fetch-production-cycle}
+present the two supplementary data-retrieval flows that run concurrently
+alongside the main operation detail view. Both are polling streams that
+re-emit on demand or when a state-change trigger is received from the
+\techname{Flutter} client.
+ 
+Figure~\ref{fig:s3-seq-fetch-bom} describes the bill-of-materials retrieval
+flow. The \techname{AL} layer resolves the routing link code from the active
+\domainterm{ProdOrderRoutingLine}, filters the production order components
+by that link, aggregates the quantity already scanned per item, and resolves
+per-unit quantities from the \domainterm{ItemUnitOfMeasure} table before
+returning the assembled BOM rows to the \techname{Flutter} client.
 
 \begin{figure}[H]
   \centering
@@ -606,7 +625,10 @@ need to update
 %     end
 %====================================================================
 
-need to update
+Figure~\ref{fig:s3-seq-fetch-production-cycle} illustrates the production-cycle
+retrieval flow. The \techname{AL} layer fetches the full progression history
+for the operation, enriches each entry with the name of the user who declared
+it, and returns the assembled cycle list to the \techname{Flutter} client.
 
 \begin{figure}[H]
   \centering
@@ -635,13 +657,20 @@ need to update
 %     end
 %====================================================================
 
-Figures~\ref{fig:s3-seq-pause-operation} through~\ref{fig:s3-seq-cancel-operation}
+Figures~\ref{fig:s3-seq-pause-operation} through~\ref{fig:s3-seq-finish_cancel-operation}
 illustrate the remaining operation lifecycle transition flows: pause, resume,
-finish, and cancel. All four follow the same pattern as the start operation
-sequence --- the \techname{Flutter} frontend POSTs to the corresponding
-\techname{MES Web Service} endpoint, the \techname{AL} backend validates the
-current state via the \texttt{Try*} family of functions, inserts a new immutable
-status record, and returns a structured success/error response.
+finish, and cancel. All four follow the same structural pattern as the start
+operation sequence (SD-11): the \techname{Flutter} frontend POSTs to the
+corresponding \techname{MES Web Service} endpoint; the \techname{AL} backend
+validates the current state via the \texttt{Try*} family of functions; inserts
+a new immutable status record in \techname{Business Central}; and returns a
+structured success or error response to the client.
+ 
+Figure~\ref{fig:s3-seq-pause-operation} describes the pause flow. The
+\techname{AL} layer confirms that the operation is currently in the
+\domainterm{Running} state before inserting a \domainterm{Paused}
+\domainterm{MES Operation State} record and setting the machine status
+back to \domainterm{Idle}.
 
 \begin{figure}[H]
   \centering
@@ -689,6 +718,12 @@ status record, and returns a structured success/error response.
 %         Flutter-->>User: OperationCard badge changes to Paused
 %     end
 %====================================================================
+
+Figure~\ref{fig:s3-seq-resume-operation} presents the resume flow. In addition
+to confirming that the operation is in the \domainterm{Paused} state, the
+\techname{AL} layer verifies that no other operation is currently running on
+the same machine before inserting a \domainterm{Running} state record and
+marking the machine as \domainterm{Working}.
 
 \begin{figure}[H]
   \centering
@@ -739,6 +774,12 @@ status record, and returns a structured success/error response.
 %     end
 %====================================================================
 
+Figure~\ref{fig:s3-seq-finish_cancel-operation} covers the finish and cancel
+flows, which share a single endpoint family. The \techname{AL} layer rejects
+the request if the operation is already in a terminal state; otherwise it
+inserts the appropriate closed-state record, stamps the execution end time,
+and resets the machine status to \domainterm{Idle}. The closed operation then
+appears in the history view rather than the active operations list.	
 
 \begin{figure}[H]
   \centering
@@ -786,6 +827,14 @@ status record, and returns a structured success/error response.
 %         Flutter-->>User: Operation appears as Finished/Cancelled in history
 %     end
 %====================================================================
+
+Figure~\ref{fig:s3-seq-declare-scrap} describes the scrap declaration flow.
+Before inserting the scrap record, the \techname{AL} layer verifies that
+the operation has not already been finished, cancelled, or paused, and that
+the referenced scrap code exists in \techname{Business Central}. On success,
+it inserts a \domainterm{MES Operation Scrap} entry, records user interaction,
+and appends a new \domainterm{MES Operation Progression} row so that the
+scrap quantity is reflected in the live data stream.
 
 \begin{figure}[H]
   \centering
@@ -838,6 +887,13 @@ status record, and returns a structured success/error response.
 %     end
 %====================================================================
 
+Figure~\ref{fig:s3-seq-scan-component} illustrates the component scanning flow,
+which operates in two steps. First, the \techname{Flutter} client resolves
+each scanned barcode into an item record via a lightweight \texttt{resolveBarcode}
+call and accumulates the results locally. Once the operator confirms the
+batch, a single \texttt{insertScans} request is sent to the \techname{AL}
+layer, which inserts one \domainterm{MES Component Consumption} record per
+scanned item and records the associated user interaction entries.
 
 \begin{figure}[H]
   \centering
@@ -885,10 +941,15 @@ status record, and returns a structured success/error response.
 %     Flutter-->>User: Updated scanned quantities
 %====================================================================
 
-Figure~\ref{fig:s3-seq-fetch-operation-live-data} presents the live operation data
-retrieval sequence, in which \techname{Business Central} returns the current
-operation status, total produced quantity, scrap quantity, and progress percentage,
-or an empty response when the operation is finished, cancelled, or not yet started.
+Figure~\ref{fig:s3-seq-fetch-operation-live-data} presents the live operation
+data retrieval sequence. When the user navigates to the
+\uilabel{OperationDetailPage}, three \techname{StreamBuilder} instances mount
+simultaneously: one polling the current operation status and quantities from
+\techname{Business Central} (SD-18), one consuming the production-cycle stream
+(SD-22), and one consuming the BOM stream (SD-21). The \techname{Flutter}
+client merges all three data sources and renders the full detail view. If the
+operation is finished, cancelled, or not yet started, the live-data stream
+returns an empty response and the client falls back to the history view.
 
 \begin{figure}[H]
   \centering
@@ -1151,24 +1212,24 @@ This sprint introduces a key reactive pattern: a shared \texttt{StreamController
 Figures~\ref{fig:s3-ui-op-detail-running} through~\ref{fig:s3-ui-op-detail-cancelled} illustrate the \uilabel{Operation Detail Page} across its four possible states: Running, Paused, Finished, and Cancelled. Each view adapts its action buttons and status badge to the current state, while the production chart, cycle table, and BOM list remain consistently visible. On desktop, the page uses a two-column layout with order information and production data on the left, and the \uilabel{Quick Actions} panel on the right; on mobile, these sections stack vertically. Action button availability is state-dependent: \uilabel{Declare Production} and \uilabel{Report Reject} are disabled in the Paused, Finished, and Cancelled states; the close button triggers a \uilabel{Finish Production Order} or \uilabel{Cancel Production Order} action depending on whether the progress has reached 100\%; and \uilabel{Print Label} is enabled only once the operation is finished.
 
 \begin{figure}[H]
-	\centering
-	\setlength{\fboxsep}{5pt}
-	\colorbox{black}{%
-		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/desktop-opDetail-running.png}%
-		\hspace{\fboxsep}%
-		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/mobile-opDetail-running.png}%
-	}
-	\caption{\uilabel{Operation Detail Page} (Running state) --- desktop and mobile views.}
-	\label{fig:s3-ui-op-detail-running}
+    \centering
+    \setlength{\fboxsep}{5pt}
+    \colorbox{black}{%
+        \includegraphics[height=\imgheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/desktop-opDetail-running.png}%
+        \hspace{\fboxsep}%
+        \includegraphics[height=\imgheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/mobile-opDetail-running.png}%
+    }
+    \caption{\uilabel{Operation Detail Page} (Running state) --- desktop and mobile views.}
+    \label{fig:s3-ui-op-detail-running}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\setlength{\fboxsep}{5pt}
 	\colorbox{black}{%
-		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/desktop-opDetail-finished.png}%
+		\includegraphics[height=\imgheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/desktop-opDetail-finished.png}%
 		\hspace{\fboxsep}%
-		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/mobile-opDetail-finished.png}%
+		\includegraphics[height=\imgheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/mobile-opDetail-finished.png}%
 	}
 	\caption{\uilabel{Operation Detail Page} (Finished state) --- desktop and mobile views.}
 	\label{fig:s3-ui-op-detail-finished}
@@ -1178,9 +1239,9 @@ Figures~\ref{fig:s3-ui-op-detail-running} through~\ref{fig:s3-ui-op-detail-cance
 	\centering
 	\setlength{\fboxsep}{5pt}
 	\colorbox{black}{%
-		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/desktop-opDetail-paused.png}%
+		\includegraphics[height=\imgheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/desktop-opDetail-paused.png}%
 		\hspace{\fboxsep}%
-		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/mobile-opDetail-paused.png}%
+		\includegraphics[height=\imgheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/mobile-opDetail-paused.png}%
 	}
 	\caption{\uilabel{Operation Detail Page} (Paused state) --- desktop and mobile views.}
 	\label{fig:s3-ui-op-detail-paused}
@@ -1190,12 +1251,24 @@ Figures~\ref{fig:s3-ui-op-detail-running} through~\ref{fig:s3-ui-op-detail-cance
 	\centering
 	\setlength{\fboxsep}{5pt}
 	\colorbox{black}{%
-		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/desktop-opDetail-cancelled.png}%
+		\includegraphics[height=\imgheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/desktop-opDetail-cancelled.png}%
 		\hspace{\fboxsep}%
-		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/mobile-opDetail-cancelled.png}%
+		\includegraphics[height=\imgheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/mobile-opDetail-cancelled.png}%
 	}
 	\caption{\uilabel{Operation Detail Page} (Cancelled state) --- desktop and mobile views.}
 	\label{fig:s3-ui-op-detail-cancelled}
+\end{figure}
+
+\section{Test and Validation}
+\subsection{Integration test}
+
+For integration testing, we chose Postman, a powerful and user-friendly tool for API evaluation. Figure~\ref{fig:s3-test-postman-fetchBom} shows a test case for the \apiendpoint{/fetchBom} endpoint.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-3-Repport/test/postman/fetchBom.png}
+  \caption{Postman endpoint test --- fetchBom.}
+  \label{fig:s3-test-postman-fetchBom}
 \end{figure}
 
 \phantomsection

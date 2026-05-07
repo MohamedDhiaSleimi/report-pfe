@@ -153,7 +153,9 @@ This sprint covers \textbf{Domain 5:} \textbf{\domainterm{AI Assistant \& Analyt
 	\midrule
 
 	\businessrule{BR-AI-006}: Five-Tier Fuzzy Resolution with Confidence Thresholds &
-	When a user refers to a machine by a colloquial name or partial ID, \modulename{resolver.py} applies a five-tier match cascade. A confidence score below \texttt{MIN\_CONFIDENCE = 0.45} causes the assistant to ask the user to clarify. A score between 0.45 and \texttt{HIGH\_CONFIDENCE = 0.85} causes the assistant to proceed while noting the assumption. A score at or above 0.85 causes silent resolution. The five tiers are: (1) exact canonical ID, (2) normalised exact, (3) digit suffix match, (4) ID prefix/suffix overlap, and (5) token overlap and edit-distance scoring on the machine name. \\
+	When a user refers to a machine by a colloquial name or partial ID, \modulename{resolver.py} applies a five-tier match cascade. A confidence score below \texttt{MIN\_CONFIDENCE = 0.45} causes the assistant to ask the user to clarify.
+	\\ & 
+	A score between 0.45 and \texttt{HIGH\_CONFIDENCE = 0.85} causes the assistant to proceed while noting the assumption. A score at or above 0.85 causes silent resolution. The five tiers are: (1) exact canonical ID, (2) normalised exact, (3) digit suffix match, (4) ID prefix/suffix overlap, and (5) token overlap and edit-distance scoring on the machine name. \\
 	\midrule
 
 	\multicolumn{2}{@{}l}{\textbf{Fan-Out Rules}} \\
@@ -430,7 +432,7 @@ The UML Class Diagram (Figure~\ref{fig:s5-class-diagram-s5}) shows the Python AI
 
 \subsubsection{Data Models}
 
-\begin{longtable}{@{} P{0.25\linewidth} P{0.20\linewidth} P{0.50\linewidth} @{}}
+\begin{longtable}{@{} P{0.25\linewidth} P{0.25\linewidth} P{0.45\linewidth} @{}}
 	\caption{Pydantic Models --- \modulename{agent/models.py}}
 	\label{tab:s5-pydantic-models} \\
 	\toprule
@@ -532,7 +534,7 @@ Table~\ref{tab:s5-tool-catalogue} lists all 17 tool classes registered in \textt
 	\midrule
 	\techname{GetMachineOrdersTool} & \texttt{getMachineOrders} & \texttt{machine\_no} \\
 	\midrule
-	\techname{GetOngoingOperationsTool} & \texttt{fetchOngoingOperationsState} & \texttt{machine\_no} \\
+	\techname{GetOngoingOperationsTool} & \texttt{fetchOngoing-\linebreak OperationsState} & \texttt{machine\_no} \\
 	\midrule
 	\techname{GetOperationLiveDataTool} & \texttt{fetchOperationLiveData} & \texttt{machine\_no}, \texttt{prod\_order\_no}, \texttt{operation\_no} \\
 	\midrule
@@ -602,42 +604,7 @@ The \texttt{build\_llm\_client()} factory reads the \texttt{LLM\_PROVIDER} envir
 
 \subsubsection{Endpoint Routing}
 
-The middleware maps incoming \texttt{/api/<endpoint>} requests to BC URLs using two lookup structures. The \texttt{webServiceEndpoints} \texttt{Set} contains all 38 MES web service names; matching paths are forwarded to \texttt{<webServiceBase><endpoint>?company=<BC\_COMPANY>}. The \texttt{apiBaseEndpoints} object maps three API collection names (\texttt{scrapCodes}, \texttt{employees}, \texttt{workCenters}) to their corresponding OData API paths. Unrecognised paths fall back to \texttt{BC\_HOST + originalUrl} with the \texttt{/api} prefix stripped.
-
-\subsubsection{PowerShell SSPI Bridge}
-
-Each request to BC is handled by \texttt{runPowerShell()}, which spawns a \texttt{powershell.exe} child process and feeds it a script produced by \texttt{buildPsScript()}. The script creates an \texttt{HttpClientHandler} with \texttt{UseDefaultCredentials = \$true}, sends the HTTP request, reads the response bytes, and emits a JSON object containing \texttt{status}, \texttt{headers}, and \texttt{bodyBase64} to standard output. Node reads the last line beginning with \texttt{\{} from stdout (tolerating any PowerShell informational messages before it), parses the JSON, filters the response headers through the \texttt{SKIP\_RESPONSE} set, and forwards the decoded body to Flutter. A kill timer expires \texttt{BC\_TIMEOUT\_MS + 2000} ms after the process is spawned.
-
-\subsubsection{Provider Architecture}
-
-\begin{longtable}{@{} P{0.28\linewidth} P{0.67\linewidth} @{}}
-	\caption{Node.js Middleware Module Responsibilities}
-	\label{tab:s5-middleware-modules} \\
-	\toprule
-	\textbf{Module} & \textbf{Responsibility} \\
-	\midrule
-	\endfirsthead
-	\toprule
-	\textbf{Module} & \textbf{Responsibility} \\
-	\midrule
-	\endhead
-	\multicolumn{2}{r}{\small Continued on next page} \\
-	\endfoot
-	\bottomrule
-	\endlastfoot
-
-	\modulename{index.js} & Bootstraps Express, composes the middleware pipeline (CORS → body parser → health → OPTIONS preflight → AI router → BC catch-all → error handler), and starts the HTTP server. \\
-	\midrule
-	\modulename{src/config.js} & Loads and validates all environment variables at startup. Computes derived URL fragments (\texttt{odataBase}, \texttt{webServiceBase}, \texttt{apiBase}, \texttt{companyParam}). Fails fast on missing required variables. \\
-	\midrule
-	\modulename{src/cors.js} & Exports CORS options: whitelist-based origin validation, credentials enabled, \texttt{maxAge} 3600 s. Requests with no \texttt{Origin} header (server-to-server) are unconditionally allowed. \\
-	\midrule
-	\modulename{src/proxy.js} & Implements \texttt{buildTargetUrl()}, \texttt{sanitizeRequestHeaders()}, \texttt{buildPsScript()}, \texttt{runPowerShell()}, and the main \texttt{forwardRequest()} Express handler. Emits structured request/response log lines to stdout. \\
-	\midrule
-	\modulename{src/aiProxy.js} & Express Router mounted at \texttt{/api/ai}. Implements \texttt{POST /chat} (validates input, forwards to Python agent with \texttt{AbortController} timeout, handles 400/502/504 errors) and \texttt{GET /health} (probes agent with 3 s timeout). \\
-	\midrule
-	\modulename{src/logger.js} & Reserved stub. All current logging is performed via inline \texttt{console.log} calls in \modulename{proxy.js} and \modulename{aiProxy.js}. \\
-\end{longtable}
+We configured the middleware to map all calls coming from the frontend using the structure \techname{/api/ai} to the ai proxy handler which forwards them to the \techname{/chat} endpoint of the Python agent. The agents tool calls are treated through the same path as the normal business central function calls by the flutter frontend.
 
 \subsection{Flutter Frontend}
 
@@ -647,7 +614,7 @@ The Flutter data layer for the AI feature comprises three classes. \techname{AiC
 
 \subsubsection{AI Domain Layer}
 
-\techname{AiChatProvider} extends \texttt{ChangeNotifier} and owns the conversation history as a \texttt{List<ConversationTurn>}. Its \texttt{sendMessage()} method appends the user turn before calling the service, and on success appends the assistant turn and stores \texttt{lastResponse}. On failure it removes the failed user turn and sets \texttt{errorMessage}. \texttt{clearHistory()} resets both the history and the last response, enabling the user to start a fresh conversation.
+\techname{AiChatProvider} extends \texttt{ChangeNotifier} and owns the conversation history as a \texttt{List\linebreak<ConversationTurn>}. Its \texttt{sendMessage()} method appends the user turn before calling the service, and on success appends the assistant turn and stores \texttt{lastResponse}. On failure it removes the failed user turn and sets \texttt{errorMessage}. \texttt{clearHistory()} resets both the history and the last response, enabling the user to start a fresh conversation.
 
 \subsubsection{User Interface}
 

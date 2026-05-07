@@ -248,12 +248,17 @@ represents the most significant new administrator workflow in this sprint.
 
 \subsection{Sequence Diagrams}
 
-Figures~\ref{fig:s4-seq-fetch-dashboard} through~\ref{fig:s4-seq-fetch-activity-log}
-illustrate the two main backend query flows introduced in this sprint. Both
-follow the same pattern: the \techname{Flutter} frontend sends a POST request
-with an admin session token and a \texttt{hoursBack} parameter; the
-\techname{Business Central} backend validates the token, aggregates data from
-the Sprint~1--3 tables, and returns a JSON array.
+The following sequence diagrams illustrate the communication flow between the
+\techname{Flutter} frontend, the \techname{Business Central} OData layer, and
+the \techname{AL} business logic for the administrator analytics flows
+introduced in Sprint~4.
+
+Figure~\ref{fig:s4-seq-fetch-dashboard} depicts the machine dashboard retrieval
+flow. The \techname{AL} layer iterates over all \domainterm{Machine Center}
+records and, for each machine, computes the total operation count, cumulative
+produced and scrap quantities, and uptime percentage from the corresponding
+\techname{Business Central} records before assembling the per-machine KPI rows
+returned to the \techname{Flutter} client.
 
 \begin{figure}[H]
       \centering
@@ -287,6 +292,17 @@ the Sprint~1--3 tables, and returns a JSON array.
 %     AL-->>Flutter: request data
 %     Flutter-->>User: show data
 %====================================================================
+
+Figure~\ref{fig:s4-seq-fetch-activity-log} presents the activity log retrieval
+flow. The \techname{AL} layer queries four event tables in parallel ---
+\domainterm{MES Operation State}, \domainterm{MES Operation Progression},
+\domainterm{MES Operation Scrap}, and \domainterm{MES Component Consumption}
+--- filtering each by the requested time window. For every event row it joins
+the associated \domainterm{MES User} and \domainterm{MES Operation Execution}
+records to enrich the entry with operator identity and execution context. The
+resulting flat event list is returned to the \techname{Flutter} client, which
+renders it as a chronological activity table.
+
 
 \begin{figure}[H]
       \centering
@@ -490,6 +506,27 @@ in the AppBar narrow the view.
       }
       \caption{\uilabel{Activity Log Page} --- desktop and mobile views.}
       \label{fig:s4-ui-activity-log}
+\end{figure}
+
+\section{Test and validation}
+\subsection{Integration test}
+
+For integration testing, we chose Postman, a powerful and user-friendly tool for API evaluation. Figure~\ref{fig:s4-test-postman-activityLog} shows a test case for the \apiendpoint{/activityLog} endpoint.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-4-Report/test/postman/fetchActivityLog.png}
+  \caption{Postman endpoint test --- fetchActivityLog.}
+  \label{fig:s4-test-postman-activityLog}
+\end{figure}
+
+Figure~\ref{fig:s4-test-postman-machineDashboard} shows a test case for the \apiendpoint{/MachineDashboard} endpoint.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-4-Report/test/postman/fetchMachineDashboard.png}
+  \caption{Postman endpoint test --- fetchMachineDashboard.}
+  \label{fig:s4-test-postman-machineDashboard}
 \end{figure}
 
 % ---------------------------------------------------------------------------
