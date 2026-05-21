@@ -112,68 +112,6 @@ This sprint covers \textbf{Domain 4:}
 % ---------------------------------------------------------------------------
 % 2. BUSINESS RULES
 % ---------------------------------------------------------------------------
-\section{Business Rules}
-\begin{longtable}{@{} P{0.30\linewidth} P{0.65\linewidth} @{}}
-	\caption{Business Rules}
-	\label{tab:s4-Business-Rules-2}\\
-	\toprule
-	\textbf{ID: Business Rule} & \textbf{Description} \\
-	\midrule
-	\endfirsthead
-	\toprule
-	\textbf{ID: Business Rule} & \textbf{Description} \\
-	\midrule
-	\endhead
-	\multicolumn{2}{r}{\small Continued on next page} \\
-	\endfoot
-	\bottomrule
-	\endlastfoot
-	
-	\multicolumn{2}{@{}l}{\textbf{Dashboard and Log Rules}} \\
-	\midrule
-	
-	\businessrule{BR-ADMIN-001}: Dashboard Time-Range Scoping &
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	      \item The \texttt{hoursBack} parameter filters all dashboard and activity log
-	            queries; it is applied server-side when querying the MES tables.
-	      \item The default value is 24 hours; available options are exposed as
-	            \texttt{hourOptions} in \techname{LogProvider} (e.g., 8\,h, 24\,h,
-	            48\,h, 7 days).
-	      \item Changing the time-range selector triggers a new API call and replaces
-	            the displayed data.
-	\end{itemize} \\
-	\midrule
-	
-	\multicolumn{2}{@{}l}{\textbf{Internationalisation Rules}} \\
-	\midrule
-	
-	\businessrule{BR-I18N-001}: RTL Support &
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	      \item Selecting the Arabic locale (\texttt{ar}) sets the \texttt{MaterialApp}
-	            locale to \texttt{ar}; Flutter's \texttt{Directionality} widget handles
-	            right-to-left layout automatically without any per-widget configuration.
-	      \item All UI strings are externalised in JSON translation files; no
-	            hard-coded string literals remain in the codebase.
-	      \item The language preference is persisted between app restarts via the
-	            \techname{EasyLocalization} storage layer.
-	\end{itemize} \\
-	\midrule
-	
-	\multicolumn{2}{@{}l}{\textbf{Tutorial Rules}} \\
-	\midrule
-	
-	\businessrule{BR-TUTORIAL-001}: One-Time Display &
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	      \item Each tutorial is shown exactly once per application install, gated by
-	            a \techname{SharedPreferences} boolean flag keyed to the tutorial
-	            identifier (e.g., \texttt{tutorial\_machine\_list\_shown}).
-	      \item Once dismissed or completed, the flag is set to \texttt{true} and the
-	            tutorial is never shown again, even after the application is restarted.
-	\end{itemize} \\
-\end{longtable}
-% ---------------------------------------------------------------------------
-% 3. DESIGN
-% ---------------------------------------------------------------------------
 \section{Design}
 
 \subsection{Use Case Diagram}
@@ -545,11 +483,3 @@ navigation shell without losing context between sections. All users benefit from
 full internationalisation covering English, French, and Arabic with automatic
 right-to-left layout, and from guided coach-mark tutorials that ease onboarding
 for first-time users.
-
-All business rules defined at the start of the sprint have been enforced:
-time-range scoping (\businessrule{BR-ADMIN-001}), right-to-left layout and
-string externalisation (\businessrule{BR-I18N-001}), and one-time tutorial
-display (\businessrule{BR-TUTORIAL-001}). No new \techname{Business Central}
-tables were required; all data is derived from the tables created in
-Sprints~1 through~3, demonstrating the extensibility of the append-only
-architecture established from the first sprint.

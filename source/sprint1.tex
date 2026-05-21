@@ -158,77 +158,6 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	\end{itemize}\\
 \end{longtable}
 
-% -----------------------------------------------------------------------\section{Business Rules}
-% -----------------------------------------------------------------------
-
-
-\begin{longtable}{@{} P{0.30\linewidth} P{0.65\linewidth} @{}}
-	\caption{Business Rules}
-	\label{tab:s1-Business-Rules}\\
-	\toprule
-	\textbf{ID: Business Rule} & \textbf{Description} \\
-	\midrule
-	\endfirsthead
-	\toprule
-	\textbf{ID: Business Rule} & \textbf{Description} \\
-	\midrule
-	\endhead
-	\multicolumn{2}{r}{\small Continued on next page} \\
-	\endfoot
-	\bottomrule
-	\endlastfoot
-	
-	\multicolumn{2}{@{}l}{\textbf{Authentication Rules}} \\
-	\midrule
-	
-	\businessrule{BR-AUTH-001} Credential Validation & 
-	\begin{itemize}
-		\item Credentials must be validated against the \techname{ERP} database.
-		\item Generic validation failure to prevent user enumeration.
-	\end{itemize} \\
-	\midrule
-	
-	\businessrule{BR-AUTH-002} Session Management & 
-	\begin{itemize}
-		\item Each session generates a unique token (\domainterm{GUID}).
-		\item Token lifetime: 12 hours.
-		\item Token expires automatically after this period.
-		\item Only one active token per device.
-	\end{itemize} \\
-	\midrule
-	
-	\businessrule{BR-AUTH-003} Password Security & 
-	\begin{itemize}
-		\item Minimum length: 8 characters.
-		\item Must contain uppercase, lowercase, number, and special character.
-		\item Encryption using \domainterm{PBKDF2-SHA256}.
-		\item Unique salt per user (randomly generated).
-	\end{itemize} \\
-	\midrule
-	
-	\multicolumn{2}{@{}l}{\textbf{User Administration Rules}} \\
-	\midrule
-	
-	\businessrule{BR-ADMIN-001} Role--Work-Centre Constraint & 
-	\begin{itemize}
-		\item An \userrole{Operator} or \userrole{Supervisor} must be assigned to at
-		      least one work centre.
-		\item An \userrole{Administrator} must have no work-centre assignment.
-		\item These constraints are enforced both in
-		      \texttt{AdminCreateUser()} and \texttt{AdminChangeUserRole()}.
-	\end{itemize} \\
-	\midrule
-	
-	\businessrule{BR-ADMIN-002} Role Change Revokes Active Tokens & 
-	\begin{itemize}
-		\item \texttt{AdminChangeUserRole()} calls \texttt{RevokeAllTokensForUser()}
-		      after updating the role and work-centre fields, forcing the affected user
-		      to re-authenticate and receive a new session reflecting their updated
-		      permissions.
-		\item The same revocation logic applies when an account is deactivated via
-		      \texttt{AdminSetActive()}.
-	\end{itemize} \\
-\end{longtable}\section{Design}
 % -----------------------------------------------------------------------
 
 \subsection{Use Case Diagram}
@@ -1023,8 +952,7 @@ the user. The password is not stored in plaintext on the server after this point
 The \uilabel{Change Password Page}, shown in Figure~\ref{fig:s1-ui-change-password},
 is presented to users whose \domainterm{needChangePassword} flag is \texttt{true}
 after login, requiring them to enter their current password and choose a new
-password satisfying the rules defined in \businessrule{BR-AUTH-003} before
-accessing the main application.
+password before accessing the main application.
 
 \begin{figure}[H]
 	\centering
@@ -1085,11 +1013,3 @@ session token management with automatic expiry, and a full set of
 (codeunit 50126). The \techname{Flutter} frontend provides a clean, role-aware
 user experience covering login, logout, forced password change, administrator-level
 user creation, role and work-centre management, and account activation control.
-
-All business rules defined at the start of the sprint --- credential validation
-(\businessrule{BR-AUTH-001}), session management (\businessrule{BR-AUTH-002}),
-password security (\businessrule{BR-AUTH-003}), role--work-centre constraint
-(\businessrule{BR-ADMIN-001}), and token revocation on role change
-(\businessrule{BR-ADMIN-002}) --- have been implemented and verified. The layered
-architecture adopted on the frontend ensures that the codebase remains maintainable
-and extensible as new sprints introduce additional \domainterm{MES} features.

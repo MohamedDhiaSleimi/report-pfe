@@ -164,106 +164,6 @@ This sprint covers \textbf{Domain 2:}
   \end{itemize}\\  
 \end{longtable}
 
-% ---------------------------------------------------------------------------
-% 2. BUSINESS RULES
-% ---------------------------------------------------------------------------
-\section{Business Rules}
-
-\Needspace{12\baselineskip}
-\begin{longtable}{@{} P{0.30\linewidth} P{0.65\linewidth} @{}}
-	\caption{Business Rules}
-	\label{tab:s2-Business-Rules}\\
-	\toprule
-	\textbf{ID: Business Rule} & \textbf{Description} \\
-	\midrule
-	\endfirsthead
-	\toprule
-	\textbf{ID: Business Rule} & \textbf{Description} \\
-	\midrule
-	\endhead
-	\multicolumn{2}{r}{\small Continued on next page} \\
-	\endfoot
-	\bottomrule
-	\endlastfoot
-	
-	\multicolumn{2}{@{}l}{\textbf{Machine Status Rules}} \\
-	\midrule
-	
-	\businessrule{BR-MCH-001}: Machine Status Tracking &
-	\begin{itemize}
-	  \item Machine status is stored as an append-only log in the
-	        \modulename{MES Machine Status} table; the latest record per machine
-	        represents the current state.
-	  \item Valid statuses are \domainterm{Idle}, \domainterm{Starting}, and
-	        \domainterm{OutOfOrder}.
-	  \item The \techname{Flutter} frontend polls the status endpoint every 5 seconds
-	        via a \domainterm{Stream} to maintain a live view.
-	\end{itemize} \\
-	\midrule
-	
-	\businessrule{BR-MCH-002}: Work Centre Scoping &
-	\begin{itemize}
-	  \item The machine list is always filtered to the work centre stored in the
-	        authenticated user's session token response.
-	  \item An \userrole{Operator} or \userrole{Supervisor} can only see machines
-	        belonging to their assigned work centre.
-	\end{itemize} \\
-	\midrule
-	
-	\multicolumn{2}{@{}l}{\textbf{Operation Lifecycle Rules}} \\
-	\midrule
-	
-	\businessrule{BR-OPS-001}: Start Operation Validation &
-	\begin{itemize}
-	  \item Only routing lines with status \domainterm{Released} may be started.
-	  \item An operation that already has a \domainterm{Running} record may not be
-	        started again.
-	  \item A machine may not run more than one operation at a time; attempting to
-	        start a second operation on a busy machine is rejected with a descriptive
-	        error message.
-	\end{itemize} \\
-	\midrule
-	
-	\businessrule{BR-OPS-002}: Immutable Operation History &
-	\begin{itemize}
-	  \item Each state transition (start, pause, resume) inserts a \emph{new} record
-	        into \modulename{MES Operation Status} rather than modifying an existing
-	        one, preserving a full audit trail.
-	  \item The latest status for a given (machine, order, operation) triple is
-	        determined by sorting on \modulename{Last Updated At} descending and
-	        taking the first record.
-	\end{itemize} \\
-	\midrule
-	
-	\businessrule{BR-OPS-003}: Active Operation Query &
-	\begin{itemize}
-	  \item When fetching active operations for a machine, the backend groups records
-	        by (production order, operation) and returns only those whose most recent
-	        record has status \domainterm{Running} or \domainterm{Paused}.
-	  \item Operations whose latest record is \domainterm{Finished} are excluded from
-	        the active list.
-	\end{itemize} \\
-	\midrule
-	
-	\multicolumn{2}{@{}l}{\textbf{History Query Rules}} \\
-	\midrule
-	
-	\businessrule{BR-HIST-001}: History Scope &
-	\begin{itemize}
-	  \item The History tab queries \modulename{fetchOperationsStatusAndProgress}
-	        with \texttt{fetchFinished = true}, returning only \domainterm{Finished}
-	        and \domainterm{Cancelled} executions.
-	  \item The earliest \domainterm{Running} status timestamp is resolved as
-	        \texttt{startDateTime}; the first \domainterm{Finished} or
-	        \domainterm{Cancelled} timestamp as \texttt{endDateTime}.
-	  \item History is loaded as a one-shot \texttt{Future} on page open; it is
-	        not polled, as completed records are immutable.
-	\end{itemize} \\
-\end{longtable}
-
-% ---------------------------------------------------------------------------
-% 3. DESIGN
-% ---------------------------------------------------------------------------
 \section{Design}
 
 
@@ -342,7 +242,7 @@ textual description of the \textit{Start Operation} use case.
   \uilabel{Start Order}.
   \item The frontend sends a \domainterm{POST} request to
   \apiendpoint{MESMachinesActionsEndpoints\_startOperation}.
-  \item The backend validates all preconditions (\businessrule{BR-OPS-001}).
+  \item The backend validates all preconditions.
   \item On success, a \modulename{MES Operation Status} record is inserted.
   \item The frontend navigates to the \uilabel{Orders Progression Page}.
   \end{enumerate} \\
@@ -749,7 +649,7 @@ quantity.
 \textbf{startOperation.}
 Accepts a production order number, operation number, and machine number. The
 procedure delegates precondition checking to a \texttt{[TryFunction]}
-(\modulename{TryStartOperation}) that enforces \businessrule{BR-OPS-001}: it
+(\modulename{TryStartOperation}) that
 verifies the routing line is \domainterm{Released}, confirms no \domainterm{Running}
 record exists for the same order/operation, and checks that the machine is not
 already busy with another operation. If all checks pass, a new
@@ -763,8 +663,7 @@ The procedure sets a descending composite key on
 (Machine No, Prod Order No, Operation No, Last Updated At) and iterates the
 result set, emitting at most one entry per (order, operation) pair --- the one
 with the most recent timestamp. Only entries whose latest status is
-\domainterm{Running} or \domainterm{Paused} are included in the output, satisfying
-\businessrule{BR-OPS-003}.
+\domainterm{Running} or \domainterm{Paused} are included in the output.
 
 \subsection{REST API and Web Services Implementation}
 
@@ -975,13 +874,3 @@ new append-only tables (\modulename{MES Machine Status} and
   AL}, exposing four \domainterm{OData V4} endpoints that cover the full machine and
 operation lifecycle. The append-only design ensures a complete, tamper-evident
 audit trail of every state transition without requiring any record modification.
-
-All business rules defined at the start of the sprint have been enforced: work
-centre scoping (\businessrule{BR-MCH-002}), start operation validation
-(\businessrule{BR-OPS-001}), immutable history (\businessrule{BR-OPS-002}),
-active operation querying (\businessrule{BR-OPS-003}), and history scope
-(\businessrule{BR-HIST-001}). The \techname{Flutter} frontend delivers a
-responsive, real-time interface with 5-second polling streams for the machine
-list and operations progress view, and a one-shot history load for the completed
-operation audit log. The codebase is now ready to extend in Sprint~3 with
-consumable tracking, operation finishing, and production declaration.
