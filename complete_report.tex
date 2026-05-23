@@ -449,10 +449,9 @@ performance, serving both operators and management alike.
 
 This report has presented the full lifecycle of the MES (\textit{Manufacturing
 Execution System}) project developed at \textbf{\CompanyName{}} over the course
-of four sprints. Starting from a blank slate, the team designed and implemented
+of five sprints. Starting from a blank slate, the team designed and implemented
 a complete shop-floor execution system natively integrated with Microsoft
 Dynamics 365 Business Central.
-
 Sprint~1 established the security and identity foundation: a token-based
 authentication system, role-based access control, and a full administrator
 interface for user and account management. Sprint~2 delivered real-time machine
@@ -462,18 +461,23 @@ resume, and close flows, Bill of Materials visibility, component scanning, scrap
 tracking, and label printing. Sprint~4 added the administration layer with a
 machine performance dashboard, a paginated activity log, multi-language support
 covering English, French, and Arabic, and in-app onboarding tutorials.
-
-Across all four sprints, the append-only data model ensures a tamper-evident
+Sprint~5 delivered the AI intelligence layer: a natural-language chat assistant
+embedded in the Flutter frontend, a Node.js reverse-proxy middleware bridging
+the Flutter application to both Business Central and a Python AI agent, and the
+agent itself, providing intent classification, multi-provider LLM synthesis,
+fuzzy machine resolution, composite fan-out queries, and contextual redirect
+actions.
+Across all five sprints, the append-only data model ensures a tamper-evident
 audit trail from every machine state change through to every production cycle
 declaration. The reactive stream architecture in the Flutter frontend provides
 operators and supervisors with a consistent, real-time view of the production
 floor without manual refreshes.
-
 The project demonstrates that a tightly integrated MES solution can be built
 on top of Microsoft Dynamics 365 Business Central using OData V4 unbound
-actions, without requiring additional third-party middleware. The extensible
-layered architecture positions the system for future enhancements such as
-statistical reporting, alert management, and additional language support.
+actions, with a Node.js middleware layer handling Windows authentication and
+AI routing. The extensible layered architecture positions the system for future
+enhancements such as statistical reporting, alert management, and additional
+language support.
 
 % ---------------------------------------------------------------------------
 % BIBLIOGRAPHY
