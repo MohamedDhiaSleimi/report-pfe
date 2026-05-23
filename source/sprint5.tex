@@ -384,29 +384,29 @@ If validation fails for any reason — malformed JSON, unknown tool, missing req
 	\bottomrule
 	\endlastfoot
 
-	\texttt{BOM} & \textit{bom}, \textit{component}, \textit{material}, \textit{consumption}, \textit{scan} \\
+	\texttt{operation\_bom} & \textit{bom}, \textit{component}, \textit{material}, \textit{consumption}, \textit{scan} \\
 	\midrule
-	\texttt{PRODUCTION\_CYCLES} & \textit{cycle}, \textit{declaration}, \textit{declared}, \textit{production history} \\
+	\texttt{production\_cycles} & \textit{cycle}, \textit{declaration}, \textit{declared}, \textit{production history} \\
 	\midrule
-	\texttt{OPERATION\_LIVE} & \textit{live}, \textit{current operation}, \textit{running}, \textit{in progress} \\
+	\texttt{operation\_live} & \textit{live}, \textit{current operation}, \textit{running}, \textit{in progress} \\
 	\midrule
-	\texttt{OPERATION\_HISTORY} & \textit{history}, \textit{past operation}, \textit{finished}, \textit{cancelled} \\
+	\texttt{machine\_history} & \textit{history}, \textit{past operation}, \textit{finished}, \textit{cancelled} \\
 	\midrule
-	\texttt{ORDERS} & \textit{order}, \textit{production order}, \textit{PO-}, \textit{scheduled} \\
+	\texttt{machine\_orders} & \textit{order}, \textit{production order}, \textit{PO-}, \textit{scheduled} \\
 	\midrule
-	\texttt{MACHINE\_LIVE} & \textit{machine status}, \textit{what is MC-}, \textit{ongoing} \\
+	\texttt{machine\_live} & \textit{machine status}, \textit{what is MC-}, \textit{ongoing} \\
 	\midrule
-	\texttt{DASHBOARD} & \textit{dashboard}, \textit{summary}, \textit{overview}, \textit{KPI} \\
+	\texttt{machine\_dashboard} & \textit{dashboard}, \textit{summary}, \textit{overview}, \textit{KPI} \\
 	\midrule
-	\texttt{MACHINE\_STATUS} & \textit{idle}, \textit{working}, \textit{which machines are} \\
+	\texttt{machine\_status} & \textit{idle}, \textit{working}, \textit{which machines are} \\
 	\midrule
-	\texttt{SCRAP\_ANALYSIS} & \textit{scrap}, \textit{reject}, \textit{waste}, \textit{defect} \\
+	\texttt{scrap\_analysis} & \textit{scrap}, \textit{reject}, \textit{waste}, \textit{defect} \\
 	\midrule
-	\texttt{ACTIVITY} & \textit{activity}, \textit{event log}, \textit{what happened}, \textit{recent actions} \\
+	\texttt{activity\_log} & \textit{activity}, \textit{event log}, \textit{what happened}, \textit{recent actions} \\
 	\midrule
-	\texttt{DEPARTMENT} & \textit{work center}, \textit{department}, \textit{sector}, \textit{operator summary} \\
+	\texttt{department\_overview} & \textit{work center}, \textit{department}, \textit{sector}, \textit{operator summary} \\
 	\midrule
-	\texttt{GENERAL} & Catch-all when no higher-priority rule matches. \\
+	\texttt{general} & Catch-all when no higher-priority rule matches. \\
 \end{longtable}
 
 \subsubsection{Tool Catalogue}
@@ -503,10 +503,16 @@ The \texttt{build\_llm\_client()} factory reads the \texttt{LLM\_PROVIDER} envir
 
 \subsubsection{Endpoint Routing}
 
-We configured the middleware to map all calls coming from the frontend using the structure \techname{/api/ai} to the ai proxy handler which forwards them to the \techname{/chat} endpoint of the Python agent. The agents tool calls are treated through the same path as the normal business central function calls by the flutter frontend.
+We configured the middleware to map all calls coming from the frontend using
+the structure \techname{/api/ai} to the AI proxy handler, which registers two
+routes: \texttt{POST /api/ai/chat} forwards requests to the \texttt{/chat}
+endpoint of the Python agent, and \texttt{GET /api/ai/health} proxies health
+checks to the agent's health endpoint. The agent's tool calls are treated
+through the same path as the normal Business Central function calls from the
+Flutter frontend.
 
 \subsection{Flutter Frontend}
-
+ù 
 \subsubsection{AI Data Layer}
 
 The Flutter data layer for the AI feature comprises three classes. \techname{AiChatService} constructs the full request payload — including user context assembled from \techname{SessionStorage} at call time — and POSTs it to \apiendpoint{/api/ai/chat}. It deserialises the response into an \techname{AiChatResponse} object. \techname{ConversationTurn} is a minimal data class with \texttt{role} and \texttt{content} fields and a \texttt{toJson()} serialiser. \techname{AiChatResponse} holds the reply text, the list of \techname{AiRedirectAction} objects, and an optional error string.

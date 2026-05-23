@@ -299,8 +299,8 @@ defined in Sprints~1 through~3.
 
 \subsubsection{Dashboard Aggregation}
 
-\texttt{fetchMachineDashboard()} accepts a validated admin token and a
-\texttt{hoursBack} integer. It iterates all \modulename{Machine Center} records,
+\texttt{fetchMachineDashboard()} accepts a \texttt{hoursBack} integer and an
+optional \texttt{workCenterNoJson} (JSON array of work centre numbers). It iterates all \modulename{Machine Center} records,
 and for each machine it filters \modulename{MES Operation Execution} records
 whose \texttt{Start Time} falls within the requested window. For each matched
 execution it sums the \texttt{Cycle Quantity} fields from linked
@@ -313,11 +313,11 @@ capped at 100.
 
 \subsubsection{Activity Log Aggregation}
 
-\texttt{fetchActivityLog()} queries three tables in descending timestamp order,
-filtered to the \texttt{hoursBack} window: \modulename{MES Operation Status}
+\texttt{fetchActivityLog()} queries four tables in descending timestamp order,
+filtered to the \texttt{hoursBack} window: \modulename{MES Operation State}
 (type \texttt{status\_change}), \modulename{MES Operation Progression} (type
-\texttt{production}), and \modulename{MES Component Consumption} (type
-\texttt{scan} or \texttt{scrap} depending on whether a scrap code is present).
+\texttt{production}), \modulename{MES Operation Scrap} (type \texttt{scrap}),
+and \modulename{MES Component Consumption} (type \texttt{scan}).
 For each record the operator's first and last name are resolved from the
 \modulename{Employee} table via the \texttt{Operator Id} foreign key. The
 results are merged into a single chronological list before being returned as
@@ -341,11 +341,11 @@ a JSON array.
       \bottomrule
       \endlastfoot
             
-      \texttt{fetchMachineDashboard} & token, hoursBack        &                   
-      JSON array of \texttt{MachineDashboardModel} objects \\ \midrule
+      \texttt{fetchMachineDashboard} & hoursBack, workCenterNoJson &                   
+	JSON array of \texttt{MachineDashboardModel} objects \\ \midrule
             
-      \texttt{fetchActivityLog}      & token, hoursBack        &                   
-      JSON array of \texttt{ActivityLogModel} objects \\
+      \texttt{fetchActivityLog}      & hoursBack               &                   
+	JSON array of \texttt{ActivityLogModel} objects \\
 \end{longtable}
 
 \subsection{Frontend Implementation}

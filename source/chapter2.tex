@@ -85,7 +85,7 @@ solution meets these functional requirements.
 	\item \textbf{Machine Management}: This feature allows users to:
 	      \begin{itemize}
 	      	\item View the list of machines in a work centre with their current status
-	      	      (Idle, Starting, OutOfOrder).
+	      	       (Idle, Working).
 	      	\item View the production order currently running on each machine.
 	      \end{itemize}
 	      	      
@@ -282,7 +282,7 @@ these non-functional requirements:
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Machine list is scoped to the authenticated user's work centre.
 	\item Each card shows machine name, current status (\domainterm{Idle},
-	\domainterm{Starting}, \domainterm{OutOfOrder}), and active production
+	\domainterm{Working}), and active production
 	order number.
 	\item The list refreshes automatically every 5 seconds.
 	\end{itemize} &
@@ -662,7 +662,7 @@ these non-functional requirements:
 
 \section{Sprint Plan}
 
-The project was organised into four two-week sprints, each delivering a
+The project was organised into five two-week sprints, each delivering a
 functional increment verified by a sprint review with the professional supervisor.
 
 \begin{longtable}{@{} P{0.10\linewidth} P{0.30\linewidth} P{0.55\linewidth} @{}}
@@ -698,7 +698,13 @@ functional increment verified by a sprint review with the professional superviso
 	Sprint~4        & Administration, System Configuration              &                
 	Administrator dashboard and activity log, admin navigation shell,
 	multi-language support (EN/FR/AR) and RTL layout,
-	in-app onboarding tutorials. \\
+	in-app onboarding tutorials. \\ \midrule
+
+	Sprint~5        & AI Assistant \& Analytical Intelligence           &                
+	Natural-language chat assistant, Node.js reverse proxy middleware,
+	Python AI agent with intent classification, multi-provider LLM support,
+	fuzzy machine resolution, composite fan-out queries, data enrichment,
+	and contextual redirect actions. \\
 	\bottomrule
 \end{longtable}
 
@@ -706,19 +712,24 @@ functional increment verified by a sprint review with the professional superviso
 
 \subsection{Physical Architecture}
 
-The physical architecture of the MES system rests on two main nodes:
+The physical architecture of the MES system rests on three main nodes:
 
-\begin{itemize}
-	\item \textbf{Business Central Server (on-premises / SaaS)}: hosts the AL extension
-	      that exposes OData V4 endpoints and the business REST APIs. In on-premises mode, the
-	      server runs on a BC210 instance accessible on port 7048. In SaaS mode, the base URLs
-	      follow the schema
-	      \texttt{api.businesscentral.dynamics.com/v2.0/<tenantId>/<environment>/ODataV4/}.
-	      	      
-	\item \textbf{Flutter Client (mobile / web / desktop)}: application compiled for
-	      Android, iOS, Web or desktop, communicating with the BC server via HTTP POST requests
-	      to OData V4 endpoints and custom APIs.
-\end{itemize}
+	\begin{itemize}
+	      \item \textbf{Business Central Server (on-premises / SaaS)}: hosts the AL extension
+	            that exposes OData V4 endpoints and the business REST APIs. In on-premises mode, the
+	            server runs on a BC210 instance accessible on port 7048. In SaaS mode, the base URLs
+	            follow the schema
+	            \texttt{api.businesscentral.dynamics.com/v2.0/<tenantId>/<environment>/ODataV4/}.
+
+	      \item \textbf{Node.js Middleware}: a reverse-proxy layer running between the Flutter
+	            client and Business Central. It handles SSPI/Windows authentication toward BC,
+	            exposes a REST API consumed by Flutter, and routes AI chat requests to the Python
+	            AI agent.
+
+	      \item \textbf{Flutter Client (mobile / web / desktop)}: application compiled for
+	            Android, iOS, Web or desktop, communicating with the Node.js middleware via HTTP
+	            requests. The middleware proxies these to the BC OData V4 endpoints.
+	\end{itemize}
 
 % IMAGE PLACEHOLDER - physical architecture diagram (BC server + Flutter clients)
 \begin{figure}[H]
@@ -731,7 +742,7 @@ The physical architecture of the MES system rests on two main nodes:
 
 \subsection{Software Architecture}
 
-The software architecture of the system is organised around two distinct parts.
+The software architecture of the system is organised around four distinct layers.
 
 \subsubsection{AL Back-end (Business Central)}
 
@@ -742,11 +753,11 @@ The back-end is structured in six layers:
 	      MES User, MES Auth Token, MES Machine Status, MES Operation Status, MES Operation
 	      Progression.
 	\item \textbf{Enums (2-Enum)}: define the enumerated types --- MES User Role
-	      (Operator, Supervisor, Admin), MES Machine Status (Idle, Starting, OutOfOrder),
-	      MES Operation Status (Running, Paused, Finished).
+	      (Operator, Supervisor, Admin), MES Machine Status (Idle, Working),
+	      MES Operation Status (Running, Paused, Finished, Cancelled, Interrupted).
 	\item \textbf{Codeunits (3-CodeUnit)}: contain the business logic --- MES Auth Mgt
-	      (authentication, tokens), MES Password Mgt (SHA-256 hashing), MES Machine Actions
-	      (machine and operation management), MES Unbound Actions (OData V4 facade).
+	      (authentication, tokens), MES Password Mgt (SHA-256 hashing), MES Machine Fetch
+	      and MES Machine Write (machine and operation management), MES Unbound Actions (OData V4 facade).
 	\item \textbf{API Pages (4-API)}: expose data for reading/writing via the BC REST
 	      API --- employees, MES users, work centres.
 	\item \textbf{Permission Sets (5-PermissionSet)}: define access rights to AL objects
@@ -754,6 +765,21 @@ The back-end is structured in six layers:
 	\item \textbf{Pages (6-Pages)}: administration and debugging interfaces in the BC
 	      client (lists, cards, API debug page).
 \end{itemize}
+
+\subsubsection{Node.js Middleware}
+
+	The Node.js middleware is the network bridge between the Flutter client and
+	Business Central. It handles SSPI/Windows authentication for BC OData V4
+	requests, exposes a unified REST API to the Flutter application, and routes
+	AI chat requests (\texttt{POST /api/ai/chat}) to the Python AI agent.
+
+	\subsubsection{Python AI Agent}
+
+	The Python AI agent (FastAPI) provides the conversational intelligence layer.
+	It classifies user intent, executes tool chains against Business Central via
+	the Node.js middleware, enriches results with data-analysis helpers, and
+	synthesises natural-language replies using a configurable multi-provider LLM client.
+
 
 \subsubsection{Flutter Front-end}
 
@@ -833,7 +859,7 @@ this project.
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/lucid-chart-logo.png}& 
 	lucid chart&                              
-	Testing and validation of OData V4 endpoints \\[6pt]
+	UML and system architecture diagramming \\[6pt]
 	\midrule
 \end{longtable}
 

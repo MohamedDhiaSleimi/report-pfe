@@ -917,7 +917,7 @@ model.
 	
 	Execution Id & Code[50] & GUID-based primary key; auto-generated on insert. \\
 	\midrule
-	Machine No & Code[20] & Foreign key to Machine Center. \\
+	Machine No & Code[20] & References Machine Center (no referential constraint enforced in the current implementation). \\
 	\midrule
 	Prod Order No & Code[20] & Foreign key to Prod.\ Order Routing Line. \\
 	\midrule
@@ -962,7 +962,7 @@ model.
 	\midrule
 	Operator Id & Code[50] & BC session UserId of the operator who declared. \\
 	\midrule
-	Last Updated At & DateTime & Set by \texttt{OnInsert} trigger to \texttt{CurrentDateTime()}. \\
+	Declared At & DateTime & Set by \texttt{OnInsert} trigger to \texttt{CurrentDateTime()}. \\
 \end{longtable}
 
 \begin{longtable}{@{} P{0.21\linewidth} P{0.17\linewidth} P{0.57\linewidth} @{}}
@@ -989,14 +989,13 @@ model.
 	\midrule
 	Item No & Code[50] & Item identifier of the consumed component. \\
 	\midrule
-	Barcode & Code[50] & Barcode scanned to register the component. \\
+	Barcode & Text[500] & Barcode scanned to register the component. \\
 	\midrule
 	Unit of Measure & Code[50] & Unit of measure code from the component definition. \\
 	\midrule
 	Quantity Scanned & Decimal & Raw quantity read from the barcode scan. \\
 	\midrule
-	Quantity Consumed & Decimal & Quantity actually applied to the production order. \\
-	\midrule
+	Quantity per Unit of Measure & Decimal & Unit-of-measure conversion factor; the effective consumed quantity equals Quantity Scanned multiplied by this value. \\	\midrule
 	Operator Id & Code[50] & BC session UserId of the operator who scanned. \\
 	\midrule
 	Scanned At & DateTime & Set by \texttt{OnInsert} trigger to \texttt{CurrentDateTime()}. \\
@@ -1048,7 +1047,7 @@ Table~\ref{tab:s3-api-endpoints} lists all endpoints added in this sprint.
 	\midrule
 	\texttt{fetchBom} & prodOrderNo, operationNo & JSON array of BOM component records \\
 	\midrule
-	\texttt{ChangePassword} & token, oldPassword, newPassword & \texttt{\{success: bool, message\}} \\
+	%%% ChangePassword was implemented in Sprint 1 and is not a new Sprint 3 endpoint. Row removed. %%%
 \end{longtable}
 
 \subsection{Frontend Implementation}

@@ -241,7 +241,7 @@ textual description of the \textit{Start Operation} use case.
   \item The \userrole{Operator} locates a \domainterm{Released} order and taps
   \uilabel{Start Order}.
   \item The frontend sends a \domainterm{POST} request to
-  \apiendpoint{MESMachinesActionsEndpoints\_startOperation}.
+  \apiendpoint{MESWebService\_startOperation}.
   \item The backend validates all preconditions.
   \item On success, a \modulename{MES Operation Status} record is inserted.
   \item The frontend navigates to the \uilabel{Orders Progression Page}.
@@ -249,221 +249,221 @@ textual description of the \textit{Start Operation} use case.
   
 \end{longtable}
 
-\subsection{Sequence Diagrams}
-The following sequence diagrams illustrate the communication flow between the
-\techname{Flutter} frontend, the \techname{Business Central} OData layer, and
-the \techname{AL} business logic for the machine-listing and order-management
-flows introduced in Sprint~2.
- 
-Figure~\ref{fig:s2-seq-fetch-machines} depicts the machine-list polling flow.
-The \techname{Flutter} client issues a \texttt{FetchMachines} request for each
-work centre resolved from the authenticated user's profile every five seconds.
-For every machine returned by \techname{Business Central}, the \techname{AL}
-layer fetches the latest \domainterm{MES Machine Status} row and the work-centre
-name before assembling the response, which the client uses to rebuild the
-\uilabel{MachineCard} grid.
+  \subsection{Sequence Diagrams}
+  The following sequence diagrams illustrate the communication flow between the
+  \techname{Flutter} frontend, the \techname{Business Central} OData layer, and
+  the \techname{AL} business logic for the machine-listing and order-management
+  flows introduced in Sprint~2.
+  
+  Figure~\ref{fig:s2-seq-fetch-machines} depicts the machine-list polling flow.
+  The \techname{Flutter} client issues a \texttt{FetchMachines} request for each
+  work centre resolved from the authenticated user's profile every five seconds.
+  For every machine returned by \techname{Business Central}, the \techname{AL}
+  layer fetches the latest \domainterm{MES Machine Status} row and the work-centre
+  name before assembling the response, which the client uses to rebuild the
+  \uilabel{MachineCard} grid.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-machines.png}
-  \caption{SD-09: Fetch Machines.}
-  \label{fig:s2-seq-fetch-machines}
-\end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-machines.png}
+    \caption{SD-09: Fetch Machines.}
+    \label{fig:s2-seq-fetch-machines}
+  \end{figure}
 
-%=====SD-09==========================================================
-% sequenceDiagram
-%     participant Flutter
-%     participant AL
-%     participant BC
+  %=====SD-09==========================================================
+  % sequenceDiagram
+  %     participant Flutter
+  %     participant AL
+  %     participant BC
 
-%     rect rgb(220,235,255)
-%         Note over Flutter,BC: ref SD-01 — user is logged in workCenterIds resolved from userData;
-%     end
+  %     rect rgb(220,235,255)
+  %         Note over Flutter,BC: ref SD-01 — user is logged in workCenterIds resolved from userData;
+  %     end
 
-%     loop Every 5 seconds per work center
-%         Flutter->>AL: FetchMachines request
-%         AL->>BC: Filter Machine Center by workCenterNo
-%         BC-->>AL: machine list
-%         loop For each machine
-%             AL->>BC: Get latest MES Machine Status row
-%             BC-->>AL: machine data
-%             AL->>BC: Get Work Center name
-%             BC-->>AL: name
-%         end
-%         AL-->>Flutter: request response
-%         Flutter->>Flutter: Rebuild MachineCard grid
-%     end
-%====================================================================
+  %     loop Every 5 seconds per work center
+  %         Flutter->>AL: FetchMachines request
+  %         AL->>BC: Filter Machine Center by workCenterNo
+  %         BC-->>AL: machine list
+  %         loop For each machine
+  %             AL->>BC: Get latest MES Machine Status row
+  %             BC-->>AL: machine data
+  %             AL->>BC: Get Work Center name
+  %             BC-->>AL: name
+  %         end
+  %         AL-->>Flutter: request response
+  %         Flutter->>Flutter: Rebuild MachineCard grid
+  %     end
+  %====================================================================
 
-Figure~\ref{fig:s2-seq-machine-orders} presents the machine-orders retrieval flow,
-triggered when the user opens the \uilabel{Orders} tab. The \techname{AL} layer
-filters \domainterm{ProdOrderRoutingLine} records for the selected machine,
-skips any operation that has already been started, and enriches each remaining
-routing line with the corresponding \domainterm{ProdOrderLine} details before
-returning the list to the \techname{Flutter} client as a set of
-\uilabel{OrderCard} entries.
+  Figure~\ref{fig:s2-seq-machine-orders} presents the machine-orders retrieval flow,
+  triggered when the user opens the \uilabel{Orders} tab. The \techname{AL} layer
+  filters \domainterm{ProdOrderRoutingLine} records for the selected machine,
+  skips any operation that has already been started, and enriches each remaining
+  routing line with the corresponding \domainterm{ProdOrderLine} details before
+  returning the list to the \techname{Flutter} client as a set of
+  \uilabel{OrderCard} entries.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/waiting-orders.png}
-  \caption{SD-10: Get Machine Orders.}
-  \label{fig:s2-seq-machine-orders}
-\end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/waiting-orders.png}
+    \caption{SD-10: Get Machine Orders.}
+    \label{fig:s2-seq-machine-orders}
+  \end{figure}
 
-%=====SD-10==========================================================
-% sequenceDiagram
-%     actor User
-%     participant Flutter
-%     participant AL
-%     participant BC
+  %=====SD-10==========================================================
+  % sequenceDiagram
+  %     actor User
+  %     participant Flutter
+  %     participant AL
+  %     participant BC
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-01 — user is logged in
-%     end
+  %     rect rgb(220,235,255)
+  %         Note over User,BC: ref SD-01 — user is logged in
+  %     end
 
-%     User->>Flutter: Open Orders tab
-%     Flutter->>AL: getMachineOrders request
-%     AL->>BC: Filter ProdOrderRoutingLine
-%     BC-->>AL: routing lines
-%     loop For each routing line
-%         AL->>BC: Check if operation started - skip if yes
-%         AL->>BC: Get ProdOrderLine
-%         BC-->>AL: line detail
-%     end
-%     AL-->>Flutter: orders data
-%     Flutter-->>User: OrderCard list
-%====================================================================
+  %     User->>Flutter: Open Orders tab
+  %     Flutter->>AL: getMachineOrders request
+  %     AL->>BC: Filter ProdOrderRoutingLine
+  %     BC-->>AL: routing lines
+  %     loop For each routing line
+  %         AL->>BC: Check if operation started - skip if yes
+  %         AL->>BC: Get ProdOrderLine
+  %         BC-->>AL: line detail
+  %     end
+  %     AL-->>Flutter: orders data
+  %     Flutter-->>User: OrderCard list
+  %====================================================================
 
-Figure~\ref{fig:s2-seq-start-operation} illustrates the operation start flow.
-After the user selects a released order and taps \uilabel{Start}, the
-\techname{AL} layer confirms that the order is in the \domainterm{Released}
-state and that neither the operation nor the machine is currently running.
-On success, it creates the \domainterm{MES Operation Execution},
-\domainterm{MES Operation State}, and \domainterm{MES Operation Progression}
-records, marks the machine as working, and records the initial user interaction
-before redirecting the \techname{Flutter} client to the \uilabel{Progress} tab.
+  Figure~\ref{fig:s2-seq-start-operation} illustrates the operation start flow.
+  After the user selects a released order and taps \uilabel{Start}, the
+  \techname{AL} layer confirms that the order is in the \domainterm{Released}
+  state and that neither the operation nor the machine is currently running.
+  On success, it creates the \domainterm{MES Operation Execution},
+  \domainterm{MES Operation State}, and \domainterm{MES Operation Progression}
+  records, marks the machine as working, and records the initial user interaction
+  before redirecting the \techname{Flutter} client to the \uilabel{Progress} tab.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/start-order.png}
-  \caption{SD-11: Start Operation.}
-  \label{fig:s2-seq-start-operation}
-\end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/start-order.png}
+    \caption{SD-11: Start Operation.}
+    \label{fig:s2-seq-start-operation}
+  \end{figure}
 
 
-%=====SD-11==========================================================
-% sequenceDiagram
-%     actor User
-%     participant Flutter
-%     participant AL
-%     participant BC
+  %=====SD-11==========================================================
+  % sequenceDiagram
+  %     actor User
+  %     participant Flutter
+  %     participant AL
+  %     participant BC
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
-%     end
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-10 — machine orders loaded user selects a Released order
-%     end
+  %     rect rgb(220,235,255)
+  %         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
+  %     end
+  %     rect rgb(220,235,255)
+  %         Note over User,BC: ref SD-10 — machine orders loaded user selects a Released order
+  %     end
 
-%     User->>Flutter: Tap Start on OrderCard
-%     Flutter->>AL: startOperation request
+  %     User->>Flutter: Tap Start on OrderCard
+  %     Flutter->>AL: startOperation request
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-02 — AL validates token and resolves operatorId
-%     end
+  %     rect rgb(220,235,255)
+  %         Note over User,BC: ref SD-02 — AL validates token and resolves operatorId
+  %     end
 
-%     AL->>BC: check the order is released
-%     BC-->>AL: routing line
-%     AL->>BC: Check that the Operation is not running
-%     AL->>BC: Check that the machine is not working
-%     BC-->>AL: clear
-%     alt Not Released or already running
-%         AL-->>Flutter: error message
-%         Flutter-->>User: Show error snackbar
-%     else Valid
-%         AL->>BC: Insert MES Operation Execution
-%         BC-->>AL: executionId
-%         AL->>BC: Insert MES Operation State
-%         AL->>BC: Insert MES Operation Progression
-%         AL->>BC: set machine as working
-%         AL->>BC: Insert MES User Execution Interaction
-%         BC-->>AL: ok
-%         AL-->>Flutter: request response
-%         Flutter->>User: redirect to Progress tab
-%     end
-%====================================================================
+  %     AL->>BC: check the order is released
+  %     BC-->>AL: routing line
+  %     AL->>BC: Check that the Operation is not running
+  %     AL->>BC: Check that the machine is not working
+  %     BC-->>AL: clear
+  %     alt Not Released or already running
+  %         AL-->>Flutter: error message
+  %         Flutter-->>User: Show error snackbar
+  %     else Valid
+  %         AL->>BC: Insert MES Operation Execution
+  %         BC-->>AL: executionId
+  %         AL->>BC: Insert MES Operation State
+  %         AL->>BC: Insert MES Operation Progression
+  %         AL->>BC: set machine as working
+  %         AL->>BC: Insert MES User Execution Interaction
+  %         BC-->>AL: ok
+  %         AL-->>Flutter: request response
+  %         Flutter->>User: redirect to Progress tab
+  %     end
+  %====================================================================
 
-Figures~\ref{fig:s2-seq-fetch-progress} and~\ref{fig:s2-seq-fetch-history} present
-the two polling flows that supply real-time and historical data to the
-\uilabel{MachineDetailPage}. Both are triggered either on demand or on a
-fixed five-second interval once an operation is active.
- 
-Figure~\ref{fig:s2-seq-fetch-progress} describes the ongoing-operations state
-polling flow. The \techname{AL} layer retrieves all active operations for the
-machine, resolves their current state and cumulative produced quantity from
-\techname{Business Central}, and returns the aggregated data to the
-\techname{Flutter} client.
+  Figures~\ref{fig:s2-seq-fetch-progress} and~\ref{fig:s2-seq-fetch-history} present
+  the two polling flows that supply real-time and historical data to the
+  \uilabel{MachineDetailPage}. Both are triggered either on demand or on a
+  fixed five-second interval once an operation is active.
+  
+  Figure~\ref{fig:s2-seq-fetch-progress} describes the ongoing-operations state
+  polling flow. The \techname{AL} layer retrieves all active operations for the
+  machine, resolves their current state and cumulative produced quantity from
+  \techname{Business Central}, and returns the aggregated data to the
+  \techname{Flutter} client.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-operation-progress.png}
-  \caption{SD-23: Fetch Operation progress.}
-  \label{fig:s2-seq-fetch-progress}
-\end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-operation-progress.png}
+    \caption{SD-23: Fetch Operation progress.}
+    \label{fig:s2-seq-fetch-progress}
+  \end{figure}
 
-%=====SD-23==========================================================
-% sequenceDiagram
-%   participant Flutter
-%   participant AL as AL Extension
-%   participant BC as Business Central
+  %=====SD-23==========================================================
+  % sequenceDiagram
+  %   participant Flutter
+  %   participant AL as AL Extension
+  %   participant BC as Business Central
 
-%   rect rgb(220,240,200)
-%     Note over Flutter, BC: ref SD-11 — operation was started executionId is known
-%   end
-%   loop On trigger or every 5 s
-%     Flutter->>AL: fetchOngoingOperationsState request
-%     AL->>BC: Get Operations by machine
-%     AL->>BC: Get current state of each operation
-%     AL->>BC: get total Qte made per operation
-%     BC-->>AL: Operation info
-%     AL-->>Flutter: Operations data per machine
-%   end
-%====================================================================
+  %   rect rgb(220,240,200)
+  %     Note over Flutter, BC: ref SD-11 — operation was started executionId is known
+  %   end
+  %   loop On trigger or every 5 s
+  %     Flutter->>AL: fetchOngoingOperationsState request
+  %     AL->>BC: Get Operations by machine
+  %     AL->>BC: Get current state of each operation
+  %     AL->>BC: get total Qte made per operation
+  %     BC-->>AL: Operation info
+  %     AL-->>Flutter: Operations data per machine
+  %   end
+  %====================================================================
 
-Figure~\ref{fig:s2-seq-fetch-history} presents the operation history retrieval
-flow, triggered when the user opens the \uilabel{MachineDetailPage}. The
-\techname{AL} layer queries \techname{Business Central} for finished and
-cancelled operations associated with the machine, enriches each record with
-production quantities and start and end times, and returns the assembled list
-so the \techname{Flutter} client can display the operations history.
+  Figure~\ref{fig:s2-seq-fetch-history} presents the operation history retrieval
+  flow, triggered when the user opens the \uilabel{MachineDetailPage}. The
+  \techname{AL} layer queries \techname{Business Central} for finished and
+  cancelled operations associated with the machine, enriches each record with
+  production quantities and start and end times, and returns the assembled list
+  so the \techname{Flutter} client can display the operations history.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-operation-history.png}
-  \caption{SD-24: Fetch Operation History}
-  \label{fig:s2-seq-fetch-history}
-\end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-operation-history.png}
+    \caption{SD-24: Fetch Operation History}
+    \label{fig:s2-seq-fetch-history}
+  \end{figure}
 
-%=====SD-24==========================================================
-% sequenceDiagram
-%   actor User
-%   participant Flutter
-%   participant AL as AL Extension
-%   participant BC as Business Central
+  %=====SD-24==========================================================
+  % sequenceDiagram
+  %   actor User
+  %   participant Flutter
+  %   participant AL as AL Extension
+  %   participant BC as Business Central
 
-%   rect rgb(200,220,240)
-%     note over Flutter,BC: ref: ref SD-01 — user is logged in and holds a valid token
-%   end
-%   User->>Flutter: open the machineDetailPage
-%   Flutter->>AL: fetchOperationsHistory request
-%   AL->>BC: get machine operations
-%   AL->>BC: get finished and cancelled operations
-%   AL->>BC: get production quantities
-%   AL->>BC: get start/end times
-%   BC-->>AL: Historical operation rows
-%   AL-->>Flutter: completed operations data
-%   Flutter->>User: show the operations history
-%====================================================================
+  %   rect rgb(200,220,240)
+  %     note over Flutter,BC: ref: ref SD-01 — user is logged in and holds a valid token
+  %   end
+  %   User->>Flutter: open the machineDetailPage
+  %   Flutter->>AL: fetchOperationsHistory request
+  %   AL->>BC: get machine operations
+  %   AL->>BC: get finished and cancelled operations
+  %   AL->>BC: get production quantities
+  %   AL->>BC: get start/end times
+  %   BC-->>AL: Historical operation rows
+  %   AL-->>Flutter: completed operations data
+  %   Flutter->>User: show the operations history
+  %====================================================================
 
 \subsection{Class Diagram}
 
@@ -532,8 +532,7 @@ lists the fields and their descriptions.
   \midrule
   
   Status                  & Enum (\texttt{MES Machine Status}) &                      
-  Current machine state: \domainterm{Idle}, \domainterm{Starting}, or
-  \domainterm{OutOfOrder}. \\
+	Current machine state: \domainterm{Idle} or \domainterm{Working}. \\
   \midrule
   
   Current Prod. Order No. & Code[20]                           &                      
@@ -541,9 +540,9 @@ lists the fields and their descriptions.
   production order the machine is currently executing, if any. \\
   \midrule
   
-  Last Updated At         & DateTime                           &                      
-  UTC timestamp set automatically on insert. Used to find the most recent status
-  record for a given machine. \\
+  Updated At              & DateTime                           &                      
+	UTC timestamp set automatically on insert. Used to find the most recent status
+	record for a given machine. \\
   
 \end{longtable}
 
@@ -591,15 +590,15 @@ Table~\ref{tab:s2-mes_operation_status_fields} provides the full field dictionar
   \midrule
   
   Operation Status & Enum (\texttt{MES Operation Status}) &                      
-  Lifecycle state at the time of this record: \domainterm{Running},
-  \domainterm{Paused}, or \domainterm{Finished}. \\
+	Lifecycle state at the time of this record: \domainterm{Running},
+	\domainterm{Paused}, \domainterm{Finished}, \domainterm{Cancelled},
+	or \domainterm{Interrupted}. \\
   \midrule
   
-  Last Updated At  & DateTime                             &                      
-  UTC timestamp set automatically on insert. Together with the composite key
-  (Machine No, Prod Order No, Operation No), this field is used to retrieve the
-  current status via descending sort. \\
-  
+  Declared At      & DateTime                             &                      
+	UTC timestamp set automatically on insert. Together with the execution index,
+	this field is used to retrieve the current status via descending sort. \\
+
 \end{longtable}
 
 Key points:
@@ -615,21 +614,25 @@ Key points:
 \subsubsection{Enumerations}
 
 Two enumerations support the domain.
-\modulename{MES Machine Status} (Enum 50101) defines three values:
-\domainterm{Idle}, \domainterm{Starting}, and \domainterm{OutOfOrder}.
-\modulename{MES Operation Status} (Enum 50102) defines three values:
-\domainterm{Running}, \domainterm{Paused}, and \domainterm{Finished}.
+\modulename{MES Machine Status} (Enum 50101) defines two values:
+\domainterm{Idle} and \domainterm{Working}.
+\modulename{MES Operation Status} (Enum 50102) defines five values:
+\domainterm{Running}, \domainterm{Paused}, \domainterm{Finished},
+\domainterm{Cancelled}, and \domainterm{Interrupted}.
 Both enumerations are declared \texttt{Extensible = true} to allow future
 additions without modifying the base objects.
 
 \subsubsection{Machine Actions Business Logic}
 
-All machine and operation business logic is encapsulated in codeunit 50130
-\modulename{MES Machine Actions}. The codeunit exposes four public procedures
-that are called directly by the OData web service layer.
+Machine and operation business logic is encapsulated across two codeunits:
+\modulename{MES Machine Fetch} (50131) for read operations and
+\modulename{MES Machine Write} (50132) for write operations. Their public
+procedures are called directly by the OData web service layer.
+
 
 \textbf{FetchMachines.}
-Accepts a \domainterm{work centre number} and returns a \domainterm{JSON} array
+Accepts a \domainterm{JSON array of work centre numbers} (\texttt{workCenterNoJson})
+and returns a \domainterm{JSON} array
 of machine objects. For each \modulename{Machine Center} record scoped to the
 given work centre, the procedure looks up the latest \modulename{MES Machine
   Status} record via \texttt{FindLast()} and inlines the current status and active
@@ -640,7 +643,7 @@ machine is reported as \domainterm{Idle}.
 Accepts a machine number and returns a \domainterm{JSON} array of production
 routing lines whose status is \domainterm{Planned}, \domainterm{Firm Planned}, or
 \domainterm{Released} and whose type is \domainterm{Machine Center}. Routing
-lines that already have an existing \modulename{MES Operation Status} record are
+lines that already have an existing \modulename{MES Operation Execution} record are
 excluded from the result, ensuring that only work not yet started is shown in the
 order list. For each qualifying line, the corresponding
 \modulename{Prod. Order Line} is joined to supply item description and order
@@ -657,7 +660,7 @@ already busy with another operation. If all checks pass, a new
 inserted by \modulename{InsertMESOperation}. On failure, the last error text is
 captured and returned as a structured \domainterm{JSON} error response.
 
-\textbf{fetchMachineOperationStatus.}
+\textbf{fetchOngoingOperationsState.}
 Returns the current active operations for a machine as a \domainterm{JSON} array.
 The procedure sets a descending composite key on
 (Machine No, Prod Order No, Operation No, Last Updated At) and iterates the
@@ -669,16 +672,14 @@ with the most recent timestamp. Only entries whose latest status is
 
 Communication between \techname{Flutter} and \techname{Business Central} for the
 machines domain uses the same \domainterm{OData V4 Unbound Actions} pattern
-established in Sprint~1. A new web service entry was added to
-\modulename{WebServices.xml} exposing codeunit 50130 under the service name
-\texttt{MESMachinesActionsEndpoints}. After deployment, the four procedures are
-reachable at the following endpoints:
-
+established in Sprint~1.The procedures are exposed through the existing \modulename{MESWebService}
+(codeunit 50126) registered in \modulename{WebServices.xml}. After deployment,
+the four procedures are reachable at the following endpoints:
 \begin{itemize}
   \item \apiendpoint{POST .../ODataV4/MESWebService\_FetchMachines}
   \item \apiendpoint{POST .../ODataV4/MESWebService\_getMachineOrders}
   \item \apiendpoint{POST .../ODataV4/MESWebService\_startOperation}
-  \item \apiendpoint{POST .../ODataV4/MESWebService\_fetchMachineOperationStatus}
+  \item \apiendpoint{POST .../ODataV4/MESWebService\_fetchOngoingOperationsState}
 \end{itemize}
 
 All endpoints follow the same \domainterm{JSON} request/response convention used
@@ -731,7 +732,7 @@ layer double-decodes.
 \end{minipage}
 
 
-5-second \texttt{Future.delayed} delay, emitting an updated list on every cycle and
+20-second \texttt{Future.delayed} delay, emitting an updated list on every cycle and
 yielding an empty list on error to prevent the \domainterm{StreamBuilder} from
 entering an error state.
 
@@ -867,10 +868,10 @@ Figure~\ref{fig:s2-test-postman-getMachinesOrders} shows a test case for the \ap
 \addcontentsline{toc}{section}{Conclusion}
 
 This sprint successfully delivered the machine monitoring and production order
-management foundation of the \domainterm{MES} application. On the backend, two
+management foundation of the \domainterm{MES} application.On the backend, two
 new append-only tables (\modulename{MES Machine Status} and
-\modulename{MES Operation Status}) and a dedicated codeunit
-(\modulename{MES Machine Actions}) were implemented in \techname{Business Central
-  AL}, exposing four \domainterm{OData V4} endpoints that cover the full machine and
-operation lifecycle. The append-only design ensures a complete, tamper-evident
+\modulename{MES Operation Status}) and dedicated codeunits
+(\modulename{MES Machine Fetch} and \modulename{MES Machine Write}) were
+implemented in \techname{Business Central AL}, exposing four \domainterm{OData V4}
+endpoints that cover the full machine and operation lifecycle. The append-only design ensures a complete, tamper-evident
 audit trail of every state transition without requiring any record modification.

@@ -159,7 +159,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 \end{longtable}
 
 % -----------------------------------------------------------------------
-
+\section{Design}
 \subsection{Use Case Diagram}
 
 The UML Use Case Diagram (Figure~\ref{fig:s1-use-case-diagram}) shows the three
@@ -224,7 +224,7 @@ use cases available exclusively to the \userrole{Administrator}.
 	\begin{enumerate}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item The user launches the application.
 	\item The system displays the \uilabel{login screen}.
-	\item The user enters \uilabel{User ID} and \uilabel{password}.
+	\item The user enters \uilabel{Auth ID} and \uilabel{password}.
 	\item The system automatically detects the device ID.
 	\item The user clicks the \uilabel{Login} button.
 	\item The system validates the credentials against the \techname{ERP} database.
@@ -658,16 +658,16 @@ as described in Table~\ref{tab:s1-mes_user_fields}.
 	\midrule
 	
 	Auth ID           & Text[100]                     &                      
-	Auto-generated external identifier in the form \texttt{AUTH-XXXXXXXX}. Used for display/external references (not used for login). Uniqueness enforced. \\
+	Auto-generated external identifier in the form \texttt{AUTH-XXXXXXXX}. Used as the login identifier at the MES login prompt. Uniqueness enforced. \\
 	\midrule
 	
 	Role              & Enum (\texttt{MES User Role}) &                      
 	Authorization role for the MES application (e.g., Operator / Supervisor / Admin). Used to control permissions and access. \\
 	\midrule
 	
-	Work Center No.   & Code[20]                      &                      
-	Foreign key to \texttt{Work Center."No."}. Work center assignment: required for Operator and Supervisor; must be blank for Admin. \\
-	\midrule
+	%%% Work-centre assignments are stored in the separate MES User Work Center
+	%%% junction table (Table 50115), not on MES User directly. Field removed. %%%
+	%%%\midrule
 	
 	Is Active         & Boolean                       &                      
 	Account enable/disable flag. If false, authentication is blocked and existing tokens are revoked when deactivated. \\
@@ -755,14 +755,14 @@ auto-expiry after 12 hours, last activity tracking, and soft revocation.
 \subsubsection{Password Management and Encryption}
 
 The password management codeunit ensures that plaintext is never persisted. A
-50-character random \domainterm{salt} is generated per user and the password is
-hashed using \domainterm{PBKDF2-SHA256} with 1000 iterations before storage.
+unique random \domainterm{salt} (64-character SHA-256 hex string) is generated per
+user and the password is hashed using single-pass \domainterm{SHA-256} before storage.
 Data classification attributes mark sensitive fields as \emph{Customer Content}
 or \emph{System Metadata}.
 
 Key points include: passwords are never stored in plaintext; a unique salt per user
-(50 characters) is generated; \domainterm{PBKDF2} hashing with 1000 iterations is
-applied; and data is classified as \emph{Customer Content} or \emph{System Metadata}.
+(64 characters) is generated; \domainterm{SHA-256} hashing is applied; and data is
+classified as \emph{Customer Content} or \emph{System Metadata}.
 
 \subsubsection{Authentication Logic --- Login, Logout, and Change Password}
 
@@ -779,10 +779,10 @@ to decide the post-login navigation target.
 
 \textbf{Logout}
 
-On logout, the user's session authentication token will be expired. The token
+On logout, the user's session authentication token is revoked. The token
 record matching the supplied session token is located in the
-\modulename{MES Auth Token} table and its expiry timestamp is set to the current
-datetime, immediately invalidating the session (soft revocation).
+\modulename{MES Auth Token} table and its \texttt{Revoked} flag is set to
+\texttt{true}, immediately invalidating the session (soft revocation).
 
 \textbf{Change Password}
 
@@ -1007,7 +1007,7 @@ For integration testing, we chose Postman, a powerful and user-friendly tool for
 This sprint successfully delivered a complete authentication and user management
 foundation for the \domainterm{MES} application. The backend, built in
 \techname{Microsoft Dynamics Business Central} using \techname{AL}, implements
-secure credential validation, \domainterm{PBKDF2-SHA256} password hashing,
+secure credential validation, \domainterm{SHA-256} password hashing,
 session token management with automatic expiry, and a full set of
 \domainterm{RESTful} API endpoints exposed through \techname{MES Web Service}
 (codeunit 50126). The \techname{Flutter} frontend provides a clean, role-aware
