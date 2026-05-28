@@ -10,10 +10,17 @@ user can only reach features appropriate to their role.
 
 In addition, the \userrole{Administrator} is given the ability to add new MES
 users, generate secure passwords on their behalf, change a user's role and
-work-centre assignment, and activate or deactivate accounts. By the end of this
-sprint, a fully functional \uilabel{login} screen, \uilabel{change password}
-flow, \uilabel{admin user management dashboard}, \uilabel{role management dialog},
-and \uilabel{logout} functionality will all be in place.
+work-centre assignment, and activate or deactivate accounts. The sprint also
+delivers two-factor authentication via badge QR~code scanning, administrator
+badge management (view, print, regenerate), a configurable password expiry
+policy, and the first-launch host pairing screen that connects the Flutter
+application to the correct \techname{Node.js} middleware instance.
+
+By the end of this sprint, a fully functional \uilabel{login} screen,
+\uilabel{badge scan} flow, \uilabel{change password} flow,
+\uilabel{admin user management dashboard}, \uilabel{role management dialog},
+\uilabel{settings page}, \uilabel{paring page}, and \uilabel{logout}
+functionality will all be in place.
 
 
 % -----------------------------------------------------------------------
@@ -47,8 +54,8 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	that users only access features appropriate to their role.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implement the functions \texttt{AdminCreateUser()}, and \texttt{AdminSetActive()} in codeunit \techname{MES Unbound Actions}.
-		\item Expose \texttt{AdminCreateUser()}, and \texttt{AdminSetActive()} through codeunit \techname{MES Web Service}.
+		\item Implement the functions \texttt{AdminCreateUser()} and \texttt{AdminSetActive()} in codeunit \techname{MES Unbound Actions}.
+		\item Expose \texttt{AdminCreateUser()} and \texttt{AdminSetActive()} through codeunit \techname{MES Web Service}.
 		\item Create API page \techname{MES User Create API}.
 	\end{itemize}
 \\ & &
@@ -65,7 +72,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 		\item Implement role-based navigation in \techname{\_AuthGate}.
 	\end{itemize}\\
 	\midrule
-		\textbf{US-1.2}
+	\textbf{US-1.2}
 	& As a User (\userrole{Operator} / \userrole{Supervisor} / \userrole{Administrator}),
 	I need to log into the system with my credentials so that I can access
 	features appropriate to my role.
@@ -102,14 +109,14 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	users with their details so that I can manage accounts.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Create the function \techname{fetchAllMESUsers} in codeunit \techname{MES Unbound Actions}.
-		\item Expose \techname{fetchAllMESUsers} through codeunit \techname{MES Web Service}.
+		\item Create the function \texttt{fetchAllMESUsers} in codeunit \techname{MES Unbound Actions}.
+		\item Expose \texttt{fetchAllMESUsers} through codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Create model \techname{MesUser}.
-		\item Implement \texttt{MesUserService} to consume the new end point.
+		\item Implement \texttt{MesUserService} to consume the new endpoint.
 		\item Implement \texttt{MesUserProvider} to manage its state and its streams.
 		\item Implement user list display in \techname{AddUserPage}.
 		\item Create the widgets \techname{GeneratePasswordDialog} and \techname{EmployeeAvatar}.
@@ -143,7 +150,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	\noindent\textit{Flutter}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Update \techname{MesUserService} to consume \texttt{changeUserRole()}.
-		\item Update \techname{MesUserProvider} to account \texttt{changeUserRole()}.
+		\item Update \techname{MesUserProvider} to account for\texttt{changeUserRole()}.
 		\item Create widget \techname{ChangeRoleDialog}.
 	\end{itemize}\\
 	\midrule
@@ -152,10 +159,83 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	account so that access can be revoked without deleting the account.
 	& \noindent\textit{Flutter}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Update  \techname{ApiService} to account for \texttt{toggleUserActiveStatus()}.
-		\item Update  \techname{AuthProvider} to account for \texttt{toggleUserActiveStatus()}.
+		\item Update \techname{ApiService} to account for \texttt{toggleUserActiveStatus()}.
+		\item Update \techname{AuthProvider} to account for \texttt{toggleUserActiveStatus()}.
 		\item Integrate activate and deactivate actions in \techname{AddUserPage}.
+\end{itemize}\\
+\midrule
+
+	\textbf{US-1.8}
+	& As a User (\userrole{Operator} / \userrole{Supervisor} / \userrole{Administrator}),
+	I need to complete a badge QR~code scan after entering my credentials so that
+	my identity is verified by a second factor.
+	& \noindent\textit{Business Central (AL)}
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+		\item Add field \texttt{Badge Secret} (Text[64]) to table \techname{MES User}.
+		\item Implement \texttt{GenerateBadgeSecret()} in \techname{MES User.OnInsert}.
+		\item Implement \texttt{VerifyBadge()}, \texttt{GetBadgeSecret()}, and \texttt{RegenerateBadgeSecret()} in codeunit \techname{MESAuthMgt}.
+		\item Expose the three procedures through codeunit \techname{MES Web Service}.
+		\item Add field \texttt{TwoFA Enabled} (Boolean) to table \techname{MES Settings}.
+		\item Return \texttt{twoFAEnabled} flag in the \texttt{Login()} response.
+	\end{itemize}
+\\ & &
+	\noindent\textit{Flutter}
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+		\item Update \techname{AuthProvider.login()} to detect \texttt{twoFAEnabled} flag and hold pending session state.
+		\item Create page/dialog \techname{BadgeScanDialog} with live camera feed (\techname{mobile\_scanner}) and manual entry fallback.
+		\item Implement \texttt{verifyBadge()}, \texttt{cancelBadgeScan()} in \techname{AuthProvider}.
+		\item Integrate badge verification step into \techname{\_AuthGate} routing logic.
 	\end{itemize}\\
+	\midrule
+
+	\textbf{US-1.9}
+	& As an \userrole{Administrator}, I need to view, print, and regenerate a
+	user's badge QR~code so that I can distribute it and invalidate a compromised badge.
+	& \noindent\textit{Flutter}
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+		\item Create dialog \techname{UserBadgeDialog} rendering badge QR via \techname{barcode\_widget} package.
+		\item Implement \texttt{getBadgeSecret()} and \texttt{regenerateBadge()} in \techname{AuthProvider}.
+		\item Implement PDF export with landscape/portrait toggle in \techname{UserBadgeDialog.\_exportPdf()}.
+		\item Add \uilabel{View Badge} action to \techname{UserActionMenu} (active users only).
+	\end{itemize}\\
+	\midrule
+
+	\textbf{US-1.10}
+	& As an \userrole{Administrator}, I need to globally enable or disable
+	\domainterm{2FA} and configure a password rotation period so that I can
+	control the organisation's authentication security level.
+	& \noindent\textit{Business Central (AL)}
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+		\item Add field \texttt{PW change period} (Duration) to table \techname{MES Settings}.
+		\item Implement \texttt{GetMESSettings()} and \texttt{UpdateMESSettings()} in codeunit \techname{MES Settings Functions}.
+		\item Expose both procedures through codeunit \techname{MES Web Service}.
+		\item Implement codeunit \techname{MES Password Expiry Worker} (Job Queue, runs every 24~h) that flags users whose password age exceeds the configured period.
+		\item Register the worker in \techname{MES Setup.RegisterPasswordExpiryWorker()}.
+	\end{itemize}
+\\ & &
+	\noindent\textit{Flutter}
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+		\item Create model \techname{SettingModel} with \texttt{pwChangePeriod} and \texttt{twoFAEnabled} fields.
+		\item Create \techname{SettingService} consuming \texttt{fetchSettings} and \texttt{updateSettings} endpoints.
+		\item Create \techname{MesSettingsProvider} managing fetch, dirty-state detection, and save.
+		\item Create page \techname{MesSettingsPage} with toggle and numeric input; animated dirty banner with \uilabel{Discard} / \uilabel{Save} actions.
+		\item Add \uilabel{Settings} section to \techname{AdminPage} sidebar.
+	\end{itemize}\\
+	\midrule
+
+	\textbf{US-1.11}
+	& As a first-time user, I need to configure the middleware host URL (or scan
+	a QR~code) so that the application connects to the correct server instance.
+	& \noindent\textit{Flutter}
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+		\item Create page \techname{ParingPage} shown on first launch when \texttt{AppConstants.host} is empty.
+		\item Implement URL validation (no spaces, no backslash, no illegal characters).
+		\item Implement QR scanning via \techname{QrScannerDialog} to populate the host field.
+		\item Persist accepted host via \texttt{AppConstants.changeHost()} (SharedPreferences).
+		\item Add \uilabel{Change Host} link on \techname{LoginPage} for reconfiguration.
+		\item Add \texttt{AppConstants.loadHost()} call to the app initialisation sequence in \texttt{main()}.
+	\end{itemize}\\
+
 \end{longtable}
 
 % -----------------------------------------------------------------------
@@ -168,7 +248,9 @@ primary actors (\userrole{Operator}, \userrole{Supervisor},
 authentication and user management system. In addition to the core login,
 logout, change password, and user creation flows, the diagram includes the
 \uilabel{Change Role / Work Centre} and \uilabel{Activate / Deactivate Account}
-use cases available exclusively to the \userrole{Administrator}.
+use cases available exclusively to the \userrole{Administrator}, as well as the
+-\uilabel{Badge QR Scan} two-factor verification step and the
+-\uilabel{Paring / Host Configuration} first-launch flow.
 
 \begin{figure}[H]
 	\centering
@@ -210,7 +292,8 @@ use cases available exclusively to the \userrole{Administrator}.
 	\textbf{Postconditions} &                                                                      
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item If the credentials are valid, the user is successfully authenticated.
-	\item A session token is generated and stored securely.
+	\item If \domainterm{2FA} is enabled, the badge QR scan step is completed before a session token is issued.
+ 	\item A session token is generated and stored securely.
 	\item The user is redirected to the appropriate dashboard based on their
 	role (\userrole{Admin} or MES interface).
 	\item If the \domainterm{need change password} flag is set to true, they
@@ -223,12 +306,15 @@ use cases available exclusively to the \userrole{Administrator}.
 	\textbf{Main Scenario}  &                                                                      
 	\begin{enumerate}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item The user launches the application.
-	\item The system displays the \uilabel{login screen}.
+	\item If no host URL is configured, the system displays the \uilabel{Paring} page; the user enters or scans the middleware URL.
+ 	\item The system displays the \uilabel{login screen}.
 	\item The user enters \uilabel{Auth ID} and \uilabel{password}.
 	\item The system automatically detects the device ID.
 	\item The user clicks the \uilabel{Login} button.
 	\item The system validates the credentials against the \techname{ERP} database.
 	\item The system generates a secure session token.
+	\item If \domainterm{2FA} is enabled, the system opens the \uilabel{Badge Scan} dialog; the user scans their badge QR or enters the code manually.
+	\item The system verifies the badge secret and generates a secure session token.
 	\item The system checks the user role.
 	\item The system redirects the user to the appropriate dashboard
 	(\userrole{Admin} or MES).
@@ -249,8 +335,10 @@ the \techname{AL} business logic for each authentication flow.
 Figure~\ref{fig:s1-seq-login} depicts the login flow, in which the user submits
 credentials, the \techname{AL} layer validates them against the
 \techname{Business Central} user store, and the application either returns a
-structured error or issues a session token and redirects the user to the
-appropriate page based on their role and password-change flag.
+structured error or issues a session token (or, when \domainterm{2FA} is enabled,
+holds a pending state until the badge scan is verified) and redirects the user to
+the appropriate page based on their role and password-change flag.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/login.png}%
@@ -600,7 +688,9 @@ any currently authenticated sessions are immediately invalidated.
 The UML Class Diagram of the \domainterm{MES} authentication domain, shown in
 Figure~\ref{fig:s1-class-diagram}, depicts the \modulename{MesUser},
 \modulename{AuthToken}, and \modulename{PasswordPolicy} classes with their
-attributes and associations.
+attributes and associations. The \texttt{BadgeSecret} field on
+\modulename{MesUser} and the \modulename{MESSettings} singleton are also shown,
+reflecting the 2FA and password expiry extensions introduced in this sprint.
 
 \begin{figure}[H]
 	\centering
@@ -665,10 +755,7 @@ as described in Table~\ref{tab:s1-mes_user_fields}.
 	Authorization role for the MES application (e.g., Operator / Supervisor / Admin). Used to control permissions and access. \\
 	\midrule
 	
-	%%% Work-centre assignments are stored in the separate MES User Work Center
-	%%% junction table (Table 50115), not on MES User directly. Field removed. %%%
-	%%%\midrule
-	
+		
 	Is Active         & Boolean                       &                      
 	Account enable/disable flag. If false, authentication is blocked and existing tokens are revoked when deactivated. \\
 	\midrule
@@ -687,6 +774,13 @@ as described in Table~\ref{tab:s1-mes_user_fields}.
 	
 	Created At        & DateTime                      &                      
 	UTC timestamp set on insert only (audit trail/reporting). \\
+	\midrule
+	Last Password Changed At & DateTime               &
+	Updated whenever the password is modified. Used by the password expiry worker to determine whether a rotation is due. \\
+	\midrule
+
+	Badge Secret      & Text[64]                      &
+	SHA-256-derived secret generated on user creation. Used to verify badge QR~code scans during the two-factor authentication step. \\
 	\midrule
 	\noalign{\vskip 4pt}
 	\caption{MES User (Table 50101) --- Field Dictionary}
@@ -752,6 +846,42 @@ in Table~\ref{tab:s1-mes_auth_token_fields}.
 Key points of the token design include a unique \domainterm{GUID} token,
 auto-expiry after 12 hours, last activity tracking, and soft revocation.
 
+\subsubsection{MES Settings Table}
+
+The \modulename{MES Settings} singleton table (Table 50100) stores the two global
+security parameters configurable from the \uilabel{Settings} page.
+
+\begin{longtable}{@{} P{0.22\linewidth} P{0.18\linewidth} P{0.60\linewidth} @{}}
+
+	\toprule
+	\textbf{Name} & \textbf{Type} & \textbf{Description} \\
+	\midrule
+	\endfirsthead
+
+	\toprule
+	\textbf{Name} & \textbf{Type} & \textbf{Description} \\
+	\midrule
+	\endhead
+
+	\multicolumn{3}{r}{\small Continued on next page} \\
+	\endfoot
+
+	\endlastfoot
+
+	PW change period  & Duration &
+	Password rotation interval stored in milliseconds. A value of 0 does not disable the feature; only negative values do. \\
+	\midrule
+
+	TwoFA Enabled & Boolean &
+	Global flag. When true, all users must complete a badge QR~code scan after entering their credentials. \\
+	\midrule
+	\noalign{\vskip 4pt}
+	\caption{MES Settings (Table 50100) --- Field Dictionary}
+	\label{tab:s1-mes_settings_fields}
+
+\end{longtable}
+
+
 \subsubsection{Password Management and Encryption}
 
 The password management codeunit ensures that plaintext is never persisted. A
@@ -769,13 +899,12 @@ classified as \emph{Customer Content} or \emph{System Metadata}.
 \textbf{Login}
 
 The login validates the user credentials against the \modulename{MES User}
-table. If the credentials are correct and the account is active, a token will
-be generated and stored in the \modulename{MES Auth Token} table.
-
-The system returns a \domainterm{JSON} login response object which includes the
-generated session token, the authenticated user's role string, and a boolean
-\domainterm{needChangePassword} flag consumed by the \techname{Flutter} frontend
-to decide the post-login navigation target.
+table. If the credentials are correct and the account is active, and
+\domainterm{2FA} is disabled in \modulename{MES Settings}, a token is generated
+and stored in the \modulename{MES Auth Token} table. When \domainterm{2FA} is
+enabled, the backend returns the \texttt{twoFAEnabled} flag and the
+\techname{Flutter} client suspends the session until the badge QR~code is
+verified via the \texttt{VerifyBadge} endpoint.
 
 \textbf{Logout}
 
@@ -788,6 +917,17 @@ record matching the supplied session token is located in the
 
 Changing password requires a valid authentication token, a correct current
 password, and a new password that complies with security rules.
+
+\subsubsection{Password Expiry Worker}
+
+The \modulename{MES Password Expiry Worker} (Codeunit 50129) is a scheduled
+\techname{Business Central} Job Queue entry that runs every 24~hours. On each
+run it reads the \texttt{PW change period} value from \modulename{MES Settings}
+and computes a cutoff datetime equal to \texttt{CurrentDateTime() minus the period}.
+It then iterates all active MES Users whose \texttt{Last Password Changed At}
+falls before the cutoff (or is zero, meaning the password has never been changed)
+and sets their \texttt{Need To Change Pw} flag to \texttt{true}. Affected users
+are prompted to change their password on their next login.
 
 \subsection{REST API and Web Services Implementation}
 
@@ -812,10 +952,8 @@ which is required for \texttt{POST} operations. \texttt{GET} is not affected.
 
 \subsubsection{OData Functions and Web Service Configuration}
 
-Built \techname{MESUnboundActions} codeunit (50125): \texttt{Login()}, \texttt{Logout()}, \texttt{Me()}, \texttt{ChangePassword()}.
-Exposed these functions in the \techname{MES Web Service} codeunit (50126) exposed via ODataV4.
-Configured \techname{WebServices.xml} to publish \techname{MES Web Service}
-(codeunit 50126) as an ODataV4 web service under the service name
+Exposed these functions in the \techname{MES Web Service} codeunit (50126).
+Configured \techname{WebServices.xml} to publish \techname{MES Web Service} as an ODataV4 web service under the service name
 \texttt{MESWebService}.
 
 \subsection{Frontend Implementation}
@@ -841,14 +979,20 @@ and a \textbf{\domainterm{Model Layer}} for Data Models.
 	Two services were implemented: the \modulename{api\_service} manages
 	authentication requests such as \uilabel{login}, \uilabel{logout}, and
 	\uilabel{password change}, while the \modulename{mes\_user\_service} handles MES
-	user operations including fetching and creating new users.
-
+	user operations including fetching and creating new users. A dedicated
+	\modulename{setting\_service} handles fetching and updating the MES global settings.
+	
 	\textbf{\modulename{api\_service.dart}}
 
 	The class declaration and constructor show the base URL configuration and
 	\domainterm{HTTP} client initialisation used by all authentication endpoints.
-	The \uilabel{login} method sends user credentials and device ID to the \apiendpoint{/login} endpoint and parses the returned session token, role, and \domainterm{needChangePassword} flag. The \uilabel{logout} method sends the active session token to the \apiendpoint{/logout} endpoint to trigger server-side token revocation.
-
+	The \uilabel{login} method sends user credentials and device ID to the \apiendpoint{/login} 
+	endpoint and parses the returned session token, role, \domainterm{needChangePassword} flag, 
+	and \domainterm{twoFAEnabled} flag. When \domainterm{2FA} is enabled, the token is held in 
+	memory rather than persisted until badge verification succeeds. The \uilabel{logout} method
+	sends the active session token to the \apiendpoint{/logout} endpoint to trigger server-side
+	token revocation.
+	
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.38\textwidth}
@@ -879,19 +1023,35 @@ map the \domainterm{JSON} result into the \modulename{GeneratedPassword} model.
 \subsubsection{State Management Layer using Provider}
 
 The \domainterm{Provider} pattern is implemented to ensure reactive UI updates
-and centralised data handling. Two providers were implemented:
-\modulename{AuthProvider}, which manages authentication state, and
-\modulename{MesUserProvider}, which handles MES user data. Each provider wraps
+and centralised data handling. Three providers were implemented:
+\modulename{AuthProvider}, which manages authentication state and the 2FA pending
+flow; \modulename{MesUserProvider}, which handles MES user data; and
+\modulename{MesSettingsProvider}, which manages the global settings fetch, dirty-state
+detection, and save operations. Each provider wraps
 the corresponding service layer calls and exposes reactive state (authenticated
-user, user list, loading flag, error message) consumed by the \domainterm{UI Layer}
+user, user list, settings, loading flag, error message) consumed by the \domainterm{UI Layer}
 via \texttt{context.watch}.
 
 \subsubsection{User Interface}
 
+The \uilabel{Paring Page}, shown in Figure~\ref{fig:s1-ui-paring}, is the very
+first screen presented when the application has no saved host URL. The user
+enters the middleware URL manually or taps \uilabel{Scan QR Code} to open the
+\techname{QrScannerDialog} and populate the field automatically. On submission
+the URL is validated and persisted via \texttt{AppConstants.changeHost()}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/placeholder-image.png}
+	\caption{\uilabel{Paring Page}.}
+	\label{fig:s1-ui-paring}
+\end{figure}
+
 The \uilabel{Login Page}, shown in Figure~\ref{fig:s1-ui-login}, is the application
 entry screen presented to all users on launch. It contains \uilabel{User ID} and
 \uilabel{Password} input fields and a \uilabel{Login} button. Successful
-authentication redirects the user to the role-appropriate dashboard.
+authentication redirects the user to the role-appropriate dashboard, or to the
+\uilabel{Badge Scan Dialog} if \domainterm{2FA} is enabled.
 
 \begin{figure}[H]
 	\centering
@@ -900,10 +1060,25 @@ authentication redirects the user to the role-appropriate dashboard.
 	\label{fig:s1-ui-login}
 \end{figure}
 
+The \uilabel{Badge Scan Dialog}, shown in Figure~\ref{fig:s1-ui-badge-scan},
+is displayed after a successful first-factor login when \domainterm{2FA} is
+enabled. A live camera viewport reads the user's badge QR~code; a manual entry
+field is available as a fallback. The dialog displays any verification error and
+re-enables the scanner on failure. The user can cancel at any time, which clears
+the pending session state and returns to the login page.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/placeholder-image.png}
+	\caption{\uilabel{Badge Scan Dialog}.}
+	\label{fig:s1-ui-badge-scan}
+\end{figure}
+
 The \uilabel{MES User List Page}, shown in Figure~\ref{fig:s1-ui-user-list}, is
 the \userrole{Administrator} dashboard screen listing all registered
 \domainterm{MES} users with their assigned roles and active status, providing
-action buttons to assign roles or generate passwords for each employee.
+action buttons to assign roles, generate passwords, view or regenerate badges,
+and activate/deactivate each account.
 
 \begin{figure}[H]
 	\centering
@@ -978,13 +1153,41 @@ active tokens for the affected user.
 	\label{fig:s1-ui-chRole-diag}
 \end{figure}
 
-The user row in the \uilabel{MES User List Page} now includes a
+The \uilabel{User Badge Dialog}, shown in Figure~\ref{fig:s1-ui-badge-dialog},
+allows the \userrole{Administrator} to view a user's badge QR~code, print it as
+a PDF (with landscape/portrait toggle), and regenerate the underlying secret
+after confirmation. It is accessible via the \uilabel{View Badge} action in the
+user row action menu and is available only for active accounts.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/placeholder-image.png}
+	\caption{\uilabel{User Badge Dialog}.}
+	\label{fig:s1-ui-badge-dialog}
+\end{figure}
+
+The \uilabel{Settings Page}, shown in Figure~\ref{fig:s1-ui-settings}, is
+accessible from the \userrole{Administrator} sidebar. It exposes two controls:
+a numeric field for the password rotation period (in days) and a toggle for
+global \domainterm{2FA}. An animated action banner appears at the bottom of the
+page whenever the values differ from the last saved state, offering
+\uilabel{Discard} and \uilabel{Save} actions.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/placeholder-image.png}
+	\caption{\uilabel{Settings Page}.}
+	\label{fig:s1-ui-settings}
+\end{figure}
+
+The user row in the \uilabel{MES User List Page} includes a
 \texttt{PopupMenuButton} action menu accessible via a trailing icon on each row.
-The menu exposes two actions: \uilabel{Change Role / Department}, which opens the
-\techname{ChangeRoleDialog} described above, and \uilabel{Activate} or
-\uilabel{Deactivate}, whose label switches dynamically based on the user's current
-\texttt{isActive} flag. Selecting \uilabel{Deactivate} immediately revokes all
-active sessions for that account; selecting \uilabel{Activate} re-enables login.
+The menu exposes the following actions: \uilabel{Change Role / Department},
+\uilabel{Generate Password}, \uilabel{View Badge} (active users only),
+and \uilabel{Activate} or \uilabel{Deactivate} (label switches dynamically based
+on the user's current \texttt{isActive} flag). Selecting \uilabel{Deactivate}
+immediately revokes all active sessions for that account; selecting
+\uilabel{Activate} re-enables login.
 
 \section{Testing and Validation}
 \subsection{Integration testing}
@@ -1008,8 +1211,12 @@ This sprint successfully delivered a complete authentication and user management
 foundation for the \domainterm{MES} application. The backend, built in
 \techname{Microsoft Dynamics Business Central} using \techname{AL}, implements
 secure credential validation, \domainterm{SHA-256} password hashing,
-session token management with automatic expiry, and a full set of
+session token management with automatic expiry, optional two-factor authentication
+via badge QR~code scanning, a configurable password expiry policy enforced by a
+scheduled background job, and a full set of
 \domainterm{RESTful} API endpoints exposed through \techname{MES Web Service}
 (codeunit 50126). The \techname{Flutter} frontend provides a clean, role-aware
-user experience covering login, logout, forced password change, administrator-level
-user creation, role and work-centre management, and account activation control.
+user experience covering first-launch host pairing, login, badge QR verification,
+logout, forced password change, administrator-level user creation, badge
+management (view, print, regenerate), role and work-centre management, account
+activation control, and security policy configuration.

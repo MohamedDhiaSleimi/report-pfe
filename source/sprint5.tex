@@ -1,24 +1,43 @@
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
 
-This sprint report covers \textbf{Domain 5: AI Assistant \& Analytical Intelligence}. Building upon the complete shop-floor execution loop established in the previous sprints, this sprint delivers the AI layer of the MES system: a natural-language chat assistant embedded in the Flutter frontend, a \techname{Node.js} reverse proxy middleware that bridges the Flutter app to both \techname{Business Central} and a locally-hosted Python AI agent, and the Python agent itself. The agent provides deterministic tool orchestration, multi-provider LLM synthesis, fuzzy machine name resolution, multi-machine fan-out, production data enrichment, and contextual redirect actions. The result is a conversational interface that operators and supervisors can use to query real-time machine status, production orders, scrap rates, BOM consumption, delays, and operator performance without leaving the MES application.
+This sprint delivers the conversational intelligence layer of the \domainterm{MES}
+solution. Building upon the production execution and administration infrastructure
+established in the previous sprints, this sprint introduces an embedded
+natural-language chat assistant that allows operators and supervisors to query
+machine status, production progress, scrap data, Bill of Materials, and operation
+history without navigating the full interface. The assistant resolves ambiguous
+machine references, answers fleet-wide questions through parallel fan-out queries,
+proactively surfaces operational anomalies, and provides contextual navigation
+shortcuts directly within the chat reply.
 
+The implementation spans three new components: a \techname{Node.js} reverse-proxy
+middleware layer that handles \domainterm{SSPI/Windows} authentication toward
+\techname{Business Central} and routes AI chat traffic to a dedicated
+\techname{Python} agent; the \techname{Python FastAPI} AI agent itself, which
+classifies user intent, executes tool chains against the existing BC web services,
+enriches results with pure-Python analytics, and synthesises natural-language
+replies using a configurable multi-provider \domainterm{LLM} client; and the
+\techname{Flutter} chat UI, integrated directly into the machine list page as a
+side panel or dialog.
+ 
 % ---------------------------------------------------------------------------
 % 1. SPRINT BACKLOG
 % ---------------------------------------------------------------------------
 \section{Sprint Backlog}
 
-This sprint covers \textbf{Domain 5:} \textbf{\domainterm{AI Assistant \& Analytical Intelligence}}.
+This sprint covers \textbf{Domain 5:}
+textbf{\domainterm{AI Chat Assistant \& Analytical Intelligence}}.
 
-\begin{longtable}{@{} P{0.09\linewidth} P{0.38\linewidth} P{0.49\linewidth} @{}}
-	\caption{US-5.1 --- AI Chat Interface}
-	\label{tab:s5-US-5.1} \\
+\begin{longtable}{@{} P{0.09\linewidth} P{0.34\linewidth} P{0.53\linewidth} @{}}
+	\caption{Sprint 5 Story Backlog}
+	\label{tab:s5-sprint-backlog}\\
 	\toprule
-	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} \\
+	\textbf{ID} & \textbf{User Story} & \textbf{Tasks} \\ \\
 	\midrule
 	\endfirsthead
 	\toprule
-	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} \\
+	\textbf{ID} & \textbf{User Story} & \textbf{Tasks} \\
 	\midrule
 	\endhead
 	\multicolumn{3}{r}{\small Continued on next page} \\
@@ -27,77 +46,156 @@ This sprint covers \textbf{Domain 5:} \textbf{\domainterm{AI Assistant \& Analyt
 	\endlastfoot
 
 	\textbf{US-5.1}
-	& As an \userrole{Operator} or \userrole{Supervisor}, I need an embedded chat assistant in the MES app so that I can query production data using natural language without switching tools.
-	& \noindent\textit{Flutter:}
+	& As an \userrole{Operator} or \userrole{Supervisor}, I need a
+	natural-language chat assistant so that I can query machine status,
+	production progress, and operational data without navigating the full UI.
+	& \noindent\textit{Node.js Middleware}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Create model \techname{ConversationTurn}, \techname{AiRedirectAction}, and \techname{AiChatResponse}.
-		\item Create \techname{AiChatService} to POST to the \texttt{/api/ai/chat} endpoint.
-		\item Create \techname{AiChatProvider} to manage conversation history, loading state, and the last response.
-		\item Create page \techname{AiChatPage} supporting both modal dialog and embedded side-panel modes.
-		\item Integrate the chat panel into \techname{MachineListPage} as a collapsible side panel on desktop and a modal dialog on mobile.
-		\item Implement \techname{\_handleAction()} to process \techname{AiRedirectAction} objects (redirect to machine, operation, or machine list).
-	\end{itemize} \\
+		\item Implement \techname{Express} application (\texttt{index.js}) with global
+		      middleware stack (JSON body parser, CORS, request logger).
+		\item Implement \texttt{src/config.js} loading all environment variables and
+		      computing BC URL constants (\texttt{odataBase}, \texttt{webServiceBase},
+		      \texttt{companyParam}).
+		\item Implement \texttt{src/proxy.js}: \texttt{buildTargetUrl()},
+		      \texttt{buildPsScript()}, \texttt{runPowerShell()}, and
+		      \texttt{forwardRequest()} to proxy Flutter requests to BC via PowerShell
+		      \domainterm{SSPI}.
+		\item Register all 44 AL web service endpoints in the
+		      \texttt{webServiceEndpoints} set.
+		\item Implement \texttt{src/cors.js} CORS options.
+	\end{itemize}
+\\ & &
+	\noindent\textit{Python AI Agent}
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+		\item Implement \techname{FastAPI} application (\texttt{main.py}) with
+		      \texttt{/health} and \texttt{POST /chat} endpoints and lifespan context
+		      manager.
+		\item Implement \texttt{agent/models.py}: \modulename{ChatRequest},
+		      \modulename{ChatResponse}, \modulename{UserContext},
+		      \modulename{ConversationTurn}, \modulename{ToolResult},
+		      \modulename{RedirectAction}, \modulename{ActionType}.
+		\item Implement \texttt{agent/config.py} with all environment variable
+		      constants (LLM provider, model, timeouts, middleware URL).
+		\item Implement \texttt{agent/llm\_client.py}: \modulename{LLMClient}
+		      abstraction and \texttt{build\_llm\_client()} factory supporting
+		      Ollama, OpenAI, HuggingFace, OpenAI-compatible, and Anthropic providers.
+		\item Implement \texttt{tools/mes\_tools.py}: all 17 BC web service tool
+		      classes, \texttt{TOOL\_MAP} registry, \texttt{MACHINE\_SCOPED\_TOOLS}
+		      set, \texttt{\_post()} HTTP helper, and \texttt{\_extract\_value()}
+		      response normaliser.
+	\end{itemize}
+\\ & &
+	\noindent\textit{Flutter}
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+		\item Create model \techname{AiChatResponse}, \techname{ConversationTurn},
+		      and \techname{AiRedirectAction}.
+		\item Create \techname{AiChatService} consuming \texttt{POST /api/ai/chat}.
+		\item Create \techname{AiChatProvider} managing conversation history,
+		      loading state, and last response.
+		\item Create page \techname{AiChatPage} rendering as side overlay
+		      (width $\geq$ 600\,dp) or dialog (mobile).
+		\item Integrate chat FAB and overlay toggle in \techname{Machinelistpage}.
+	\end{itemize}\\
 	\midrule
 
 	\textbf{US-5.2}
-	& As a \userrole{Supervisor}, I need the AI to understand questions about multiple machines simultaneously so that I can get fleet-wide answers from a single query.
-	& \noindent\textit{Python AI Agent:}
+	& As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant
+	to resolve ambiguous machine references so that I do not need to know exact
+	machine codes.
+	& \noindent\textit{Python AI Agent}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implement composite query detection in \modulename{composite.py}.
-		\item Implement fan-out batch execution across machines using \texttt{asyncio.gather} in batches of 4.
-		\item Implement \texttt{build\_composite\_context()} to produce a compact markdown context for the LLM.
-		\item Cap fan-out at 12 machines to prevent timeout.
-		\item Integrate the composite path into \techname{MESAgentOrchestrator}.
-	\end{itemize} \\
+	\item Implement \texttt{agent/resolver.py}: \modulename{MachineEntry},
+		      \modulename{ResolveResult}, \texttt{build\_machine\_index()},
+		      and \texttt{resolve\_machine()} with five-tier cascade (exact ID,
+		      normalised exact, digit suffix, token overlap, edit distance).
+		\item Implement text normalisation helpers \texttt{\_norm()},
+		      \texttt{\_digits\_only()}, \texttt{\_tokenise()},
+		      \texttt{\_edit\_distance()}, \texttt{\_token\_overlap()}.
+		\item Implement \texttt{format\_candidates\_for\_llm()} disambiguation
+		      message builder.
+		\item Implement \texttt{\_substitute\_machine\_no()} in
+		      \texttt{agent/orchestrator.py} to replace \texttt{\_\_RESOLVE\_\_}
+		      slot placeholders after resolution.
+		\item Integrate resolution into \texttt{Orchestrator.run()} when
+		      \texttt{chain.unresolved\_machine\_ref} is set.
+	\end{itemize}\\
 	\midrule
 
 	\textbf{US-5.3}
-	& As an \userrole{Operator} or \userrole{Supervisor}, I need to refer to machines by colloquial names or partial identifiers so that I do not need to memorise exact machine codes.
-	& \noindent\textit{Python AI Agent:}
+	& As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant
+	to answer fleet-wide questions so that I get a consolidated view without
+	visiting each machine individually.
+	& \noindent\textit{Python AI Agent}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implement \texttt{build\_machine\_index()} to build a lookup structure from the machine list.
-		\item Implement a five-tier fuzzy resolution cascade in \texttt{resolve\_machine()} (exact canonical, normalised exact, digit suffix, ID prefix/suffix, token overlap, edit distance).
-		\item Define \texttt{MIN\_CONFIDENCE = 0.45} and \texttt{HIGH\_CONFIDENCE = 0.85} thresholds.
-		\item Implement \texttt{format\_candidates\_for\_llm()} to surface ambiguous matches to the user.
-		\item Integrate resolver into orchestrator when \texttt{unresolved\_machine\_ref} is set.
-	\end{itemize} \\
+	\item Implement \texttt{agent/composite.py}: \texttt{is\_composite()}
+		      detection, \modulename{CompositeResult} dataclass,
+		      \texttt{run\_composite()} with status filters (running/idle/overdue/scrap),
+		      fan-out capped at 12 machines in batches of 4.
+		\item Implement \texttt{build\_composite\_context()} context builder.
+		\item Integrate composite path in \texttt{Orchestrator.run()} and
+		      \texttt{Orchestrator.\_run\_composite()}.
+		\item Add \texttt{is\_composite} flag detection to both LLM and regex
+		      classifiers.
+	\end{itemize}\\
 	\midrule
 
 	\textbf{US-5.4}
-	& As a \userrole{Supervisor}, I need the AI to alert me to overdue orders, excessive pauses, and high scrap rates so that I can take corrective action without manually reviewing dashboards.
-	& \noindent\textit{Python AI Agent:}
+	& As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant
+	to provide contextual navigation shortcuts so that I can open a machine,
+	operation, or dashboard directly from the chat response.
+	& \noindent\textit{Python AI Agent}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implement \texttt{enrich\_deadlines()} in \modulename{data\_analysis.py} to compute \texttt{hours\_until\_deadline}, \texttt{is\_overdue}, and \texttt{risk\_level} per order.
-		\item Implement \texttt{analyse\_scrap()} to compute \texttt{scrap\_rate}, \texttt{severity} (ok / warning / critical), \texttt{spike\_detected}, and \texttt{interpretation}.
-		\item Implement \texttt{analyse\_velocity()} to compute \texttt{units\_per\_hour}, \texttt{required\_rate}, \texttt{projected\_end}, and \texttt{velocity\_status}.
-		\item Wire enrichment results into the LLM context block before synthesis.
-	\end{itemize} \\
+		\item Define \texttt{ActionType} enum and \modulename{RedirectAction}
+		      schema in \texttt{agent/models.py}.
+		\item Implement \texttt{Orchestrator.\_parse\_actions()} to extract
+		      \texttt{\`\`\`actions} JSON block from LLM reply (up to 4 actions).
+		\item Document supported action types and payload shapes in
+		      \texttt{prompts/system\_prompts.py} (\texttt{SYNTHESIS\_USER\_TEMPLATE}).
+	\end{itemize}
+\\ & &
+	\noindent\textit{Flutter}
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+			\item Implement \texttt{AiChatPage.\_handleAction()} routing:
+		      \texttt{redirect\_machine} $\to$ \techname{MachineMainPage},
+		      \texttt{redirect\_machine\_list} $\to$ \texttt{popUntil},
+		      \texttt{redirect\_operation} $\to$ \techname{OperationDetailPage}.
+		\item Render action buttons only on the last assistant message.
+	\end{itemize}\\
 	\midrule
 
 	\textbf{US-5.5}
-	& As an \userrole{Operator} or \userrole{Supervisor}, I need intent classification to work reliably without requiring a network call to an LLM so that the assistant remains responsive even when the LLM is slow.
-	& \noindent\textit{Python AI Agent:}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implement \modulename{intent.py} with 12 intent classes and a priority-ordered regex rule cascade.
-		\item Implement extraction helpers: \texttt{\_extract\_machine\_no()}, \texttt{\_extract\_machine\_ref()}, \texttt{\_extract\_order\_no()}, \texttt{\_extract\_op\_no()}, \texttt{\_extract\_hours()}.
-		\item Define the \techname{ToolStep} and \techname{ToolChain} data types.
-		\item Implement \modulename{llm\_intent.py} as the primary LLM-based classifier with automatic fallback to regex.
-	\end{itemize} \\
-	\midrule
-
-	\textbf{US-5.6}
-	& As a \userrole{Supervisor}, I need the AI to provide clickable navigation actions in its replies so that I can jump directly to a relevant machine or operation.
-	& \noindent\textit{Python AI Agent:}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Define the \techname{ActionType} enum with 5 redirect types in \modulename{models.py}.
-		\item Implement \texttt{\_parse\_actions()} in the orchestrator to extract a \texttt{```actions```} JSON block from the LLM reply.
-		\item Return up to 4 \techname{RedirectAction} objects in \techname{ChatResponse}.
-	\end{itemize}
-	\noindent\textit{Flutter:}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Render \techname{\_ActionButtons} in \techname{AiChatPage} as a \texttt{Wrap} of tappable \texttt{ElevatedButton}s below each assistant reply.
-		\item Implement \texttt{\_handleAction()} routing per action type.
-	\end{itemize} \\
+	& As a \userrole{Supervisor}, I need the assistant to proactively highlight
+	anomalies so that I can act before problems escalate.
+	& \noindent\textit{Python AI Agent}
+	\item Implement \texttt{agent/data\_analysis.py}:
+		      \texttt{enrich\_deadlines()} (hours until deadline, overdue flag,
+		      risk level), \texttt{analyse\_scrap()} (scrap rate, severity,
+		      spike detection at $2.5\times$ baseline), \texttt{analyse\_velocity()}
+		      (units per hour, projected end, velocity status),
+		      \texttt{summarise\_machines()}, and \texttt{summarise\_dashboard()}.
+		\item Integrate enrichment into \texttt{Orchestrator.\_enrich()} for all
+		      result key types (machines, orders, live\_data, cycles, activity,
+		      dashboard, history, bom, etc.).
+		\item Implement \texttt{agent/intent.py} deterministic regex classifier:
+		      \modulename{Intent} enum, \modulename{ToolStep}, \modulename{ToolChain}
+		      dataclasses, extraction helpers
+		      (\texttt{\_extract\_machine\_no}, \texttt{\_extract\_order\_no},
+		      \texttt{\_extract\_hours}), and \texttt{classify()} priority chain.
+		\item Implement \texttt{agent/llm\_intent.py}:
+		      \modulename{LLMIntentIdentifier} with \texttt{\_llm\_classify()},
+		      validation helpers, \texttt{\_plan\_to\_tool\_chain()},
+		      and \modulename{ThinkingBlock} reasoning trace.
+		\item Implement \texttt{agent/orchestrator.py}: full 7-stage pipeline
+		      (\texttt{run()}, \texttt{\_execute\_step()},
+		      \texttt{\_fetch\_all\_machines()}, \texttt{\_enrich()},
+		      \texttt{\_build\_context()}, \texttt{\_synthesise()},
+		      \texttt{\_parse\_actions()}).
+		\item Implement \texttt{prompts/system\_prompts.py}:
+		      \texttt{SYNTHESIS\_SYSTEM} and \texttt{SYNTHESIS\_USER\_TEMPLATE}
+		      with anomaly alert rules and action block instructions.
+		\item Wire all 17 tools to the \texttt{fetchSupervisorOverview} and
+		      \texttt{fetchDelayReport} BC endpoints used in anomaly detection.
+	\end{itemize}\\
 
 \end{longtable}
 
@@ -105,10 +203,13 @@ This sprint covers \textbf{Domain 5:} \textbf{\domainterm{AI Assistant \& Analyt
 
 \subsection{Use Case Diagram}
 
-This sprint adds a single new actor, the \domainterm{AI Assistant}, which mediates between the human user roles and the data layer. The primary use cases are: Chat with AI Assistant, Query Machine Status, Query Production Orders, Query Scrap Report, Query Operator Summary, Query Delay Report, Query BOM Consumption, Navigate to Machine (redirect action), and Navigate to Operation (redirect action).
-
-Both the \userrole{Operator} and \userrole{Supervisor} roles can interact with the AI assistant for read-only queries scoped to their assigned work centres. The \userrole{Supervisor} additionally receives fleet-wide composite query results and supervisor-specific overview data. The resulting use case diagram is shown in Figure~\ref{fig:s5-use-case-diagram-s5}.
-
+The UML Use Case Diagram (Figure~\ref{fig:s5-use-case-diagram}) shows the two
+primary actors (\userrole{Operator} and \userrole{Supervisor}) and their
+interactions with the AI chat assistant. The \userrole{Supervisor} role has
+access to anomaly-oriented queries (overdue orders, scrap spikes, idle operators)
+in addition to the machine and operation queries shared with \userrole{Operator}.
+Both roles benefit from the fuzzy machine resolution and redirect action use cases.
+ 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}
@@ -118,9 +219,13 @@ Both the \userrole{Operator} and \userrole{Supervisor} roles can interact with t
 
 \subsection{Textual Use Case Description}
 
-\Needspace{10\baselineskip}
+The following table (Table~\ref{tab:s5-uc-chat}) provides the detailed textual
+description of the \textit{Query via Chat Assistant} use case, which represents
+the central interaction delivered in this sprint.
+
+\Needspace{8\baselineskip}
 \begin{longtable}{@{} P{0.21\linewidth} P{0.75\linewidth} @{}}
-	\caption{Textual Use Case Description --- Chat with AI Assistant}
+	\caption{Textual Use Case Description --- Query via Chat Assistant}
 	\label{tab:s5-uc-chat} \\
 	\toprule
 	\endfirsthead
@@ -131,91 +236,76 @@ Both the \userrole{Operator} and \userrole{Supervisor} roles can interact with t
 	\bottomrule
 	\endlastfoot
 
-	\textbf{Use Case Name} & Chat with AI Assistant \\
+	\textbf{Use Case Name}  & Query via Chat Assistant \\
 	\midrule
-	\textbf{Primary Actor} & \userrole{Operator} / \userrole{Supervisor} \\
-	\midrule
+	\textbf{Primary Actors} & \userrole{Operator}, \userrole{Supervisor} \\
+ 	\midrule
 	\textbf{Preconditions} &
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item The user is authenticated and holds a valid session token.
-	\item The AI chat panel is open (side panel on desktop, modal on mobile).
-	\item The Node.js middleware and Python AI agent are running.
-	\end{itemize} \\
+	\item The \techname{Node.js} middleware and \techname{Python} AI agent are
+	      running and reachable.
+	\item At least one work centre is assigned to the authenticated user.
+ 	\end{itemize} \\
 	\midrule
 	\textbf{Postconditions} &
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item An assistant reply is appended to the conversation history.
-	\item Up to 4 \domainterm{RedirectAction} buttons may be rendered below the reply.
-	\item The conversation history is updated in \techname{AiChatProvider}.
-	\end{itemize} \\
-	\midrule
+	\item A natural-language answer is displayed in the chat panel.
+	\item Up to 4 contextual navigation action buttons may appear below the reply.
+	\item The conversation turn is appended to the session history for multi-turn context.
+ 	\end{itemize} \\
+ 	\midrule
 	\textbf{Main Scenario} &
 	\begin{enumerate}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item The user types a message and taps the send button.
-	\item \techname{AiChatProvider} appends a \domainterm{user} turn to the history and calls \texttt{AiChatService.sendMessage()}.
-	\item The service POSTs to \apiendpoint{/api/ai/chat} with the message, user context (userId, role, work centres, token), and conversation history.
-	\item The Node.js middleware routes the request to \apiendpoint{/api/ai} and forwards it to the Python AI agent.
-	\item The AI agent classifies the intent, executes the tool chain against Business Central via the middleware, enriches the results, and synthesises a reply.
-	\item The reply and optional redirect actions are returned as a \texttt{ChatResponse} JSON object.
-	\item The Flutter UI appends the \domainterm{assistant} turn and renders any action buttons.
+	\item The user opens the chat panel from the \uilabel{Machine List Page}.
+	\item The user types a question in natural language (e.g.,\ ``What is MC-001 producing?'').
+	\item The \techname{Flutter} client sends a \texttt{POST /api/ai/chat} request
+	      to the \techname{Node.js} middleware with the message, user context, and
+	      conversation history.
+	\item The middleware forwards the request to the \techname{Python} AI agent.
+	\item The AI agent classifies intent via the \domainterm{LLM} classifier
+	      (with regex fallback) and builds a \modulename{ToolChain}.
+	\item If the machine reference is ambiguous, the agent resolves it using the
+	      five-tier fuzzy resolver.
+	\item The agent executes each \modulename{ToolStep} in sequence, calling the
+	      corresponding \techname{BC} web service via the \techname{Node.js} middleware.
+	\item The agent enriches the raw results with pure-Python analytics
+	      (deadline enrichment, scrap analysis, velocity computation).
+	\item The agent synthesises a natural-language answer via a second \domainterm{LLM}
+	      call using the enriched context block.
+	\item Any contextual redirect actions are extracted from the reply and returned
+	      as structured \modulename{RedirectAction} objects.
+	\item The \techname{Flutter} client displays the answer and optional action buttons.
 	\end{enumerate} \\
 	\midrule
 	\textbf{Alternative Flows} &
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item \textit{LLM intent classification fails}: the regex classifier takes over; the user receives the same response with no visible difference.
-	\item \textit{Machine name is ambiguous}: the assistant asks the user to clarify and lists the top candidate machines.
-	\item \textit{AI agent timeout (60 s)}: the middleware returns a 504 error; the provider sets \texttt{errorMessage} and removes the failed user turn from history.
-	\item \textit{Machine not in user's work centre}: the tool call is skipped; the assistant informs the user of the access restriction.
-	\end{itemize} \\
+	\item \textit{Ambiguous machine name:} the agent returns a disambiguation
+	      message listing up to 3 candidates; the user clarifies in the next turn.
+	\item \textit{Fleet-wide query:} the agent triggers the composite fan-out
+	      path, querying up to 12 machines in parallel batches of 4.
+	\item \textit{LLM classifier failure:} the deterministic regex classifier
+	      is used as a fallback; the \modulename{ThinkingBlock} records
+	      \texttt{fallback\_used = true}.
+	\item \textit{General question:} no tool calls are made; the \domainterm{LLM}
+	      answers from general manufacturing knowledge.
+ 	\end{itemize} \\
 \end{longtable}
 
-\bigskip
-
-\Needspace{10\baselineskip}
-\begin{longtable}{@{} P{0.21\linewidth} P{0.75\linewidth} @{}}
-	\caption{Textual Use Case Description --- Query Supervisor Overview}
-	\label{tab:s5-uc-supervisor-overview} \\
-	\toprule
-	\endfirsthead
-	\midrule
-	\endhead
-	\multicolumn{2}{r}{\small Continued on next page} \\
-	\endfoot
-	\bottomrule
-	\endlastfoot
-
-	\textbf{Use Case Name} & Query Supervisor Overview \\
-	\midrule
-	\textbf{Primary Actor} & \userrole{Supervisor} \\
-	\midrule
-	\textbf{Preconditions} &
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item The user is authenticated with the \domainterm{Supervisor} role.
-	\item The AI assistant is open.
-	\end{itemize} \\
-	\midrule
-	\textbf{Postconditions} &
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item The assistant returns a structured summary of stopped machines, idle operators, abnormal pauses, high-scrap operations, and delayed orders.
-	\item Redirect actions allow the supervisor to navigate directly to flagged machines.
-	\end{itemize} \\
-	\midrule
-	\textbf{Main Scenario} &
-	\begin{enumerate}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item The supervisor types a broad query such as ``give me a shift overview''.
-	\item The intent classifier maps the message to the \texttt{SUPERVISOR\_OVERVIEW} intent.
-	\item The orchestrator calls \texttt{GetSupervisorOverviewTool} which in turn calls \apiendpoint{fetchSupervisorOverview} on the BC web service.
-	\item The returned JSON (stopped machines, idle operators, abnormal pauses, high-scrap operations, delayed orders) is enriched with delay risk levels by \modulename{data\_analysis.py}.
-	\item The LLM synthesises a concise shift report and emits up to 4 redirect actions pointing to the most critical machines.
-	\item The supervisor taps a redirect action to navigate directly to the flagged machine page.
-	\end{enumerate} \\
-\end{longtable}
 
 \subsection{Sequence Diagrams}
 
-The following sequence diagrams illustrate the communication flow between the \techname{Flutter} frontend, the \techname{Node.js} middleware, the \techname{Python AI Agent}, and \techname{Business Central} for the primary AI interaction flows.
-
-Figure~\ref{fig:s5-seq-ai-chat} depicts the main chat flow: the Flutter client sends a message with user context to the middleware, which routes it to the Python agent. The agent classifies the intent, executes the BC tool chain via the middleware's PowerShell proxy, enriches the results, and synthesises a reply using the configured LLM.
+The following sequence diagrams illustrate the communication flow between the
+\techname{Flutter} frontend, the \techname{Node.js} middleware, the
+\techname{Python} AI agent, and the \techname{Business Central} OData layer.
+ 
+Figure~\ref{fig:s5-seq-single-machine} depicts the standard single-machine query
+flow (e.g., ``What is MC-001 producing?''). The \techname{Flutter} client posts the
+message and user context to the middleware; the middleware forwards to the AI
+agent; the agent classifies intent, builds a \modulename{ToolChain} with two steps
+(\texttt{get\_ongoing\_operations} then \texttt{get\_operation\_live\_data} via slot
+reference), executes each step sequentially against BC, enriches the results, and
+synthesises a final reply.
 
 \begin{figure}[H]
   \centering
@@ -311,9 +401,36 @@ Figure~\ref{fig:s5-seq-intent-classification} illustrates the two-tier intent cl
 %         LLMIntent-->>Orch: (ToolChain, ThinkingBlock)
 %     end
 
+\subsection{System Architecture Diagram}
+
+Figure~\ref{fig:s5-architecture} shows the physical architecture of the AI
+assistant layer, illustrating how the \techname{Flutter} client, \techname{Node.js}
+middleware, \techname{Python} AI agent, and \techname{Business Central} server
+interact. The middleware plays a dual role: it proxies all regular MES API calls
+using PowerShell \domainterm{SSPI} authentication, and it also routes AI chat
+requests to the Python agent which calls back into the same middleware for its
+data fetching needs.
+
+\begin{figure}[H]
+	\centering
+	\missingfigure{Physical architecture: Flutter $\leftrightarrow$ Node.js
+		(port 3000) $\leftrightarrow$ Python FastAPI (port 8000); Node.js
+		$\leftrightarrow$ BC (PowerShell SSPI); Python agent $\leftrightarrow$
+		Node.js /api/* for tool calls}
+	\caption{AI Assistant Layer --- Physical Architecture.}
+	\label{fig:s5-architecture}
+\end{figure}
+
 \subsection{Class Diagram}
 
-The UML Class Diagram (Figure~\ref{fig:s5-class-diagram-s5}) shows the Python AI agent's domain model. \modulename{MES Agent Orchestrator} is the central coordinator, holding references to an \modulename{LLM Intent Identifier}, an \modulename{LLM Client} (the abstract interface implemented by six concrete provider classes), and the \modulename{TOOL MAP} registry. \modulename{Tool Chain} is a value object produced by the classifiers and consumed by the orchestrator; it contains an ordered list of \modulename{Tool Step} records. All tool classes implement a common \texttt{execute()} interface. \modulename{Chat Request} and \modulename{Chat Response} are the inbound and outbound Pydantic contracts of the \texttt{/chat} endpoint.
+The UML Class Diagram (Figure~\ref{fig:s5-class-diagram}) covers the main
+structural components of the AI agent: the \modulename{MESAgentOrchestrator}
+central controller, the \modulename{ToolChain} and \modulename{ToolStep}
+planning structures produced by the classifiers, the \modulename{ResolveResult}
+returned by the fuzzy resolver, and the \modulename{CompositeResult} produced
+by the fan-out executor. The 17 tool classes in \texttt{tools/mes\_tools.py}
+are represented as a single \modulename{BaseTool} with a \modulename{TOOL\_MAP}
+registry.
 
 \begin{figure}[H]
   \centering
@@ -327,19 +444,41 @@ The UML Class Diagram (Figure~\ref{fig:s5-class-diagram-s5}) shows the Python AI
 % ---------------------------------------------------------------------------
 \section{Implementation}
 
-\subsection{Python AI Agent}
+\subsection{Node.js Middleware}
+\subsubsection{Overview}
 
-\subsubsection{Data Models}
+The \techname{Node.js} middleware (\texttt{node-middleware/}) is an
+\techname{Express~5} application that acts as the single network bridge between
+the \techname{Flutter} client and \techname{Business Central}.
 
-\begin{longtable}{@{} P{0.25\linewidth} P{0.25\linewidth} P{0.45\linewidth} @{}}
-	\caption{Pydantic Models --- \modulename{agent/models.py}}
-	\label{tab:s5-pydantic-models} \\
+The middleware exposes two distinct route families: \texttt{/api/<endpoint>}
+(proxied to BC) and \texttt{/api/ai/*} (forwarded to the Python agent).
+
+\subsubsection{AI Proxy Layer}
+
+The \texttt{src/aiProxy.js} \techname{Express} Router, mounted at
+\texttt{/api/ai}, forwards \texttt{POST /chat} requests to the Python agent at
+\texttt{AI\_AGENT\_URL/chat} using the native \texttt{fetch} API. It validates
+that both \texttt{message} and \texttt{user\_context} are present before
+forwarding, enforces a \texttt{AI\_TIMEOUT\_MS} abort timeout, and passes the
+Python agent's response through unchanged. A \texttt{GET /api/ai/health}
+endpoint aggregates the Node process uptime with the Python agent's own health
+status for monitoring purposes.
+
+\subsubsection{Configuration}
+
+Table~\ref{tab:s5-middleware-config} lists the environment variables consumed by
+the middleware.
+
+\begin{longtable}{@{} P{0.30\linewidth} P{0.12\linewidth} P{0.54\linewidth} @{}}
+	\caption{Node.js Middleware --- Environment Variables}
+	\label{tab:s5-middleware-config}\\
 	\toprule
-	\textbf{Class} & \textbf{Key Fields} & \textbf{Description} \\
+	\textbf{Variable} & \textbf{Default} & \textbf{Description} \\
 	\midrule
 	\endfirsthead
 	\toprule
-	\textbf{Class} & \textbf{Key Fields} & \textbf{Description} \\
+	\textbf{Variable} & \textbf{Default} & \textbf{Description} \\
 	\midrule
 	\endhead
 	\multicolumn{3}{r}{\small Continued on next page} \\
@@ -347,81 +486,102 @@ The UML Class Diagram (Figure~\ref{fig:s5-class-diagram-s5}) shows the Python AI
 	\bottomrule
 	\endlastfoot
 
-	\techname{ConversationTurn} & \texttt{role}, \texttt{content} & One message in the conversation history. Role is either \texttt{"user"} or \texttt{"assistant"}. \\
-	\midrule
-	\techname{UserContext} & \texttt{user\_id}, \texttt{role}, \texttt{work\_centers}, \texttt{token} & Session identity extracted from the Flutter session storage and forwarded with every chat request. \\
-	\midrule
-	\techname{ChatRequest} & \texttt{message}, \texttt{user\_context}, \texttt{conversation\_history} & Inbound contract for the \texttt{POST /chat} endpoint. \texttt{conversation\_history} defaults to an empty list. \\
-	\midrule
-	\techname{ActionType} & enum: 5 values & Defines the five redirect types the LLM may emit: \texttt{redirect\_machine}, \texttt{redirect\_operation}, \texttt{redirect\_machine\_list}, and two reserved types. \\
-	\midrule
-	\techname{RedirectAction} & \texttt{action\_type}, \texttt{label}, \texttt{payload} & A clickable navigation action sent back to Flutter and rendered as an \texttt{ElevatedButton}. \\
-	\midrule
-	\techname{ChatResponse} & \texttt{text}, \texttt{actions}, \texttt{data\_fetched}, \texttt{thinking} & Outbound contract. \texttt{text} is the human-readable reply; \texttt{actions} holds up to 4 redirect actions; \texttt{thinking} carries the classification trace for debugging. \\
-	\midrule
-	\techname{ToolResult} & \texttt{tool\_name}, \texttt{success}, \texttt{data}, \texttt{error} & Internal result wrapper returned by every tool's \texttt{execute()} method. \\
+	\texttt{BC\_HOST}       & —         & Base URL of the BC server (no trailing slash) \\ \midrule
+	\texttt{BC\_INSTANCE}   & —         & BC server instance name \\ \midrule
+	\texttt{BC\_COMPANY}    & —         & Company GUID \\ \midrule
+	\texttt{PROXY\_PORT}    & 3000      & Listening port \\ \midrule
+	\texttt{ALLOWED\_ORIGINS} & ""      & Comma-separated CORS origins \\ \midrule
+	\texttt{BC\_TIMEOUT\_MS} & 30\,000 & BC request timeout in milliseconds \\ \midrule
+	\texttt{AI\_AGENT\_URL} & \texttt{http://localhost:8000} & Python agent base URL \\ \midrule
+	\texttt{AI\_TIMEOUT\_MS} & 60\,000 & AI request abort timeout in milliseconds \\
 \end{longtable}
+
+\subsection{Python AI Agent}
+The agent makes exactly two \domainterm{LLM} calls per user message .
+\textbf{Call 1 --- Intent classification.} The \modulename{LLMIntentIdentifier}
+sends the user message, role, and work centres to the LLM with a structured
+system prompt listing all 17 available tools and their required arguments. The
+LLM responds with a JSON plan containing the intent label, a list of
+\modulename{ToolStep} objects (each with a tool name, arguments — which may be
+slot references to previous steps — and a result key), and a reasoning string.
+The plan is validated against the tool catalogue before being converted to a
+\modulename{ToolChain} dataclass. If the LLM call fails for any reason, the
+deterministic regex classifier in \texttt{agent/intent.py} is used as a fallback.
+The entire classification reasoning is stored in a \modulename{ThinkingBlock} and
+returned in \texttt{ChatResponse.thinking} for debugging; it is never shown to the
+user.
+
+\textbf{Call 2 --- Synthesis.} After all tool steps have been executed and their
+results enriched, the \texttt{Orchestrator.\_synthesise()} method builds a context
+block containing the enriched data in markdown format (truncated at
+\texttt{LLM\_MAX\_CONTEXT\_CHARS} characters) and calls the LLM with the
+\texttt{SYNTHESIS\_SYSTEM} and \texttt{SYNTHESIS\_USER\_TEMPLATE} prompts. The
+system prompt instructs the model to answer only from the pre-fetched data, to
+highlight anomalies prominently, to respond in the same language as the user, and
+to optionally append a \texttt{\`\`\`actions} JSON block containing up to 4
+\modulename{RedirectAction} objects.
 
 \subsubsection{Intent Classification}
 
-The intent classification layer comprises two components working in tandem. \modulename{llm\_intent.py} is the primary classifier: it sends a terse system prompt listing all 17 available tools to the configured LLM and expects a JSON response containing the \texttt{intent} label, a \texttt{steps} array, and an optional \texttt{reasoning} field. This plan is validated by \texttt{\_validate\_plan()}, which checks that the intent label is known, all tool names exist in \texttt{TOOL\_MAP}, and no \texttt{result\_key} is duplicated across steps.
+\textbf{LLM classifier.} The \modulename{LLMIntentIdentifier} constructs a
+system prompt containing the full \texttt{TOOL\_CATALOGUE}
+ and the list of valid intent labels. The user
+message is injected via \texttt{\_IDENTIFIER\_USER\_TEMPLATE} along with the
+user's role and work centres. The raw LLM response is stripped of JSON fences,
+parsed, validated against \texttt{\_VALID\_TOOLS} and \texttt{\_INTENT\_MAP}, and
+converted to a \modulename{ToolChain} via \texttt{\_plan\_to\_tool\_chain()}.
 
-If validation fails for any reason — malformed JSON, unknown tool, missing required field — control passes to \modulename{intent.py}, the deterministic regex classifier. Table~\ref{tab:s5-intent-classes} lists the 12 intent classes and their primary trigger patterns.
+\textbf{Regex classifier (fallback).} The \texttt{classify()} function in
+\texttt{agent/intent.py} evaluates the user message against 10 keyword pattern
+variables in strict priority order. Table~\ref{tab:s5-intents} lists the 12
+intent values and their associated tool chains.
 
-\begin{longtable}{@{} P{0.28\linewidth} P{0.67\linewidth} @{}}
-	\caption{Intent Classes --- \modulename{agent/intent.py}}
-	\label{tab:s5-intent-classes} \\
+\begin{longtable}{@{} P{0.28\linewidth} P{0.32\linewidth} P{0.36\linewidth} @{}}
+	\caption{Intent Values and Associated Tool Chains}
+	\label{tab:s5-intents}\\
 	\toprule
-	\textbf{Intent} & \textbf{Primary Trigger Patterns} \\
+	\textbf{Intent} & \textbf{Primary Tool(s)} & \textbf{Trigger Keywords} \\
 	\midrule
 	\endfirsthead
 	\toprule
-	\textbf{Intent} & \textbf{Primary Trigger Patterns} \\
+	\textbf{Intent} & \textbf{Primary Tool(s)} & \textbf{Trigger Keywords} \\
 	\midrule
 	\endhead
-	\multicolumn{2}{r}{\small Continued on next page} \\
+	\multicolumn{3}{r}{\small Continued on next page} \\
 	\endfoot
 	\bottomrule
 	\endlastfoot
 
-	\texttt{operation\_bom} & \textit{bom}, \textit{component}, \textit{material}, \textit{consumption}, \textit{scan} \\
-	\midrule
-	\texttt{production\_cycles} & \textit{cycle}, \textit{declaration}, \textit{declared}, \textit{production history} \\
-	\midrule
-	\texttt{operation\_live} & \textit{live}, \textit{current operation}, \textit{running}, \textit{in progress} \\
-	\midrule
-	\texttt{machine\_history} & \textit{history}, \textit{past operation}, \textit{finished}, \textit{cancelled} \\
-	\midrule
-	\texttt{machine\_orders} & \textit{order}, \textit{production order}, \textit{PO-}, \textit{scheduled} \\
-	\midrule
-	\texttt{machine\_live} & \textit{machine status}, \textit{what is MC-}, \textit{ongoing} \\
-	\midrule
-	\texttt{machine\_dashboard} & \textit{dashboard}, \textit{summary}, \textit{overview}, \textit{KPI} \\
-	\midrule
-	\texttt{machine\_status} & \textit{idle}, \textit{working}, \textit{which machines are} \\
-	\midrule
-	\texttt{scrap\_analysis} & \textit{scrap}, \textit{reject}, \textit{waste}, \textit{defect} \\
-	\midrule
-	\texttt{activity\_log} & \textit{activity}, \textit{event log}, \textit{what happened}, \textit{recent actions} \\
-	\midrule
-	\texttt{department\_overview} & \textit{work center}, \textit{department}, \textit{sector}, \textit{operator summary} \\
-	\midrule
-	\texttt{general} & Catch-all when no higher-priority rule matches. \\
+	\texttt{machine\_status}      & get\_ongoing\_operations                                  & machine, mc-N, status       \\ \midrule
+	\texttt{machine\_orders}      & get\_machine\_orders                                      & order, queue, po-N          \\ \midrule
+	\texttt{machine\_live}        & get\_ongoing\_operations + get\_operation\_live\_data     & live, real-time, progress   \\ \midrule
+	\texttt{machine\_history}     & get\_operations\_history                                  & history, finished, past     \\ \midrule
+	\texttt{machine\_dashboard}   & get\_ongoing\_operations + get\_machine\_dashboard        & dashboard, kpi, uptime      \\ \midrule
+	\texttt{department\_overview} & list\_machines (fan-out)                                  & department, all machines    \\ \midrule
+	\texttt{activity\_log}        & get\_activity\_log                                        & activity, log, happened     \\ \midrule
+	\texttt{scrap\_analysis}      & get\_activity\_log                                        & scrap, reject, defect       \\ \midrule
+	\texttt{operation\_bom}       & get\_bom                                                  & bom, component, material    \\ \midrule
+	\texttt{production\_cycles}   & get\_production\_cycles                                   & cycle, declaration, shift   \\ \midrule
+	\texttt{operation\_live}      & get\_operation\_live\_data                                & live + order number         \\ \midrule
+	\texttt{general}              & (none)                                                    & No tool trigger matched     \\
 \end{longtable}
 
 \subsubsection{Tool Catalogue}
 
-Table~\ref{tab:s5-tool-catalogue} lists all 17 tool classes registered in \texttt{TOOL\_MAP}, together with the \techname{Business Central} endpoint each tool calls and its primary arguments.
+The 17 \techname{Business Central} web service wrappers in
+\texttt{tools/mes\_tools.py} correspond directly to the OData functions exposed
+by \techname{MES Web Service} (Codeunit 50126). Table~\ref{tab:s5-tools} lists
+all tools, their AL endpoint mappings, and access scope.
 
-\begin{longtable}{@{} P{0.32\linewidth} P{0.30\linewidth} P{0.33\linewidth} @{}}
-	\caption{MES Tool Catalogue --- \modulename{tools/mes\_tools.py}}
-	\label{tab:s5-tool-catalogue} \\
+\begin{longtable}{@{} P{0.35\linewidth} P{0.32\linewidth} P{0.29\linewidth} @{}}
+	\caption{AI Agent Tool Catalogue}
+	\label{tab:s5-tools}\\
 	\toprule
-	\textbf{Tool Class} & \textbf{BC Endpoint} & \textbf{Key Arguments} \\
+	\textbf{Tool name} & \textbf{AL Endpoint} & \textbf{Scope} \\
 	\midrule
 	\endfirsthead
 	\toprule
-	\textbf{Tool Class} & \textbf{BC Endpoint} & \textbf{Key Arguments} \\
+	\textbf{Tool name} & \textbf{AL Endpoint} & \textbf{Scope} \\
 	\midrule
 	\endhead
 	\multicolumn{3}{r}{\small Continued on next page} \\
@@ -429,58 +589,45 @@ Table~\ref{tab:s5-tool-catalogue} lists all 17 tool classes registered in \textt
 	\bottomrule
 	\endlastfoot
 
-	\techname{ListMachinesTool} & \texttt{FetchMachines} & \texttt{work\_center\_no} \\
-	\midrule
-	\techname{GetMachineOrdersTool} & \texttt{getMachineOrders} & \texttt{machine\_no} \\
-	\midrule
-	\techname{GetOngoingOperationsTool} & \texttt{fetchOngoing-\linebreak OperationsState} & \texttt{machine\_no} \\
-	\midrule
-	\techname{GetOperationLiveDataTool} & \texttt{fetchOperationLiveData} & \texttt{machine\_no}, \texttt{prod\_order\_no}, \texttt{operation\_no} \\
-	\midrule
-	\techname{GetProductionCyclesTool} & \texttt{fetchProductionCycles} & \texttt{machine\_no}, \texttt{prod\_order\_no}, \texttt{operation\_no} \\
-	\midrule
-	\techname{GetOperationsHistoryTool} & \texttt{fetchOperationsHistory} & \texttt{machine\_no} \\
-	\midrule
-	\techname{GetActivityLogTool} & \texttt{fetchActivityLog} & \texttt{hours\_back} \\
-	\midrule
-	\techname{GetMachineDashboardTool} & \texttt{fetchMachineDashboard} & \texttt{hours\_back}, \texttt{work\_center\_nos} \\
-	\midrule
-	\techname{GetProductionOrdersTool} & \texttt{fetchProductionOrders} & \texttt{status\_filter}, \texttt{work\_center\_no}, \texttt{machine\_no} \\
-	\midrule
-	\techname{GetWorkCenterSummaryTool} & \texttt{fetchWorkCenterSummary} & \texttt{work\_center\_nos}, \texttt{hours\_back} \\
-	\midrule
-	\techname{GetOperatorSummaryTool} & \texttt{fetchOperatorSummary} & \texttt{work\_center\_nos}, \texttt{hours\_back} \\
-	\midrule
-	\techname{GetMyDataTool} & \texttt{fetchMyData} & \texttt{hours\_back} (token-scoped) \\
-	\midrule
-	\techname{GetScrapSummaryTool} & \texttt{fetchScrapSummary} & \texttt{hours\_back}, multi-filter \\
-	\midrule
-	\techname{GetDelayReportTool} & \texttt{fetchDelayReport} & \texttt{work\_center\_nos}, \texttt{pause\_threshold\_minutes} \\
-	\midrule
-	\techname{GetConsumptionSummaryTool} & \texttt{fetchConsumptionSummary} & \texttt{prod\_order\_no}, \texttt{operation\_no}, \texttt{machine\_no}, \texttt{hours\_back} \\
-	\midrule
-	\techname{GetSupervisorOverviewTool} & \texttt{fetchSupervisorOverview} & \texttt{work\_center\_nos}, \texttt{hours\_back}, \texttt{pause\_threshold\_minutes} \\
-	\midrule
-	\techname{GetBomTool} & \texttt{fetchBom} & \texttt{prod\_order\_no}, \texttt{operation\_no} \\
+	\texttt{list\_machines}             & FetchMachines                    & Work-centre scoped \\ \midrule
+	\texttt{get\_machine\_orders}       & getMachineOrders                 & Machine scoped     \\ \midrule
+	\texttt{get\_ongoing\_operations}   & fetchOngoingOperationsState      & Machine scoped     \\ \midrule
+	\texttt{get\_operation\_live\_data} & fetchOperationLiveData           & Machine scoped     \\ \midrule
+	\texttt{get\_production\_cycles}    & fetchProductionCycles            & Machine scoped     \\ \midrule
+	\texttt{get\_operations\_history}   & fetchOperationsHistory           & Machine scoped     \\ \midrule
+	\texttt{get\_activity\_log}         & fetchActivityLog                 & Work-centre scoped \\ \midrule
+	\texttt{get\_machine\_dashboard}    & fetchMachineDashboard            & Work-centre scoped \\ \midrule
+	\texttt{get\_production\_orders}    & fetchProductionOrders            & Machine scoped     \\ \midrule
+	\texttt{get\_work\_center\_summary} & fetchWorkCenterSummary           & Work-centre scoped \\ \midrule
+	\texttt{get\_operator\_summary}     & fetchOperatorSummary             & Work-centre scoped \\ \midrule
+	\texttt{get\_my\_data}              & fetchMyData                      & User scoped        \\ \midrule
+	\texttt{get\_scrap\_summary}        & fetchScrapSummary                & Machine scoped     \\ \midrule
+	\texttt{get\_bom}                   & fetchBom                         & Machine scoped     \\ \midrule
+	\texttt{get\_delay\_report}         & fetchDelayReport                 & Work-centre scoped \\ \midrule
+	\texttt{get\_consumption\_summary}  & fetchConsumptionSummary          & Machine scoped     \\ \midrule
+	\texttt{get\_supervisor\_overview}  & fetchSupervisorOverview          & Work-centre scoped \\
 \end{longtable}
 
-\subsubsection{Orchestration Pipeline}
+Machine-scoped tools are subject to access control: the orchestrator verifies that
+the resolved \texttt{machineNo} is present in the \texttt{allowed\_machines} map
+(populated by \texttt{list\_machines} calls for the authenticated user's work
+centres) before executing the step.
 
-\techname{MESAgentOrchestrator.run()} processes each \texttt{ChatRequest} through an eight-step pipeline. Step 1 calls \texttt{LLMIntentIdentifier.classify()} (with regex fallback) to produce a \texttt{ToolChain}. Step 2 routes to the composite path (if \texttt{is\_composite = true}) or the normal sequential path. Step 3 resolves any \texttt{unresolved\_machine\_ref} using \modulename{resolver.py}. Step 4 iterates the tool steps: slot arguments prefixed with \texttt{\$} are resolved against prior step results, access-control is verified against \texttt{allowed\_machines}, and the tool is executed. Step 5 applies \modulename{data\_analysis.py} enrichment per result key. Step 6 assembles the LLM context block and truncates it to \texttt{LLM\_MAX\_CONTEXT\_CHARS}. Step 7 calls the LLM once for synthesis. Step 8 extracts any \texttt{```actions```} block from the reply and separates it from the displayed text.
+\subsubsection{Data Enrichment}
 
-\subsubsection{Multi-Provider LLM Client}
+The \texttt{Orchestrator.\_enrich()} method runs pure-Python analytics over the
+raw tool results before they are passed to the synthesis LLM. Table~\ref{tab:s5-enrichment}
+summarises the enrichment applied to each result key.
 
-The \texttt{build\_llm\_client()} factory reads the \texttt{LLM\_PROVIDER} environment variable and instantiates the corresponding client class. All clients expose the same \texttt{async complete(messages: list) → str} interface so the rest of the agent is provider-agnostic. Table~\ref{tab:s5-llm-providers} summarises the supported providers.
-
-\begin{longtable}{@{} P{0.30\linewidth} P{0.30\linewidth} P{0.35\linewidth} @{}}
-	\caption{Supported LLM Providers --- \modulename{agent/llm\_client.py}}
-	\label{tab:s5-llm-providers} \\
+\begin{longtable}{@{} P{0.28\linewidth} P{0.68\linewidth} @{}}
+	\caption{Data Enrichment Applied per Result Key}
+	\label{tab:s5-enrichment}\\
 	\toprule
-	\textbf{Client Class} & \textbf{Provider} & \textbf{Notes} \\
+	\textbf{Result key} & \textbf{Enrichment} \\
 	\midrule
 	\endfirsthead
 	\toprule
-	\textbf{Client Class} & \textbf{Provider} & \textbf{Notes} \\
+	\textbf{Result key} & \textbf{Enrichment} \\
 	\midrule
 	\endhead
 	\multicolumn{3}{r}{\small Continued on next page} \\
@@ -488,64 +635,135 @@ The \texttt{build\_llm\_client()} factory reads the \texttt{LLM\_PROVIDER} envir
 	\bottomrule
 	\endlastfoot
 
-	\techname{OllamaClient} & Local Ollama & No external credential required; model served locally. \\
-	\midrule
-	\techname{OpenAIClient} & OpenAI & Requires \texttt{OPENAI\_API\_KEY}. \\
-	\midrule
-	\techname{HuggingFaceClient} & HF Serverless Inference & Requires \texttt{HF\_API\_TOKEN}. \\
-	\midrule
-	\techname{OpenAICompatibleClient} & Groq, Together, Mistral, vLLM, LM Studio & Uses the OpenAI Chat Completions schema with a configurable base URL. \\
-	\midrule
-	\techname{AnthropicClient} & Anthropic & Extracts the system prompt from the messages list before calling the Messages API. \\
+	\texttt{machines}   & \texttt{summarise\_machines()} — utilisation percentage, working/idle counts, interpretation string \\ \midrule
+	\texttt{orders}     & \texttt{enrich\_deadlines()} — hours until deadline, overdue flag, risk level (\textit{at\_risk} threshold: $< 4$\,h) \\ \midrule
+	\texttt{live\_data} & \texttt{analyse\_scrap()} + \texttt{analyse\_velocity()} — scrap severity, spike detection, units per hour, projected end \\ \midrule
+	\texttt{cycles}     & \texttt{analyse\_scrap()} — scrap trend from cycle history \\ \midrule
+	\texttt{activity}   & \texttt{analyse\_scrap(activity=data)} — recent scrap event count \\ \midrule
+	\texttt{dashboard}  & \texttt{summarise\_dashboard()} — fleet totals, overall scrap severity \\ \midrule
+	\texttt{bom}        & Missing components list (items with zero scanned quantity) \\
 \end{longtable}
 
-\subsection{Node.js Middleware}
+\textbf{Scrap spike detection.} The \texttt{analyse\_scrap()} function computes
+the scrap rate for the most recent quarter of declared cycles and compares it to
+the rate for the earlier three-quarters. If the recent rate exceeds the baseline
+by a factor of 2.5 or is above the critical threshold of 15\%, a spike is flagged
+and explicitly mentioned in the synthesis prompt.
 
-\subsubsection{Endpoint Routing}
-
-We configured the middleware to map all calls coming from the frontend using
-the structure \techname{/api/ai} to the AI proxy handler, which registers two
-routes: \texttt{POST /api/ai/chat} forwards requests to the \texttt{/chat}
-endpoint of the Python agent, and \texttt{GET /api/ai/health} proxies health
-checks to the agent's health endpoint. The agent's tool calls are treated
-through the same path as the normal Business Central function calls from the
-Flutter frontend.
+\textbf{Velocity projection.} The \texttt{analyse\_velocity()} function derives
+the actual production rate (units per hour) from the last 6 declared cycles and
+compares it to the required rate (remaining quantity divided by time until the
+planned end). The result is one of \textit{ahead}, \textit{on\_pace}, or
+\textit{behind}, along with a projected completion timestamp.
 
 \subsection{Flutter Frontend}
-ù 
-\subsubsection{AI Data Layer}
 
-The Flutter data layer for the AI feature comprises three classes. \techname{AiChatService} constructs the full request payload — including user context assembled from \techname{SessionStorage} at call time — and POSTs it to \apiendpoint{/api/ai/chat}. It deserialises the response into an \techname{AiChatResponse} object. \techname{ConversationTurn} is a minimal data class with \texttt{role} and \texttt{content} fields and a \texttt{toJson()} serialiser. \techname{AiChatResponse} holds the reply text, the list of \techname{AiRedirectAction} objects, and an optional error string.
+\subsubsection{Chat Page and Provider}
 
-\subsubsection{AI Domain Layer}
+The \techname{AiChatPage} widget adapts its rendering to the available screen
+width: on screens wider than 600\,dp it is displayed as a \texttt{Positioned}
+overlay panel (400\,dp wide, full height) anchored to the right side of the
+\techname{MachineListPage}; on mobile it opens as a \texttt{Dialog}. The chat
+input field and conversation history list are shared between both modes.
 
-\techname{AiChatProvider} extends \texttt{ChangeNotifier} and owns the conversation history as a \texttt{List\linebreak<ConversationTurn>}. Its \texttt{sendMessage()} method appends the user turn before calling the service, and on success appends the assistant turn and stores \texttt{lastResponse}. On failure it removes the failed user turn and sets \texttt{errorMessage}. \texttt{clearHistory()} resets both the history and the last response, enabling the user to start a fresh conversation.
+The \techname{AiChatProvider} maintains the in-session conversation history as a
+\texttt{List<ConversationTurn>}. On each \texttt{sendMessage()} call it appends
+the user turn, calls \texttt{AiChatService.sendMessage()} with the history
+(excluding the most recently appended turn, which the server receives as the
+primary message), appends the assistant reply, and stores the last
+\techname{AiChatResponse} for action button rendering.
+
+\subsubsection{Redirect Actions}
+
+After each assistant reply, the \techname{AiChatPage} inspects
+\texttt{lastResponse.actions}. If non-empty and the message is the last in the
+conversation, up to 4 \techname{ElevatedButton} widgets are rendered below the
+reply bubble. The \texttt{\_handleAction()} method routes each action type:
+
+\begin{itemize}[noitemsep]
+	\item \texttt{redirect\_machine} $\to$ \texttt{Navigator.push} to
+	      \techname{MachineMainPage} with the payload \texttt{machineNo}.
+	\item \texttt{redirect\_operation} $\to$ \texttt{Navigator.push} to
+	      \techname{OperationDetailPage} with \texttt{machineNo},
+	      \texttt{prodOrderNo}, and \texttt{operationNo}.
+	\item \texttt{redirect\_machine\_list} $\to$ \texttt{Navigator.popUntil}
+	      to the root route (machine list).
+	\item \texttt{redirect\_machine\_dashboard} $\to$ \texttt{Navigator.push}
+	      to the admin machine dashboard.
+	\item \texttt{redirect\_history} $\to$ \texttt{Navigator.push} to
+	      \techname{MachineHistoryPage} with \texttt{machineNo}.
+\end{itemize}
 
 \subsubsection{User Interface}
 
-Figure~\ref{fig:s5-ui-ai-chat-mobile} illustrate the \uilabel{AI Chat} interface in its two display modes. On desktop (width $\geq$ 600 px), the chat panel opens as a 400 px fixed-width side panel anchored to the right of the \uilabel{Machine List Page}, and the floating action button (FAB) is hidden while the panel is open. On mobile, the chat opens as a full \texttt{Dialog} widget (max 800$\times$800 px). In both modes the interface comprises the same four sub-widgets: \techname{\_EmptyState} (shown before the first message), \techname{\_MessageBubble} (dark background for user turns, light grey for assistant turns, capped at 78\% of available width), \techname{\_ActionButtons} (a \texttt{Wrap} of \texttt{ElevatedButton}s for each \techname{RedirectAction}), and \techname{\_InputBar} (a \texttt{TextField} with a send icon button that switches to a \texttt{CircularProgressIndicator} while a request is in flight).
-% empty state
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.5\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}
-  \caption{\uilabel{AI Chat} dialog --- mobile view.}
-  \label{fig:s5-ui-ai-chat-mobile-empty}
-\end{figure}
+The \uilabel{AI Chat Panel}, shown in Figure~\ref{fig:s5-ui-chat-panel},
+is accessible from the \uilabel{Machine List Page} via a floating action button.
+On wide screens it opens as a non-modal side panel; on mobile it opens as a
+full-screen dialog. The panel displays the conversation history, a text input
+field at the bottom, and optional action buttons below the last assistant message.
+A \uilabel{Clear} button resets the conversation history.
 
-
-% message state don't forget to add a redirect action
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.5\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}
-  \caption{\uilabel{AI Chat} dialog --- mobile view.}
-  \label{fig:s5-ui-ai-chat-mobile}
+	\centering
+	\setlength{\fboxsep}{5pt}
+	\colorbox{black}{%
+		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/MES_Sprint-5-Repport/placeholder-image.png}%
+		\hspace{\fboxsep}%
+		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/MES_Sprint-5-Repport/placeholder-image.png}%
+	}
+	\caption{\uilabel{AI Chat Panel} --- desktop side panel and mobile dialog views.}
+	\label{fig:s5-ui-chat-panel}
 \end{figure}
 
 % ---------------------------------------------------------------------------
-% CONCLUSION
+% 4. TESTING AND VALIDATION
 % ---------------------------------------------------------------------------
+\subsection{Integration Tests}
+
+For integration testing we used \techname{Postman} for the Node.js middleware
+endpoints and the \techname{FastAPI} built-in \texttt{/docs} interface for the
+Python agent.
+
+Figure~\ref{fig:s5-test-chat} shows a test of the \apiendpoint{POST /api/ai/chat}
+endpoint with a single-machine live data query. The response contains the
+synthesised text, the \texttt{thinking} block with the classified intent and tool
+steps, and one \texttt{redirect\_machine} action.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/MES_Sprint-5-Repport/placeholder-image.png}
+	\caption{Postman endpoint test --- \texttt{POST /api/ai/chat}.}
+	\label{fig:s5-test-chat}
+\end{figure}
+
+Figure~\ref{fig:s5-test-health} shows a test of the
+\apiendpoint{GET /api/ai/health} endpoint confirming that both the Node.js proxy
+and the Python agent are reachable.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/MES_Sprint-5-Repport/placeholder-image.png}
+	\caption{Postman endpoint test --- \texttt{GET /api/ai/health}.}
+	\label{fig:s5-test-health}
+\end{figure}
+
 \phantomsection
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
 
-This sprint delivered the complete AI intelligence layer of the MES system. Operators and supervisors can now query production data, machine status, scrap rates, BOM consumption, operator performance, and shift overviews using natural language through the embedded chat assistant. The two-tier intent classification architecture — LLM-based planning with deterministic regex fallback — ensures reliable and responsive behaviour regardless of LLM availability. Work-centre-scoped access control, implemented entirely in Python and independent of LLM output, guarantees that users can only query data within their authorised scope. The multi-provider LLM client makes the system adaptable to different deployment environments, from a locally-hosted Ollama model to cloud providers such as Anthropic or OpenAI. The \techname{Node.js} middleware resolves the SSPI authentication challenge inherent to \techname{Business Central}'s OData layer while keeping the Flutter client and Python agent free of Windows-specific dependencies. Together, these components form a production-ready conversational intelligence layer that integrates seamlessly with the shop-floor execution features delivered in the preceding sprints.
+This sprint delivered the conversational intelligence layer of the \domainterm{MES}
+solution.
+
+The AI agent implements a two-\domainterm{LLM}-call pipeline: a first call
+classifies user intent and produces an executable \modulename{ToolChain} plan
+, and a second call
+synthesises the final natural-language reply from the enriched tool results.
+Pure-Python analytics (deadline enrichment, scrap spike detection, velocity
+projection) pre-compute key facts so the synthesis \domainterm{LLM} receives
+answers rather than raw numbers.
+
+Operators and supervisors can now ask questions in natural language, receive
+machine and production data scoped strictly to their work centres, navigate
+directly to relevant screens via action buttons embedded in the reply, and obtain
+proactive alerts for overdue orders, scrap anomalies, and paused operations —
+all without leaving the chat interface.

@@ -7,7 +7,7 @@ and non-functional requirements of the system. This step then allows a complete
 understanding of the subject in order to position oneself clearly, precisely and
 without ambiguity.
 
-% ── 2.1 ─────────────────────────────────────────────────────
+% ── 2.1 ─────────────────────────────────────────────────────────────────────
 \section{Requirements Analysis}
 
 This step allows us to understand the overall context of our project, that is to say
@@ -27,32 +27,32 @@ will interact with our system:
 	\textbf{Actor} & \textbf{Description} \\
 	\midrule
 	\endfirsthead
-	
+
 	\toprule
 	\textbf{Actor} & \textbf{Description} \\
 	\midrule
 	\endhead
-	
+
 	\multicolumn{2}{r}{\small Continued on next page} \\
 	\endfoot
-	
+
 	\endlastfoot
-	
-	Administrator  &                      
+
+	Administrator  &
 	This is the person responsible for the MES platform. They manage all users
 	(supervisors, operators), passwords and account statuses. They have access to all
 	application features as well as the administration pages in Business Central. \\[6pt]
-	
-	Supervisor     &                      
+
+	Supervisor     &
 	This is an intermediate user. They can monitor the progress of production operations
 	on their work centre, view machine status and track the progress of production
 	orders. \\[6pt]
-	
-	Operator       &                      
+
+	Operator       &
 	This is the end user of the MES application. Assigned to a work centre
 	(\textit{Work Center}), they can view the production orders assigned to their machine,
 	start, pause or resume an operation, and declare produced quantities. \\
-	
+
 \end{longtable}
 
 \subsection{Identification of Requirements}
@@ -72,7 +72,17 @@ solution meets these functional requirements.
 	      platform using their Auth~ID and password. Upon first login, the user is prompted
 	      to change their temporary password. A secure session token (GUID, 12~h validity) is
 	      issued upon each successful login.
-	      	      
+
+	\item \textbf{Two-Factor Authentication (2FA)}: When enabled globally by the
+	      administrator, users must complete a second authentication step by scanning their
+	      personal badge QR~code after entering their credentials. Administrators can view,
+	      print, and regenerate badge secrets for any user.
+
+	\item \textbf{Application Setup}: On first launch, the user must configure the
+	      middleware host URL (entered manually or obtained by scanning a QR~code) so that
+	      the application connects to the correct server instance. The host is persisted
+	      across sessions and can be changed from the login page.
+
 	\item \textbf{User Management}: This feature allows the administrator to:
 	      \begin{itemize}
 	      	\item View the complete list of MES users.
@@ -81,14 +91,19 @@ solution meets these functional requirements.
 	      	\item Generate and assign a temporary password.
 	      	\item Activate or deactivate an account (automatic revocation of active tokens).
 	      \end{itemize}
-	      	      
+
+	\item \textbf{Security Policy}: The administrator can configure a password rotation
+	      period (in days). A scheduled background job runs every 24~hours and flags users
+	      whose password age exceeds the configured period, forcing them to change their
+	      password on next login.
+
 	\item \textbf{Machine Management}: This feature allows users to:
 	      \begin{itemize}
 	      	\item View the list of machines in a work centre with their current status
 	      	       (Idle, Working).
 	      	\item View the production order currently running on each machine.
 	      \end{itemize}
-	      	      
+
 	\item \textbf{Production Order Management}: This feature allows the operator to:
 	      \begin{itemize}
 	      	\item View production orders (Planned, Firm, Released) assigned to their machine.
@@ -96,7 +111,7 @@ solution meets these functional requirements.
 	      	\item View the details of an order (item, quantity, planned dates, operation
 	      	      description).
 	      \end{itemize}
-	      	      
+
 	\item \textbf{Production Operation Management}: This feature is the core of the
 	      system. It allows the operator to:
 	      \begin{itemize}
@@ -108,13 +123,19 @@ solution meets these functional requirements.
 	      	\item View progress in real time (produced quantity, completion percentage,
 	      	      operation status).
 	      \end{itemize}
-	      	      
+
 	\item \textbf{Progress Dashboard}: Allows the operator and supervisor to view all
 	      active operations (Running / Paused) on a given machine, with their respective
 	      progress.
-	      	      
+
 	\item \textbf{Password Change}: Allows any logged-in user to change their password
 	      by entering their old password and the new one.
+
+	\item \textbf{AI Chat Assistant}: An embedded natural-language assistant allows
+	      operators and supervisors to query machine status, production progress, scrap
+	      data, BOM, and history without navigating the full interface. The assistant
+	      resolves ambiguous machine references, answers fleet-wide questions, surfaces
+	      operational anomalies, and provides contextual navigation shortcuts.
 \end{itemize}
 
 \subsubsection{Non-Functional Requirements}
@@ -126,26 +147,28 @@ these non-functional requirements:
 	\item \textbf{Performance}: The platform performs efficiently in terms of handling
 	      routine operations (login, order consultation, production declaration). Machine
 	      status updates are refreshed every 5 seconds via a streaming mechanism.
-	      	      
+
 	\item \textbf{Security}: Implementation of a token-based authentication system
 	      (signed GUID, 12~h expiry) and role management (Admin, Supervisor, Operator) to
 	      control access to features. Passwords are stored as SHA-256 hashes with a salt.
-	      	      
+	      Optional two-factor authentication enforces badge QR verification as a second
+	      factor. A configurable password expiry policy forces periodic credential rotation.
+
 	\item \textbf{Maintainability}: The AL back-end code is organised in layers
 	      (Tables, Enums, Codeunits, API Pages) and the Flutter code follows a layered
 	      architecture (Data, Domain, Presentation) with the Provider pattern, facilitating
 	      updates and the addition of new features.
-	      	      
+
 	\item \textbf{Ergonomics}: The user interface is adaptive (mobile, tablet, PC)
 	      thanks to responsive layouts dedicated to each form factor, minimising the learning
 	      curve for workshop operators.
-	      	      
+
 	\item \textbf{Portability}: The Flutter application is compiled for Android, iOS,
 	      Web, Linux, macOS and Windows from a single codebase. The Business Central back-end
 	      is deployable both on-premises and in SaaS (cloud) mode.
 \end{itemize}
 
-% ── 2.2 ─────────────────────────────────────────────────────
+% ── 2.2 ─────────────────────────────────────────────────────────────────────
 \section{Project Management with Scrum}
 
 \subsection{Backlog Features}
@@ -161,17 +184,17 @@ these non-functional requirements:
 	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
 	\hline
 	\endfirsthead
-	
+
 	\hline
 	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
 	\hline
 	\endhead
-	
+
 	\multicolumn{4}{r}{\small Continued on next page} \\
 	\endfoot
-	
+
 	\endlastfoot
-	
+
 	\textbf{US-1.1} &
 	As an \userrole{Administrator}, I need to assign access to each user so
 	that users only access features appropriate to their role.
@@ -181,7 +204,7 @@ these non-functional requirements:
 	\end{itemize} &
 	High \\
 	\midrule
-	
+
 	\textbf{US-1.2} &
 	As a User (\userrole{Operator} / \userrole{Supervisor} / \userrole{Administrator}),
 	I need to log into the system with my credentials so that I can access
@@ -195,7 +218,7 @@ these non-functional requirements:
 	\end{itemize} &
 	High \\
 	\midrule
-	
+
 	\textbf{US-1.3} &
 	As an \userrole{Administrator}, I need to search users.
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
@@ -204,7 +227,7 @@ these non-functional requirements:
 	\end{itemize} &
 	High \\
 	\midrule
-	
+
 	\textbf{US-1.4} &
 	As an \userrole{Administrator}, I need to see a list of all \techname{MES}
 	users with their details so that I can manage accounts.
@@ -213,7 +236,7 @@ these non-functional requirements:
 	\item Clicking a user row opens a password management dialog for that account.
 	\item The list refreshes automatically after a new user is created.
 	\end{itemize} & High \\ \midrule
-	
+
 	\textbf{US-1.5} &
 	As an \userrole{Administrator}, I need to generate and assign a temporary
 	password to a user so that they can log in for the first time.
@@ -223,7 +246,7 @@ these non-functional requirements:
 	\item The target account is flagged \domainterm{Need To Change Password} after the password is set.
 	\item Success or failure is reported to the admin with a clear message.
 	\end{itemize} & High \\ \midrule
-	
+
 	\textbf{US-1.6} &
 	As an \userrole{Administrator}, I need to change the role and work-centre
 	assignment of an existing user so that access rights stay current.
@@ -236,7 +259,7 @@ these non-functional requirements:
 	\end{itemize}
 	&
 	High \\ \midrule
-	
+
 	\textbf{US-1.7} &
 	As an \userrole{Administrator}, I need to activate or deactivate a user
 	account so that access can be revoked without deleting the account.
@@ -246,6 +269,66 @@ these non-functional requirements:
 	\item Deactivation immediately revokes all active tokens.
 	\item An admin cannot deactivate their own account.
 	\item The user row updates its visual status indicator immediately.
+	\end{itemize}
+	&
+	High \\ \midrule
+
+	\textbf{US-1.8} &
+	As a User (\userrole{Operator} / \userrole{Supervisor} / \userrole{Administrator}),
+	I need to complete a badge QR code scan after entering my credentials so
+	that my identity is verified by a second factor.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item \domainterm{2FA} prompt appears only when \domainterm{TwoFA Enabled} is active in \techname{MES Settings}.
+	\item Camera opens and reads a QR badge code automatically.
+	\item Manual entry field available as a fallback.
+	\item Session token is persisted only after successful badge verification.
+	\item Failed scan shows an error; scanner reactivates.
+	\item User can cancel and return to the login page.
+	\end{itemize}
+	&
+	High \\ \midrule
+
+	\textbf{US-1.9} &
+	As an \userrole{Administrator}, I need to view, print, and regenerate a
+	user's badge QR~code so that I can distribute it and invalidate a lost or
+	compromised badge.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Badge QR rendered from the user's \domainterm{Badge Secret} via a barcode widget.
+	\item Print button generates a PDF with landscape/portrait toggle.
+	\item Regenerate action shows a confirmation dialog before replacing the secret.
+	\item New QR is displayed immediately after regeneration without a page reload.
+	\item Actions are available only for active users and to the \userrole{Admin} role.
+	\end{itemize}
+	&
+	High \\ \midrule
+
+	\textbf{US-1.10} &
+	As an \userrole{Administrator}, I need to globally enable or disable \domainterm{2FA}
+	and configure a password rotation period so that I can control the
+	organisation's authentication security level.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item \domainterm{2FA} toggle and password period field available on the \uilabel{Settings} page.
+	\item Changes take effect on the next login attempt.
+	\item Settings are persisted in the \techname{MES Settings} table in \techname{Business Central}.
+	\item A scheduled job (every 24~h) flags users whose password age exceeds the configured period.
+	\item Unsaved changes display a persistent banner with \uilabel{Discard} and \uilabel{Save} actions.
+	\end{itemize}
+	&
+	High \\ \midrule
+
+	\textbf{US-1.11} &
+	As a first-time user, I need to configure the middleware host URL (or scan
+	a QR~code) so that the application connects to the correct server instance.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item \uilabel{Paring} page shown on first launch when no host is saved.
+	\item URL can be entered manually or obtained by scanning a QR~code.
+	\item URL is validated (no spaces, no illegal characters).
+	\item Saved host persists across app restarts.
+	\item \uilabel{Change Host} link on the login page allows re-entering the pairing screen.
 	\end{itemize}
 	&
 	High \\
@@ -264,17 +347,17 @@ these non-functional requirements:
 	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
 	\midrule
 	\endfirsthead
-	
+
 	\toprule
 	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
 	\midrule
 	\endhead
-	
+
 	\multicolumn{4}{r}{\small Continued on next page} \\
 	\endfoot
-	
+
 	\endlastfoot
-	
+
 	\textbf{US-2.1} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to see the list
 	of machines in my work centre with their current status so that I can see
@@ -288,7 +371,7 @@ these non-functional requirements:
 	\end{itemize} &
 	High \\
 	\midrule
-	
+
 	\textbf{US-2.2} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to view the
 	production orders assigned to a machine so that I know what work needs
@@ -303,7 +386,7 @@ these non-functional requirements:
 	\end{itemize} &
 	High \\
 	\midrule
-	
+
 	\textbf{US-2.3} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to start a
 	production operation so that the system records that the order has begun.
@@ -314,7 +397,7 @@ these non-functional requirements:
 	\item A new MES Operation Status record is created with status
 	\domainterm{Running}.
 	\end{itemize} & High \\ \midrule
-	
+
 	\textbf{US-2.4} &
 	As a \userrole{Supervisor} or \userrole{Operator}, I need to monitor the
 	current status of all active operations on a machine so that I can follow
@@ -326,7 +409,7 @@ these non-functional requirements:
 	last updated timestamp.
 	\item Data refreshes automatically every 5 seconds.
 	\end{itemize} & High \\ \midrule
-	
+
 	\textbf{US-2.5} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need a tabbed view
 	for a machine so that I can navigate between pending orders and active
@@ -338,7 +421,7 @@ these non-functional requirements:
 	\item Switching tabs preserves the state of each tab without reloading data.
 	\item The active tab is visually highlighted in the navigation bar.
 	\end{itemize} & High \\ \midrule
-	
+
 	\textbf{US-2.6} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to filter and
 	sort production orders so that I can quickly find the most relevant work.
@@ -349,7 +432,7 @@ these non-functional requirements:
 	\item Orders can be sorted by planned start date ascending or descending.
 	\item On mobile, the status filter is accessible via a compact popup menu.
 	\end{itemize} & High \\ \midrule
-	
+
 	\textbf{US-2.7} &
 	As a \userrole{Supervisor} or \userrole{Operator}, I need to view the
 	history of completed operations for a machine so that I can audit past
@@ -386,7 +469,7 @@ these non-functional requirements:
 	\multicolumn{4}{r}{\small Continued on next page} \\
 	\endfoot
 	\endlastfoot
-	
+
 	\textbf{US-3.1} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to declare the
 	quantity produced in a cycle so that the system records production progress.
@@ -397,7 +480,7 @@ these non-functional requirements:
 	\item Cumulative quantity and progress percentage update immediately.
 	\end{itemize}
 	& High \\ \midrule
-	
+
 	\textbf{US-3.2} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to pause and
 	resume an active operation so that interruptions are tracked accurately.
@@ -407,7 +490,7 @@ these non-functional requirements:
 	\item A machine cannot resume if another operation is already running.
 	\end{itemize}
 	& High \\ \midrule
-	
+
 	\textbf{US-3.3} &
 	As a \userrole{Supervisor}, I need to finish or cancel an operation so that
 	the machine is released and the order is closed.
@@ -418,7 +501,7 @@ these non-functional requirements:
 	\item Closing sets the execution end time and inserts an Idle machine status.
 	\end{itemize}
 	& High \\ \midrule
-	
+
 	\textbf{US-3.4} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need a dedicated
 	operation detail page with live data in one place.
@@ -429,7 +512,7 @@ these non-functional requirements:
 	\item Adapts between mobile and desktop layouts.
 	\end{itemize}
 	& High \\ \midrule
-	
+
 	\textbf{US-3.5} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to see all
 	production cycles declared for an operation.
@@ -440,7 +523,7 @@ these non-functional requirements:
 	\item Refreshes after each new declaration.
 	\end{itemize}
 	& High \\ \midrule
-	
+
 	\textbf{US-3.6} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need a visual chart
 	of declarations over time to identify performance trends.
@@ -451,7 +534,7 @@ these non-functional requirements:
 	\item Auto-scrolls to most recent data point on load and refresh.
 	\end{itemize}
 	& Medium \\ \midrule
-	
+
 	\textbf{US-3.7} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to see the Bill
 	of Materials for an operation to know which components are required.
@@ -463,7 +546,7 @@ these non-functional requirements:
 	\item BOM data refreshes after every consumption event.
 	\end{itemize}
 	& High \\ \midrule
-	
+
 	\textbf{US-3.8} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to report
 	scrapped units with a reason code so that waste is accurately tracked.
@@ -474,7 +557,7 @@ these non-functional requirements:
 	\item Each declaration records quantity, code, and operator.
 	\end{itemize}
 	& High \\ \midrule
-	
+
 	\textbf{US-3.9} &
 	As a \userrole{Supervisor}, I need to declare production on behalf of an
 	operator so that output is attributed to the correct person.
@@ -485,7 +568,7 @@ these non-functional requirements:
 	\item If no operator is selected, the supervisor's ID is used.
 	\end{itemize}
 	& Medium \\ \midrule
-	
+
 	\textbf{US-3.10} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to scan
 	components into an operation so that consumption is recorded against the BOM.
@@ -497,7 +580,7 @@ these non-functional requirements:
 	\item Confirming scans inserts consumption records and refreshes the BOM.
 	\end{itemize}
 	& High \\ \midrule
-	
+
 	\textbf{US-3.11} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to print a label
 	for a production order so that produced parts are correctly identified.
@@ -509,7 +592,7 @@ these non-functional requirements:
 	$\geq$ 100\%.
 	\end{itemize}
 	& Medium \\ \midrule
-	
+
 	\textbf{US-3.12} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need a label printed
 	for each declared unit so that individual pieces carry traceable information.
@@ -542,7 +625,7 @@ these non-functional requirements:
 	\multicolumn{4}{r}{\small Continued on next page} \\
 	\endfoot
 	\endlastfoot
-	
+
 	\textbf{US-4.1} &
 	As an \userrole{Administrator}, I need a performance dashboard for all
 	machines so that I can monitor production health across the facility.
@@ -554,7 +637,7 @@ these non-functional requirements:
 	\item Responsive grid: 1 col mobile, 2 col tablet, 3 col desktop.
 	\end{itemize}
 	& High \\ \midrule
-	
+
 	\textbf{US-4.2} &
 	As an \userrole{Administrator}, I need a filterable, paginated activity log
 	of all system actions so that I can audit operator and machine activity.
@@ -565,7 +648,7 @@ these non-functional requirements:
 	\item Paginated at 15 rows per page.
 	\end{itemize}
 	& High \\ \midrule
-	
+
 	\textbf{US-4.3} &
 	As an \userrole{Administrator}, I need a persistent sidebar navigation so
 	that I can move between admin sections without losing context.
@@ -577,7 +660,7 @@ these non-functional requirements:
 	\item Active section is visually highlighted.
 	\end{itemize}
 	& High \\ \midrule
-	
+
 	\textbf{US-4.4} &
 	As any user, I need the application available in English, French, and Arabic
 	so that I can use it in my preferred language.
@@ -589,7 +672,7 @@ these non-functional requirements:
 	\item Language preference persisted across sessions.
 	\end{itemize}
 	& High \\ \midrule
-	
+
 	\textbf{US-4.5} &
 	As a first-time user, I need guided coach-mark tutorials so that I can learn
 	the interface without external documentation.
@@ -605,6 +688,98 @@ these non-functional requirements:
 \end{longtable}
 
 
+% ===================== DOMAIN 5: AI ASSISTANT =====================
+\subsubsection{Domain 5: AI Chat Assistant \& Analytical Intelligence}
+\label{domain5}
+
+\vspace{0.3cm}
+
+\begin{longtable}{p{1.5cm} p{5cm} p{6.5cm} p{2cm}}
+	\hline
+	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
+	\hline
+	\endfirsthead
+	\hline
+	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
+	\hline
+	\endhead
+	\multicolumn{4}{r}{\small Continued on next page} \\
+	\endfoot
+	\endlastfoot
+
+	\textbf{US-5.1} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need a natural-language
+	chat assistant so that I can query machine status, production progress, and
+	operational data without navigating the full UI.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Chat panel opens as a side overlay on wide screens and as a dialog on mobile.
+	\item Assistant answers questions about machines, orders, live operations, BOM,
+	history, and scrap.
+	\item Responses are scoped to the user's own work centres (access control enforced).
+	\item Multi-turn conversation history is maintained within the session.
+	\item Conversation can be cleared by the user.
+	\end{itemize}
+	& High \\ \midrule
+
+	\textbf{US-5.2} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant to
+	resolve ambiguous machine references (e.g.\ ``Fraiseuse~3'') so that I do not
+	need to know exact machine codes.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Machine names, partial codes, and digit-only references are matched to
+	the correct machine using a five-tier fuzzy resolution strategy.
+	\item High-confidence matches ($\geq$ 85\%) are resolved silently.
+	\item Low-confidence matches present up to 3 candidates for disambiguation.
+	\item Machine access control is enforced after resolution.
+	\end{itemize}
+	& High \\ \midrule
+
+	\textbf{US-5.3} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant to
+	answer fleet-wide questions (e.g.\ ``which machines are running?'') so that I
+	get a consolidated view without visiting each machine individually.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Queries about all machines trigger a parallel fan-out across work centres.
+	\item Results are filtered by running / idle / overdue / scrap status as requested.
+	\item Fan-out is capped at 12 machines to control response time.
+	\item Fleet summary includes machine count, utilisation percentage, and active orders.
+	\end{itemize}
+	& High \\ \midrule
+
+	\textbf{US-5.4} &
+	As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant to
+	provide contextual navigation shortcuts so that I can open a machine, operation,
+	or dashboard directly from the chat response.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Chat responses include up to 4 action buttons when a redirect is relevant.
+	\item Supported targets: machine detail, operation detail, machine list,
+	dashboard, and operation history.
+	\item Tapping an action navigates to the corresponding screen.
+	\item Action buttons appear only on the last assistant message.
+	\end{itemize}
+	& Medium \\ \midrule
+
+	\textbf{US-5.5} &
+	As a \userrole{Supervisor}, I need the assistant to proactively highlight
+	anomalies (overdue orders, scrap spikes, idle operators) so that I can act
+	before problems escalate.
+	&
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item Scrap rate above 5\% is flagged as a warning; above 15\% as critical.
+	\item Scrap spikes (recent rate $>$ 2.5$\times$ baseline) are explicitly mentioned.
+	\item Overdue orders (past planned end) and at-risk orders ($<$ 4~h remaining)
+	are highlighted.
+	\item Paused operations exceeding the configured threshold are surfaced.
+	\end{itemize}
+	& High \\
+	\bottomrule
+\end{longtable}
+
+
 \section*{Remaining}
 
 \vspace{0.3cm}
@@ -614,17 +789,17 @@ these non-functional requirements:
 	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
 	\midrule
 	\endfirsthead
-	
+
 	\toprule
 	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} & \textbf{Priority} \\
 	\midrule
 	\endhead
-	
+
 	\multicolumn{4}{r}{\small Continued on next page} \\
 	\endfoot
-	
+
 	\endlastfoot
-	
+
 	\textbf{US-x.1}
 	\label{usx.1} &
 	As a Supervisor, I need to create a new production order so that I can respond to urgent production needs.
@@ -640,7 +815,7 @@ these non-functional requirements:
 	&
 	Medium \\
 	\midrule
-	
+
 	\textbf{US-x.2}
 	\label{usx.6} &
 	As an Operator, I need to be able to declare production on another machine of the same type so that I can continue working when my terminal is broken.
@@ -654,11 +829,11 @@ these non-functional requirements:
 	&
 	Low \\
 	\midrule
-	
+
 \end{longtable}
 
 
-% ── 2.3 ─────────────────────────────────────────────────────
+% ── 2.3 ─────────────────────────────────────────────────────────────────────
 
 \section{Sprint Plan}
 
@@ -678,33 +853,37 @@ functional increment verified by a sprint review with the professional superviso
 	\endhead
 	\multicolumn{3}{r}{\small Continued on next page} \\
 	\endfoot
-	
-	Sprint~1        & Authentication \& User Management                 &                
+
+	Sprint~1        & Authentication \& User Management                 &
 	Secure login, session token management, role-based access control,
 	administrator user creation, password generation and reset,
-	role and work-centre change, account activation/deactivation. \\ \midrule
-	
-	Sprint~2        & Machine Monitoring \& Production Order Management &                
+	role and work-centre change, account activation/deactivation,
+	two-factor authentication with badge QR~code, badge management
+	(view, print, regenerate), password expiry policy configuration,
+	and first-launch host pairing. \\ \midrule
+
+	Sprint~2        & Machine Monitoring \& Production Order Management &
 	Real-time machine status tracking, production order list per machine,
 	operation start, tabbed machine view with Orders / Progress / History tabs,
 	order filtering and sorting, completed operation history. \\ \midrule
-	
-	Sprint~3        & Production Execution \& Traceability              &                
+
+	Sprint~3        & Production Execution \& Traceability              &
 	Production cycle declarations, pause/resume/finish/cancel operations,
 	operation detail page with live data, production chart, Bill of Materials
 	visibility, component barcode scanning, scrap declaration,
 	supervisor proxy declaration, and label printing. \\ \midrule
-	
-	Sprint~4        & Administration, System Configuration              &                
+
+	Sprint~4        & Administration, System Configuration              &
 	Administrator dashboard and activity log, admin navigation shell,
 	multi-language support (EN/FR/AR) and RTL layout,
 	in-app onboarding tutorials. \\ \midrule
 
-	Sprint~5        & AI Assistant \& Analytical Intelligence           &                
-	Natural-language chat assistant, Node.js reverse proxy middleware,
-	Python AI agent with intent classification, multi-provider LLM support,
+	Sprint~5        & AI Assistant \& Analytical Intelligence           &
+	Natural-language chat assistant, \techname{Node.js} reverse proxy middleware,
+	\techname{Python} AI agent with intent classification, multi-provider LLM support,
 	fuzzy machine resolution, composite fan-out queries, data enrichment,
-	and contextual redirect actions. \\
+	anomaly detection (scrap spikes, overdue orders), and contextual
+	redirect actions. \\
 	\bottomrule
 \end{longtable}
 
@@ -723,7 +902,7 @@ The physical architecture of the MES system rests on three main nodes:
 
 	      \item \textbf{Node.js Middleware}: a reverse-proxy layer running between the Flutter
 	            client and Business Central. It handles SSPI/Windows authentication toward BC,
-	            exposes a REST API consumed by Flutter, and routes AI chat requests to the Python
+	            exposes a unified REST API consumed by Flutter, and routes AI chat requests to the Python
 	            AI agent.
 
 	      \item \textbf{Flutter Client (mobile / web / desktop)}: application compiled for
@@ -806,7 +985,7 @@ The Flutter front-end follows a three-layer architecture:
 	\label{fig:mescha-archi_logicielle}
 \end{figure}
 
-% ── 2.5 ─────────────────────────────────────────────────────
+% ── 2.5 ─────────────────────────────────────────────────────────────────────
 \section{Work Environment}
 
 \subsection{Software Environment}
@@ -821,44 +1000,44 @@ this project.
 	\textbf{Logo}                                                                   & \textbf{Tool / Technology}              & \textbf{Role in the project} \\
 	\midrule
 	\endfirsthead
-	
+
 	\toprule
 	\textbf{Logo}                                                                   & \textbf{Tool / Technology}              & \textbf{Role in the project} \\
 	\midrule
 	\endhead
-	
+
 	\multicolumn{3}{r}{\small Continued on next page} \\
 	\endfoot
-	
+
 	\endlastfoot
-	
+
 	% IMAGE PLACEHOLDER - insert logos in the left column
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/Microsoft-Business-Central-Logo.png}&
-	Microsoft Dynamics 365 Business Central &                              
+	Microsoft Dynamics 365 Business Central &
 	ERP platform hosting the AL back-end and business data \\[6pt]
 	\midrule
-	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/AL-language-logo.png}& 
-	AL Language (Application Language)&                              
+	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/AL-language-logo.png}&
+	AL Language (Application Language)&
 	Development of the BC extension (tables, codeunits, API pages) \\[6pt]
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/flutter-dart-logo.png}&
-	Flutter (Dart)&                              
+	Flutter (Dart)&
 	Development of the cross-platform mobile/web application \\[6pt]
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/VSCode-logo.png}&
-	Visual Studio Code&                              
+	Visual Studio Code&
 	Primary development environment (AL and Flutter) \\[6pt]
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/github-logo.png}&
-	Git / GitHub&                              
+	Git / GitHub&
 	Version control and collaboration \\[6pt]
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/postman-logo.png}&
-	Postman&                              
+	Postman&
 	Testing and validation of OData V4 endpoints \\[6pt]
 	\midrule
-	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/lucid-chart-logo.png}& 
-	lucid chart&                              
+	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/lucid-chart-logo.png}&
+	lucid chart&
 	UML and system architecture diagramming \\[6pt]
 	\midrule
 \end{longtable}
@@ -869,18 +1048,17 @@ this project.
 \textit{[To be completed: include workstation specifications (OS, RAM, CPU), tool versions
 (Flutter SDK, Dart SDK, Business Central version, VS Code extensions), and any specific
 configuration details such as Docker setup or BC on-premises instance parameters.]}
-	
+
 \phantomsection
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
-	
+
 In this chapter, we analysed and specified the functional and non-functional
 requirements of the MES system, identified the actors and their interactions, and
 presented the overall architecture of the solution. We also described the work
 environment and the adopted Scrum methodology. The following chapters detail the work
 carried out sprint by sprint, presenting the conceptual aspects and the results
 obtained at the end of each iteration.
-	
 % ============================================================
 	
 	
