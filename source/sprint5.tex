@@ -148,7 +148,7 @@ textbf{\domainterm{AI Chat Assistant \& Analytical Intelligence}}.
 		\item Define \texttt{ActionType} enum and \modulename{RedirectAction}
 		      schema in \texttt{agent/models.py}.
 		\item Implement \texttt{Orchestrator.\_parse\_actions()} to extract
-		      \texttt{\`\`\`actions} JSON block from LLM reply (up to 4 actions).
+		      \texttt{actions} JSON block from LLM reply (up to 4 actions).
 		\item Document supported action types and payload shapes in
 		      \texttt{prompts/system\_prompts.py} (\texttt{SYNTHESIS\_USER\_TEMPLATE}).
 	\end{itemize}
@@ -414,11 +414,12 @@ data fetching needs.
 
 \begin{figure}[H]
 	\centering
-	\missingfigure{Physical architecture: Flutter $\leftrightarrow$ Node.js
-		(port 3000) $\leftrightarrow$ Python FastAPI (port 8000); Node.js
-		$\leftrightarrow$ BC (PowerShell SSPI); Python agent $\leftrightarrow$
-		Node.js /api/* for tool calls}
-	\caption{AI Assistant Layer --- Physical Architecture.}
+	% \missingfigure{Physical architecture: Flutter $\leftrightarrow$ Node.js
+	% 	(port 3000) $\leftrightarrow$ Python FastAPI (port 8000); Node.js
+	% 	$\leftrightarrow$ BC (PowerShell SSPI); Python agent $\leftrightarrow$
+	% 	Node.js /api/* for tool calls}
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}
+  	\caption{AI Assistant Layer --- Physical Architecture.}
 	\label{fig:s5-architecture}
 \end{figure}
 
@@ -519,7 +520,7 @@ block containing the enriched data in markdown format (truncated at
 \texttt{SYNTHESIS\_SYSTEM} and \texttt{SYNTHESIS\_USER\_TEMPLATE} prompts. The
 system prompt instructs the model to answer only from the pre-fetched data, to
 highlight anomalies prominently, to respond in the same language as the user, and
-to optionally append a \texttt{\`\`\`actions} JSON block containing up to 4
+to optionally append a \texttt{actions} JSON block containing up to 4
 \modulename{RedirectAction} objects.
 
 \subsubsection{Intent Classification}
@@ -631,7 +632,7 @@ summarises the enrichment applied to each result key.
 	\textbf{Result key} & \textbf{Enrichment} \\
 	\midrule
 	\endhead
-	\multicolumn{3}{r}{\small Continued on next page} \\
+	\multicolumn{2}{r}{\small Continued on next page} \\
 	\endfoot
 	\bottomrule
 	\endlastfoot
@@ -708,9 +709,9 @@ A \uilabel{Clear} button resets the conversation history.
 	\centering
 	\setlength{\fboxsep}{5pt}
 	\colorbox{black}{%
-		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/MES_Sprint-5-Repport/placeholder-image.png}%
+		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}%
 		\hspace{\fboxsep}%
-		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/MES_Sprint-5-Repport/placeholder-image.png}%
+		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}%
 	}
 	\caption{\uilabel{AI Chat Panel} --- desktop side panel and mobile dialog views.}
 	\label{fig:s5-ui-chat-panel}
@@ -732,7 +733,7 @@ steps, and one \texttt{redirect\_machine} action.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/MES_Sprint-5-Repport/placeholder-image.png}
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}
 	\caption{Postman endpoint test --- \texttt{POST /api/ai/chat}.}
 	\label{fig:s5-test-chat}
 \end{figure}
@@ -743,7 +744,7 @@ and the Python agent are reachable.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/MES_Sprint-5-Repport/placeholder-image.png}
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}
 	\caption{Postman endpoint test --- \texttt{GET /api/ai/health}.}
 	\label{fig:s5-test-health}
 \end{figure}
