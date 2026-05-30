@@ -215,13 +215,13 @@ textual description of the \textit{Start Operation} use case.
   \item The target routing line has status \domainterm{Released}.
   \item No other operation is currently \domainterm{Running} on the same machine.
   \item The operation has not already been started (no existing \domainterm{Running} record for this order/operation pair).
-  \item The previous operation in the same production order (if any) is marked as \domainterm{Completed} or produced enough for the send ahead quantity.
+  \item The previous operation in the same production order (if any) is marked as \domainterm{Finished} or produced enough for the send ahead quantity.
   \end{itemize} \\
   \midrule
   
   \textbf{Postconditions} &                     
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-  \item A new \modulename{MES Operation Status} record is inserted with status
+  \item A new \modulename{MES Operation State} record is inserted with status
   \domainterm{Running} and the current \domainterm{UTC} timestamp.
   \item The \uilabel{Operations Progress} tab reflects the new running operation
   within the next polling cycle.
@@ -241,7 +241,7 @@ textual description of the \textit{Start Operation} use case.
   \item The frontend sends a \domainterm{POST} request to
   \apiendpoint{MESWebService\_startOperation}.
   \item The backend validates all preconditions.
-  \item On success, a \modulename{MES Operation Status} record is inserted.
+  \item On success, a \modulename{MES Operation State} record is inserted.
   \item The frontend navigates to the \uilabel{Orders Progression Page}.
   \end{enumerate} \\
   
@@ -517,7 +517,7 @@ so the \techname{Flutter} client can display the operations history.
 
 The UML Class Diagram (Figure~\ref{fig:s2-class-diagram-s2}) of the machine and
 production management domain shows the \modulename{MES Machine Status} and
-\modulename{MES Operation Status} tables and their relationships with the
+\modulename{MES Operation State} tables and their relationships with the
 \techname{Business Central} standard tables \modulename{Machine Center} and
 \modulename{Prod. Order Routing Line}.
 
@@ -594,7 +594,7 @@ lists the fields and their descriptions.
   
 \end{longtable}
 
-\subsubsection{MES Operation Status Table}
+\subsubsection{MES Operation State Table}
 
 The \modulename{MES Operation Status} table (50108) implements the same
 append-only pattern for operation lifecycle events. Every state transition
@@ -655,7 +655,7 @@ Key points:
   \item Both tables use an append-only design: no \texttt{Modify} is called on
         existing records.
   \item The \domainterm{secondary index}
-        \texttt{ExecutionTimeline("Execution Id", "Last Updated At")} on \modulename{MES Operation State} supports
+       \texttt{ExecutionTimeline("Execution Id", "Declared At")} on \modulename{MES Operation State} supports
         efficient retrieval of the latest event per group.
 \end{itemize}
 
@@ -704,14 +704,14 @@ procedure delegates precondition checking to a \texttt{[TryFunction]}
 verifies the routing line is \domainterm{Released}, confirms no \domainterm{Running}
 record exists for the same order/operation, and checks that the machine is not
 already busy with another operation. If all checks pass, a new
-\modulename{MES Operation Status} record with status \domainterm{Running} is
+\modulename{MES Operation State} record with status \domainterm{Running} is
 inserted by \modulename{InsertMESOperation}. On failure, the last error text is
 captured and returned as a structured \domainterm{JSON} error response.
 
 \textbf{fetchOngoingOperationsState.}
 Returns the current active operations for a machine as a \domainterm{JSON} array.
 The procedure sets a descending composite key on
-(Machine No, Prod Order No, Operation No, Last Updated At) and iterates the
+(Machine No, Prod Order No, Operation No, Declared At) and iterates the
 result set, emitting at most one entry per (order, operation) pair --- the one
 with the most recent timestamp. Only entries whose latest status is
 \domainterm{Running} or \domainterm{Paused} are included in the output.
@@ -815,7 +815,7 @@ through directly to the UI layer.
 
 The \uilabel{Machine List Page} is the entry point for operators after login. It
 displays a live-updating grid (tablet/desktop) or list (mobile) of machine cards
-scoped to the authenticated work centre. Each card shows the machine name, its
+scoped to the authenticated work centre, refreshing every 20~seconds. Each card shows the machine name, its
 current status with a colour-coded badge, and the active production order number.
 The layout adapts across breakpoints: a single-column list below 600 dp, a
 two-column grid below 1024 dp, and a four-column grid above.
@@ -836,7 +836,7 @@ across both desktop and mobile platforms.
 
 The user interface for the machines domain is split across two top-level pages
 accessible via a shared \uilabel{Top Navigation Bar} with tabs for
-\uilabel{Orders}, \uilabel{Progress}, \uilabel{Consumable}, and \uilabel{History}.
+\uilabel{Orders}, \uilabel{Progress}, and \uilabel{History}.
 
 The \uilabel{Machine Orders Page} displays the production routing lines assigned to the selected machine. A \uilabel{Global Search Bar} allows filtering by free text (order number, item description, or date), by status, and sorting by planned start date. Order cards use a responsive layout that switches between a stacked \domainterm{narrow layout} and a side-by-side \domainterm{wide layout} at a 520 dp breakpoint. Only \domainterm{Released} orders display an active \uilabel{Start Order} button; \domainterm{Planned} and \domainterm{Firm Planned} orders show it disabled. Figure~\ref{fig:s2-ui-machine-orders} illustrates both the desktop and mobile views.
 
@@ -873,7 +873,7 @@ Figure~\ref{fig:s2-ui-operations-progress}.
   \label{fig:s2-ui-operations-progress}
 \end{figure}
 
-The \uilabel{Machine History Page} (Figure~\ref{fig:s2-ui-hist-page}) displays completed operations assigned to the selected machine, limited to \domainterm{Finished} and \domainterm{Cancelled} statuses. It shares the same layout and filtering behaviour as the \uilabel{Machine Orders Page} --- including free-text search, status filtering, and sort controls --- but omits the \uilabel{Start Order} button. Tapping an operation card navigates to its \uilabel{Operation Detail Page} for review. The \uilabel{Machine History Page} is accessible via the \domainterm{History} tab in the \techname{TopNavigationBar}. Figure~\ref{fig:s2-ui-hist-page} shows the desktop and mobile views.
+The \uilabel{Machine History Page} (Figure~\ref{fig:s2-ui-hist-page}) displays completed operations assigned to the selected machine, limited to \domainterm{Finished}, \domainterm{Interrupted}, and \domainterm{Cancelled} statuses. It shares the same layout and filtering behaviour as the \uilabel{Machine Orders Page} --- including free-text search, status filtering, and sort controls --- but omits the \uilabel{Start Order} button. Tapping an operation card navigates to its \uilabel{Operation Detail Page} for review. The \uilabel{Machine History Page} is accessible via the \domainterm{History} tab in the \techname{TopNavigationBar}. Figure~\ref{fig:s2-ui-hist-page} shows the desktop and mobile views.
 
 \begin{figure}[H]
   \centering
@@ -918,7 +918,7 @@ Figure~\ref{fig:s2-test-postman-getMachinesOrders} shows a test case for the \ap
 This sprint successfully delivered the machine monitoring and production order
 management foundation of the \domainterm{MES} application.On the backend, two
 new append-only tables (\modulename{MES Machine Status} and
-\modulename{MES Operation Status}) and dedicated codeunits
+\modulename{MES Operation State}) and dedicated codeunits
 (\modulename{MES Machine Fetch} and \modulename{MES Machine Write}) were
 implemented in \techname{Business Central AL}, exposing four \domainterm{OData V4}
 endpoints that cover the full machine and operation lifecycle. The append-only design ensures a complete, tamper-evident

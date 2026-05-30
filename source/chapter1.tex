@@ -210,6 +210,12 @@ This solution consists of two complementary parts:
 	      application allowing operators and supervisors to view production orders assigned to
 	      their machine, start, pause or complete an operation, declare produced quantities,
 	      and visualise progress in real time.
+	\item \textbf{A Node.js middleware layer}: a reverse-proxy Express 5.x server
+	      handling SSPI/Windows authentication toward Business Central and exposing
+	      a unified REST API to both the Flutter client and the Python AI agent.
+	\item \textbf{A Python AI agent (FastAPI)}: provides the conversational
+	      intelligence layer introduced in Sprint~5: intent classification, multi-provider
+	      LLM synthesis, fuzzy machine resolution, and contextual redirect actions.
 \end{itemize}
 
 The objective is to optimise every phase of production management by establishing a

@@ -393,7 +393,7 @@ these non-functional requirements:
 	\item Only \domainterm{Released} routing lines may be started.
 	\item An operation cannot be started if it is already running.
 	\item A machine cannot run two operations simultaneously.
-	\item A new MES Operation Status record is created with status.
+	\item A new MES Operation State record is created with status.
 	\item An operation cannot be started if the previous operation in 
 	the same order is not started.
 	\domainterm{Running}.
@@ -876,7 +876,7 @@ The software architecture of the system is organised around four distinct layers
 
 \subsubsection{AL Back-end (Business Central)}
 
-The back-end is structured in six layers:
+The back-end is structured in five layers:
 
 \begin{itemize}
 	\item \textbf{Tables (1-Tables)}: define the persistent data model ---
@@ -885,14 +885,15 @@ The back-end is structured in six layers:
 	      Progression, MES Settings, MES Component Consumption, MES User Execution Interaction, .
 	\item \textbf{Enums (2-Enum)}: define the enumerated types --- MES User Role
 	      (Operator, Supervisor, Admin), MES Machine Status (Idle, Working),
-	      MES Operation Status (Running, Paused, Finished, Cancelled, Interrupted), 
+	      MES Operation State (Running, Paused, Finished, Cancelled, Interrupted), 
 		  MES Token State (Revoked, Pending, Active).
 	\item \textbf{Codeunits (3-CodeUnit)}: contain the business logic --- MES Auth Mgt
 	      (authentication, tokens), MES Password Mgt (SHA-256 hashing), MES Machine Fetch
-	      and MES Machine Write (machine and operation management), MES Unbound Actions (OData V4 facade).
+	      (read operations), MES Machine Write (state orchestration), MES Machine Insert
+		  (table writes), MES Machine Validation (business rule guards), MES Unbound Actions.
 	\item \textbf{API Pages (4-API)}: expose data for reading/writing via the BC REST
 	      API --- employees, work centres.
-	\item \textbf{Pages (6-Pages)}: administration and debugging interfaces in the BC
+	\item \textbf{Pages (5-Pages)}: administration and debugging interfaces in the BC
 	      client (lists, cards, API debug page, etc...).
 \end{itemize}
 
@@ -988,12 +989,14 @@ this project.
 	Testing and validation of OData V4 endpoints \\[6pt]
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/python.png}&
-	Python&
-	[description] \\[6pt]
+	Python (FastAPI)&
+	AI agent layer: intent classification, multi-provider LLM synthesis, fuzzy
+	machine resolution, and analytics enrichment. \\[6pt]
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/node.png}&
-	node&
-	[description] \\[6pt]
+	Node.js (Express 5.x)&
+	Reverse-proxy middleware: Windows SSPI authentication toward Business Central,
+	unified REST API for Flutter and Python clients. \\[6pt]
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/lucid-chart-logo.png}&
 	lucid chart&

@@ -230,7 +230,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 		\item Add \texttt{AppConstants.loadHost()} call to the app initialisation sequence in \texttt{main()}.
 	\end{itemize}\\
 	\midrule
-	\textbf{US-1.10}
+	\textbf{US-1.12}
 	& As an \userrole{Administrator}, I need to be able to export the list of users so that I can
 	use the info in other applications or processes.
 	& \noindent\textit{Flutter}
@@ -252,28 +252,28 @@ authentication and user management system. In addition to the core login,
 logout, change password, and user creation flows, the diagram includes the
 \uilabel{Change Role / Work Centre} and \uilabel{Activate / Deactivate Account}
 use cases available exclusively to the \userrole{Administrator}, as well as the
--\uilabel{Badge QR Scan} two-factor verification step and the
--\uilabel{Paring / Host Configuration} first-launch flow.
+\uilabel{Badge QR Scan} two-factor verification step and the
+\uilabel{Paring / Host Configuration} first-launch flow.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/useCase/authentification.png}
-	\caption{UML Use Case Diagram.}
-	\label{fig:s1-use-case-diagram}
+	\caption{UML Use Case Diagram --- Authentication.}
+	\label{fig:s1-uc-authentication}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/useCase/manageSettings.png}
-	\caption{UML Use Case Diagram.}
-	\label{fig:s1-use-case-diagram}
+	\caption{UML Use Case Diagram --- Manage Settings.}
+	\label{fig:s1-uc-manage-settings}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/useCase/manageUsers.png}
-	\caption{UML Use Case Diagram.}
-	\label{fig:s1-use-case-diagram}
+	\caption{UML Use Case Diagram --- Manage Users.}
+	\label{fig:s1-uc-manage-users}
 \end{figure}
 
 \Needspace{10\baselineskip}
@@ -540,7 +540,7 @@ and revokes all existing tokens for the account.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/change-password.png}%
-	\caption{SD-03: Change Password}%
+	\caption{SD-04: Change Password}%
 	\label{fig:s1-seq-ChangePw}%
 \end{figure}%
 
@@ -692,11 +692,6 @@ active tokens for that account, and returns the new credential to the
 % 	Flutter-->>Admin: Show dialog with generated password a single time
 %====================================================================
 
-Figure~\ref{fig:s1-seq-AdminSetPw} depicts the admin set-password flow. The
-administrator generates a temporary credential, the \techname{AL} layer marks
-the target account as requiring a password change on next login, revokes all
-active tokens for that account, and returns the new credential to the
-\techname{Flutter} client as copyable text.
 
 \begin{figure}[H]
 	\centering

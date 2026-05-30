@@ -273,15 +273,15 @@ The \userrole{Supervisor} role is a superset of \userrole{Operator}: both roles 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/useCase/sprint3-1.png}
-  \caption{UML Use Case Diagram --- Sprint 3}
-  \label{fig:s3-use-case-diagram-s3}
+  \caption{UML Use Case Diagram --- Sprint 3 (Part 1)}
+  \label{fig:s3-uc-part1}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/useCase/sprint3-2.png}
-  \caption{UML Use Case Diagram --- Sprint 3}
-  \label{fig:s3-use-case-diagram-s3}
+  \caption{UML Use Case Diagram --- Sprint 3 (Part 2)}
+  \label{fig:s3-uc-part2}
 \end{figure}
 
 \subsection{Textual Use Case Description}
@@ -1146,7 +1146,14 @@ This sprint introduces a key reactive pattern: a shared \texttt{StreamController
 \end{longtable}
 
 \subsubsection{User Interface}
-Figures~\ref{fig:s3-ui-op-detail-running} through~\ref{fig:s3-ui-op-detail-cancelled} illustrate the \uilabel{Operation Detail Page} across its four possible states: Running, Paused, Finished, and Cancelled. Each view adapts its action buttons and status badge to the current state, while the production chart, cycle table, and BOM list remain consistently visible. On desktop, the page uses a two-column layout with order information and production data on the left, and the \uilabel{Quick Actions} panel on the right; on mobile, these sections stack vertically. Action button availability is state-dependent: \uilabel{Declare Production} and \uilabel{Report Reject} are disabled in the Paused, Finished, and Cancelled states; the close button triggers a \uilabel{Finish Production Order} or \uilabel{Cancel Production Order} action depending on whether the progress has reached 100\%; and \uilabel{Print Label} is enabled only once the operation is finished.
+Figures~\ref{fig:s3-ui-op-detail-running} through~\ref{fig:s3-ui-op-detail-cancelled} illustrate the \uilabel{Operation Detail Page}
+across its five possible states: Running, Paused, Finished, Interrupted, and Cancelled. Each view adapts its action buttons and status badge
+to the current state, while the production chart, cycle table, and BOM list remain consistently visible. On desktop, the page 
+uses a two-column layout with order information and production data on the left, and the \uilabel{Quick Actions} panel on the
+right; on mobile, these sections stack vertically. Action button availability is state-dependent: \uilabel{Declare Production} 
+and \uilabel{Declare Scrap} are disabled in the Paused, Finished, and Cancelled states; the close button triggers a 
+\uilabel{Finish Production Order} or \uilabel{Cancel Production Order} action depending on whether the progress has reached 100\%;
+and \uilabel{Print Label} is enabled only once the operation is finished.
 
 \begin{figure}[H]
     \centering
