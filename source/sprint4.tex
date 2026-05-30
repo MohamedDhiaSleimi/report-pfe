@@ -4,13 +4,13 @@
 This sprint delivers the administration layer, multi-language support, and
 in-app onboarding tutorials that complete the \domainterm{MES} solution.
 Administrators receive a persistent navigation shell giving access to a
-machine performance dashboard, a paginated activity log, and a user role
-management interface. Cross-cutting quality-of-life features include full
-internationalisation with English, French, and Arabic support, automatic
-right-to-left layout for Arabic, and guided coach-mark tutorials shown once
-per screen on first use. No new \techname{Business Central} tables are
-introduced in this sprint; all data is derived by querying and aggregating
-the tables created in Sprints~1 through~3.
+a paginated activity log, and a user role management interface. Cross-cutting
+quality-of-life features include full internationalisation with English, French,
+and Arabic support, automatic right-to-left layout for Arabic, and guided 
+coach-mark tutorials shown once per screen on first use. This sprint also 
+delivers machine performance dashboard for the \userrole{Supervisor}. No new
+\techname{Business Central} tables are introduced in this sprint; all data is
+derived by querying and aggregating the tables created in Sprints~1 through~3.
 
 % ---------------------------------------------------------------------------
 % 1. SPRINT BACKLOG
@@ -41,7 +41,7 @@ This sprint covers \textbf{Domain 4:}
       \endlastfoot
             
       \textbf{US-4.1}
-      & As an \userrole{Administrator}, I need a performance dashboard for all
+      & As an \userrole{Supervisor}, I need a performance dashboard for all
       machines so that I can monitor production health across the facility.
       & \noindent\textit{Business Central (AL):}
       \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
@@ -54,7 +54,6 @@ This sprint covers \textbf{Domain 4:}
             \item Create model \techname{MachineDashboardModel}.
             \item Create \techname{LogService} to consume the \texttt{fetchMachineDashboard} API and \techname{LogProvider} to manage its state.
             \item Create page \techname{MachineDashboardPage}.
-            \item Create widget \techname{AdminMachineCard}.
             \item Implement machine dashboard search and time-range filtering in \techname{MachineDashboardPage}.
       \end{itemize} \\  
       \midrule 
@@ -117,9 +116,9 @@ This sprint covers \textbf{Domain 4:}
 \subsection{Use Case Diagram}
 
 The UML Use Case Diagram (Figure~\ref{fig:s4-use-case-s4}) covers the actors and
-interactions introduced in this sprint. The \userrole{Administrator} gains three
-new interactions: \uilabel{View Machine Dashboard}, \uilabel{View Activity Log},
-and \uilabel{Navigate Admin Shell}. All three actors (\userrole{Operator},
+interactions introduced in this sprint. The \userrole{Administrator} gains the
+interaction \uilabel{View Activity Log}.The \userrole{Supervisor} gains the interaction
+\uilabel{View Machine Dashboard}. All three actors (\userrole{Operator},
 \userrole{Supervisor}, \userrole{Administrator}) share the
 \uilabel{Select Language} and \uilabel{View Tutorial} use cases, which are
 cross-cutting accessibility features available on every screen.
@@ -153,11 +152,11 @@ represents the most significant new administrator workflow in this sprint.
       
       \textbf{Use Case Name}  & View Machine Dashboard   \\
       \midrule
-      \textbf{Primary Actor}  & \userrole{Administrator} \\
+      \textbf{Primary Actor}  & \userrole{Supervisor} \\
       \midrule
       \textbf{Preconditions}  &                          
       \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-      \item The user is authenticated with the \domainterm{Admin} role.
+      \item The user is authenticated with the \domainterm{Supervisor} role.
       \item At least one \techname{MES Operation Execution} record exists.
       \end{itemize} \\
       \midrule
@@ -170,15 +169,13 @@ represents the most significant new administrator workflow in this sprint.
       \midrule
       \textbf{Main Scenario}  &                          
       \begin{enumerate}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-      \item The administrator logs in and is routed to \techname{AdminPage}.
-      \item The administrator selects \uilabel{Machine Dashboard} in the sidebar.
+      \item The Supervisor logs in and is routed to \techname{machineList}.
+      \item The Supervisor selects \uilabel{Machine Dashboard} in the topBar.
       \item The system POSTs to \apiendpoint{/MESWebService\_fetchMachineDashboard}
       with the default \texttt{hoursBack = 24}.
       \item The backend aggregates execution and progression records and returns
       per-machine metrics.
-      \item The \techname{MachineDashboardPage} renders one
-      \techname{AdminMachineCard} per machine.
-      \item The administrator changes the time range to 48\,h via the AppBar
+      \item The Supervisor changes the time range to 48\,h via the AppBar
       dropdown; the page re-fetches and updates.
       \end{enumerate} \\
             
@@ -207,35 +204,38 @@ returned to the \techname{Flutter} client.
 
 %=====SD-19==========================================================
 % sequenceDiagram
-%     actor User
-%     participant Flutter
-%     participant AL
-%     participant BC
+%       actor User
+%       participant Flutter
+%       participant Node as Node.js Middleware
+%       participant AL
+%       participant BC
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-01 — user is logged in as Admin
-%     end
+%       rect rgb(220,235,255)
+%           Note over User,BC: ref SD-01 — user is logged in as Admin
+%       end
 
-%     User->>Flutter: Open Machine Dashboard
-%     Flutter->>AL: fetchMachineDashboard request
+%       User->>Flutter: Open Machine Dashboard
+%       Flutter->>Node: POST /api/fetchMachineDashboard 
+%       Node->>AL: MESWebService_fetchMachineDashboard 
 
-%     AL->>BC: Loop all Machine Center records
-%     loop For each machine
-%         AL->>BC: Count Operation for machine
-%         AL->>BC: Calculate sum TotalProducedQuantity
-%         AL->>BC: Calculate sum ScrapQuantity
-%         AL->>BC: Calculate uptime percentage
-%     end
-%     BC-->>AL: per-machine KPI rows
-%     AL-->>Flutter: request data
-%     Flutter-->>User: show data
+%       AL->>BC: filter machines to relevant WCs only
+%       BC-->>AL: filtered machine list
+
+%       loop For each machine in filtered list
+%           AL->>BC: collect the detail from all the necessary records 
+%           BC-->>AL: per-machine aggregated KPIs
+%       end
+
+%       AL-->>Node: response
+%       Node-->>Flutter: response
+%       Flutter-->>User: Machine dashboard grid rendered
 %====================================================================
 
 Figure~\ref{fig:s4-seq-fetch-activity-log} presents the activity log retrieval
-flow. The \techname{AL} layer queries four event tables in parallel ---
+flow. The \techname{AL} layer queries four event tables in parallel;
 \domainterm{MES Operation State}, \domainterm{MES Operation Progression},
 \domainterm{MES Operation Scrap}, and \domainterm{MES Component Consumption}
---- filtering each by the requested time window. For every event row it joins
+, filtering each by the requested time window. For every event row it joins
 the associated \domainterm{MES User} and \domainterm{MES Operation Execution}
 records to enrich the entry with operator identity and execution context. The
 resulting flat event list is returned to the \techname{Flutter} client, which
@@ -251,29 +251,32 @@ renders it as a chronological activity table.
 
 %=====SD-20==========================================================
 % sequenceDiagram
-%     actor User
-%     participant Flutter
-%     participant AL
-%     participant BC
+%       actor User
+%       participant Flutter
+%       participant Node as Node.js Middleware
+%       participant AL
+%       participant BC
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-01 — user is logged in as Admin
-%     end
+%       rect rgb(220,235,255)
+%           Note over User,BC: ref SD-01 — user is logged in as Admin
+%       end
 
-%     User->>Flutter: Open Activity Log
-%     Flutter->>AL: fetchMachineDashboard request
+%       User->>Flutter: Open Activity Log 
+%       Flutter->>Node: POST /api/fetchActivityLog 
+%       Node->>AL: MESWebService_fetchActivityLog 
 
-%     AL->>BC: Filter MES Operation State rows 
-%     AL->>BC: Filter MES Operation Progression rows
-%     AL->>BC: Filter MES Operation Scrap rows
-%     AL->>BC: Filter MES Component Consumption rows
-%     loop For each event row
-%         AL->>BC: Join MES User to Employee 
-%         AL->>BC: Join MES Operation Execution
-%     end
-%     BC-->>AL: flat event list
-%     AL-->>Flutter: request response
-%     Flutter-->>User: activity table
+%       AL->>BC: collect Operation state changes within the cutoff
+%       AL->>BC: collect the Operation progress within the cutoff
+%       AL->>BC: collect the scrap declarations within the cutoff
+%       AL->>BC: collect the component scan within the cutoff
+
+%       AL->>BC: resolve the name of the users
+
+
+%       AL->>AL: Merge all four event lists into flat chronological array
+%       AL-->>Node: response
+%       Node-->>Flutter: response
+%       Flutter-->>User: Activity log table rendered
 %====================================================================
 
 \subsection{Class Diagram}
@@ -396,25 +399,9 @@ status codes and throws a structured exception for non-2xx responses.
 
 \subsubsection{User Interface}
 
-\textbf{\uilabel{Admin Navigation Shell} (Figure~\ref{fig:s4-ui-admin-shell})} provides
-the persistent sidebar that frames all administrator pages. A 250\,px dark panel
-on the left lists the four sections (Users \& Roles, Machine Dashboard, Activity
-Logs, Settings), with the active section highlighted in blue. At the bottom, a
-user-info strip shows the administrator's avatar, full name, and Auth ID, and
-navigates to \techname{ProfilePage} on tap. The \texttt{IndexedStack} to the
-right keeps all pages alive simultaneously, preserving scroll position and loaded
-data as the administrator switches sections.
-
-\begin{figure}[H]
-      \centering
-      \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-4-Report/placeholder-image.png}
-      \caption{\uilabel{Admin Navigation Shell} --- desktop view.}
-      \label{fig:s4-ui-admin-shell}
-\end{figure}
-
 Figures~\ref{fig:s4-ui-machine-dashboard} and~\ref{fig:s4-ui-activity-log} illustrate
-the two main administration pages. The \uilabel{Machine Dashboard Page} renders
-one \techname{AdminMachineCard} per machine, each displaying a circular uptime
+the two  pages. The \uilabel{Machine Dashboard Page} renders
+one card per machine, each displaying a circular uptime
 indicator and four metric rows (operations, produced, scrap, running minutes);
 the AppBar hosts a time-range dropdown that re-fetches data on change. The
 \uilabel{Activity Log Page} presents a paginated list of all system events
@@ -426,24 +413,19 @@ in the AppBar narrow the view.
       \centering
       \setlength{\fboxsep}{5pt}
       \colorbox{black}{%
-            \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/placeholder-image.png}%
+            \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/UI/dashboard/wide.png}%
             \hspace{\fboxsep}%
-            \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/placeholder-image.png}%
+            \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/UI/dashboard/small.png}%
       }
       \caption{\uilabel{Machine Dashboard Page} --- desktop and mobile views.}
       \label{fig:s4-ui-machine-dashboard}
 \end{figure}
 
 \begin{figure}[H]
-      \centering
-      \setlength{\fboxsep}{5pt}
-      \colorbox{black}{%
-            \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/placeholder-image.png}%
-            \hspace{\fboxsep}%
-            \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/placeholder-image.png}%
-      }
-      \caption{\uilabel{Activity Log Page} --- desktop and mobile views.}
-      \label{fig:s4-ui-activity-log}
+  \centering
+  \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/UI/activityLog/wide.png}
+  \caption{\uilabel{Activity Log Page} --- desktop and mobile views}
+  \label{fig:s4-ui-activity-log}
 \end{figure}
 
 \section{Test and validation}

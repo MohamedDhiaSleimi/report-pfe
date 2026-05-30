@@ -254,7 +254,21 @@ use cases available exclusively to the \userrole{Administrator}, as well as the
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/useCase/sprint1.png}
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/useCase/authentification.png}
+	\caption{UML Use Case Diagram.}
+	\label{fig:s1-use-case-diagram}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/useCase/manageSettings.png}
+	\caption{UML Use Case Diagram.}
+	\label{fig:s1-use-case-diagram}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/useCase/manageUsers.png}
 	\caption{UML Use Case Diagram.}
 	\label{fig:s1-use-case-diagram}
 \end{figure}
@@ -296,6 +310,10 @@ use cases available exclusively to the \userrole{Administrator}, as well as the
  	\item A session token is generated and stored securely.
 	\item The user is redirected to the appropriate dashboard based on their
 	role (\userrole{Admin} or MES interface).
+	\end{itemize} \\ 
+	\midrule
+	& 
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item If the \domainterm{need change password} flag is set to true, they
 	are redirected to the \uilabel{Change Password} page.
 	\item If the credentials are invalid, access is denied and an error
@@ -348,34 +366,97 @@ the appropriate page based on their role and password-change flag.
 
 %=====SD-01==========================================================
 % sequenceDiagram
-%    actor User
-%    participant Flutter
-%    participant AL
-%    participant BC
+%     actor User
+%     participant Flutter
+%     participant Node as Node.js Middleware
+%     participant AL
+%     participant BC
+%     User->>Flutter: Enter AuthID + password
+%     Flutter->>Node: POST /api/Login
+%     Node->>AL: MESWebService_Login
 
-%    User->>Flutter: Enter AuthID + password
-%    Flutter->>AL: Login endpoint
-%    AL->>BC: Find the User 
-%    BC-->>AL: MES User record
-%    alt Invalid credentials or inactive user
-%        AL-->>Flutter: error message
-%        Flutter-->>User: Show error dialog
-%    else Valid
-%        AL->>BC: Create Token
-%        BC-->>AL: token record
-%        AL->>BC: Get the Users info
-%        BC-->>AL: userData
-%        AL-->>Flutter: {userData + token}
-%        Flutter->>Flutter: Store token + userData in AuthProvider
-%        alt needToChangePw = true
-%            Flutter-->>User: Navigate to ChangePasswordPage
-%        else role = Admin
-%            Flutter-->>User: Navigate to AdminPage
-%        else role = Operator / Supervisor
-%            Flutter-->>User: Navigate to MachineListPage
-%        end
-%    end
+%     AL->>BC: Find MES User
+%     BC-->>AL: MES User record
+%     alt User not found or inactive or wrong password
+%         AL-->>Node: error response
+%         Node-->>Flutter: error response
+%         Flutter-->>User: Show error dialog
+%     else Valid credentials
+%         AL->>BC: Read MES Settings
+%         alt twoFAEnabled = true
+%             AL->>BC: Insert MES Auth Token pending
+%         else 
+%             AL->>BC: Insert MES Auth Token active
+%         end
+%         AL->>BC: resolve Work Center names
+%         AL->>BC: Get Employee fullName, email, imageBase64
+%         BC-->>AL: all user data assembled
+%         AL-->>Node: response JSON
+%         Node-->>Flutter: response JSON
+%         Flutter->>Flutter: AuthProvider stores response in memory
+%         alt twoFAEnabled = true
+%             Flutter-->>User: Open BadgeScanDialog
+%             Note over User,Flutter: ref SD-2FA — badge scan flow continues
+%         end
+%             Flutter->>Flutter: save the user info in session storage and mark as authenticated
+%             alt needToChangePw = true
+%                 Flutter-->>User: _AuthGate routes to ChangePasswordPage
+%             else role = Admin
+%                 Flutter-->>User: _AuthGate routes to AdminPage
+%             else role = Operator / Supervisor
+%                 Flutter-->>User: _AuthGate routes to MachineListPage
+%             end
+%     end
 %====================================================================
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/badge-scan.png}%
+	\caption{SD-2FA: Badge Scan.}%
+	\label{fig:s1-seq-badge-scan}%
+\end{figure}%
+
+%======SD-2FA=========================================================
+%  sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant Node as Node.js Middleware
+%     participant AL
+%     participant BC
+
+%     rect rgb(220,235,255)
+%         Note over User,BC: ref SD-01 — credentials valid, twoFAEnabled = true
+%     end
+
+   
+%     alt User scans QR badge
+%         User->>Flutter: Camera detects barcode value
+%     else User enters secret manually
+%         User->>Flutter: Toggle manual entry, type secret, tap Submit
+%     end
+
+%     Flutter->>Node: POST /api/VerifyBadge
+%     Node->>AL: MESWebService_VerifyBadge
+%     AL->>BC: Find MES User and token
+%     BC-->>AL: MES User and token record
+%     AL->>AL: Verify Badge Secret
+%     AL->>BC: set the token to active
+%     alt Secret mismatch or user not found or Badge Secret blank
+%         AL-->>Node: error response
+%         Node-->>Flutter: error response
+%         Flutter-->>User: Show error in red container, re-enable scanner
+%     else Valid
+%         AL-->>Node: {success: true}
+%         Node-->>Flutter: success response
+%     end
+
+%     alt User taps Cancel
+%         User->>Flutter: Tap Cancel button
+%         Flutter->>Flutter: clears pending info
+%         Flutter-->>User: BadgeScanDialog closes, user remains on LoginPage
+%     end
+%====================================================================
+
 
 Figure~\ref{fig:s1-seq-Token-Validation} presents the token validation flow,
 which is invoked by the \techname{AL} backend before processing any
@@ -400,17 +481,12 @@ that the associated user account is still active, and either updates the
 %     participant AL
 %     participant BC
 
-%     AL->>BC: Get MES Auth Token
-%     BC-->>AL: token record
-%     AL->>AL: Check token Validity
-%     AL->>BC: Get MES User record
-%     BC-->>AL: MES User record
-%     AL->>AL: Check IsActive
+%     AL->>BC: Get token and user record
+%     BC-->>AL: records
+%     AL->>AL: Check token and user validity
 %     alt Token invalid / expired / revoked / user inactive
 %         AL-->>Flutter: error message
 %         Flutter-->>User: Show error & redirect to LoginPage
-%     else Token valid
-%         AL->>BC: Update token LastSeenAt
 %     end
 %====================================================================
 
@@ -429,24 +505,29 @@ navigating back to the login page.
 
 %======SD-03=========================================================
 % sequenceDiagram
-%     actor User
-%     participant Flutter
-%     participant AL
-%     participant BC
+% 	actor User
+% 	participant Flutter
+% 	participant Node as Node.js Middleware
+% 	participant AL
+% 	participant BC
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
-%     end
+% 	rect rgb(220,235,255)
+% 		Note over User,BC: ref SD-01 — user is logged in and holds a valid token
+% 	end
 
-%     User->>Flutter: Tap Logout
-%     Flutter->>AL: Logout request
-%     AL->>BC: Get Token record
-%     BC-->>AL: token record
-%     AL->>BC: Revoke token
-%     BC-->>AL: ok
-%     AL-->>Flutter: success message
-%     Flutter->>Flutter: Clear token + userData from AuthProvider
-%     Flutter-->>User: Navigate to LoginPage
+% 	User->>Flutter: Tap Logout
+% 	Flutter->>Node: POST /api/Logout
+% 	Node->>AL: MESWebService_Logout
+
+% 	AL->>BC: get MES Auth Token
+% 	BC-->>AL: token record
+% 	AL->>BC:set token state to revoked
+% 	BC-->>AL: ok
+% 	AL-->>Node: success response
+% 	Node-->>Flutter: success response
+
+% 	Flutter->>Flutter: removes session_token and session_user_data
+% 	Flutter-->>User: navigates to LoginPage
 %====================================================================
 
 Figure~\ref{fig:s1-seq-ChangePw} describes the change-password flow. The
@@ -467,38 +548,46 @@ and revokes all existing tokens for the account.
 
 %======SD-04=========================================================
 % sequenceDiagram
-%     actor User
-%     participant Flutter
-%     participant AL
-%     participant BC
+% 	actor User
+% 	participant Flutter
+% 	participant Node as Node.js Middleware
+% 	participant AL
+% 	participant BC
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
-%     end
+% 	rect rgb(220,235,255)
+% 		Note over User,BC: ref SD-01 — user is logged in and holds a valid token
+% 	end
 
-%     User->>Flutter: Enter current password + new password
-%     Flutter->>Flutter: Validate passwords match and meet strength rules
-%     Flutter->>AL: ChangePassword request
+% 	User->>Flutter: Enter the passwords
+% 	Flutter->>Flutter: Check confirmPassword
+% 	alt Passwords do not match
+% 		Flutter-->>User: Show mismatch dialog
+% 	else Passwords match
+% 		Flutter->>Node: POST /api/ChangePassword
+% 		Node->>AL: MESWebService_ChangePassword
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-02 — AL validates token before proceeding
-%     end
+% 		rect rgb(220,235,255)
+% 			Note over User,BC: ref SD-02 — ValidateToken
+% 		end
 
-%     AL->>BC: Get MES User (from token)
-%     BC-->>AL: MES User record (storedHash, salt)
-%     AL->>AL: check old password
-%     AL->>AL: IsPasswordStrong(newPw)
-%     alt Validation failed
-%         AL-->>Flutter: error message
-%         Flutter-->>User: Show error dialog
-%     else Valid
-%         AL->>BC: Update MES User with new password
-%         AL->>BC: Revoke all tokens of the user
-%         BC-->>AL: ok
-%         AL-->>Flutter: success message
-%         Flutter->>Flutter: Update AuthProvider 
-%         Flutter-->>User: Navigate to AdminPage / MachineListPage
-%     end
+% 		AL->>BC: get the user
+% 		BC-->>AL: MES User record 
+% 		AL->>AL: verify the current password
+% 		AL->>AL: checks the new password strength
+% 		alt Old password wrong or strength check fails
+% 			AL-->>Node: error response
+% 			Node-->>Flutter: error response
+% 			Flutter-->>User: Show error dialog
+% 		else Valid
+% 			AL->>AL: Make new salt and hash
+% 			AL->>BC: write the new info
+% 			AL->>BC: revoke all tokens
+% 			BC-->>AL: ok
+% 			AL-->>Node: success response
+% 			Node-->>Flutter: success response
+% 			Flutter-->>User: navigates to the loginpage
+% 		end
+% 	end
 %====================================================================
 
 Figures~\ref{fig:s1-seq-AdminCreateUser} through~\ref{fig:s1-seq-AdminToggleActive}
@@ -524,31 +613,36 @@ assignment records.
 
 %=====SD:05==========================================================
 % sequenceDiagram
-%     actor User
-%     participant Flutter
-%     participant AL
-%     participant BC
+% 	actor Admin
+% 	participant Flutter
+% 	participant Node as Node.js Middleware
+% 	participant AL
+% 	participant BC
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-01 — user is logged in as Admin
-%     end
+% 	rect rgb(220,235,255)
+% 		Note over Admin,BC: ref SD-01 — user is logged in as Admin
+% 	end
 
-%     User->>Flutter: Add a User
-%     Flutter->>AL: AdminCreateUser request
+% 	Admin->>Flutter: Select user info and then submit
+% 	Flutter->>Node: POST /api/AdminCreateUser
+% 	Node->>AL: MESWebService_AdminCreateUser
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-02 — AL validates token and checks Role = Admin
-%     end
+% 	rect rgb(220,235,255)
+% 		Note over Admin,BC: ref SD-02 — ValidateToken called
+% 	end
 
-%     AL->>BC: Insert MES User with IsActive and NeedToChangePw as true
-%     BC-->>AL: ok
-%     loop For each work center in workCenterListJson
-%         AL->>BC: Insert MES User Work Center
-%     end
-%     BC-->>AL: ok
-%     AL-->>Flutter: success message
-%     Flutter->>Flutter: triggerRefresh — MES user stream re-emits
-%     Flutter-->>User: New user appears in user list
+% 	AL->>BC: MES User.Init + Insert(true)
+% 	Note over AL,BC: MES User.OnInsert fires automatically:
+% 	Note over AL,BC:  - initialising all fields set by the system
+% 	BC-->>AL: MES User inserted
+% 	loop For each work center in workCenterListJson
+% 		AL->>BC: Insert MES User Work Center {UserId, WorkCenterNo}
+% 	end
+% 	BC-->>AL: ok
+% 	AL-->>Node: success response
+% 	Node-->>Flutter: success response
+% 	Flutter->>Flutter: triggers a call to refresh the user list
+% 	Flutter-->>Admin: New user appears in user list with isPendingSetup badge
 %====================================================================
 
 Figure~\ref{fig:s1-seq-AdminSetPw} depicts the admin set-password flow. The
@@ -567,27 +661,36 @@ active tokens for that account, and returns the new credential to the
 
 %=====SD-06==========================================================
 % sequenceDiagram
-%     actor User
-%     participant Flutter
-%     participant AL
-%     participant BC
+% 	actor Admin
+% 	participant Flutter
+% 	participant Node as Node.js Middleware
+% 	participant AL
+% 	participant BC
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-01 — user is logged in as Admin
-%     end
+% 	rect rgb(220,235,255)
+% 		Note over Admin,BC: ref SD-01 — user is logged in as Admin
+% 	end
 
-%     User->>Flutter: generate a password
-%     Flutter->>AL: AdminSetPassword request
+% 	Admin->>Flutter: Tap Generate Password in UserActionMenu
+% 	Flutter->>Flutter: generates 10-char password client-side
+% 	Admin->>Flutter: Tap Confirm in GeneratePasswordDialog
+% 	Flutter->>Node: POST /api/AdminSetPassword
+% 	Node->>AL: MESWebService_AdminSetPassword
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-02 — AL validates token and checks Role = Admin
-%     end
+% 	rect rgb(220,235,255)
+% 		Note over Admin,BC: ref SD-02 — ValidateToken called
+% 	end
 
-%     AL->>BC: Update MES User with  NeedToChangePw = true
-%     AL->>BC: Revoke all tokens of the user
-%     BC-->>AL: ok
-%     AL-->>Flutter: success message
-%     Flutter-->>User: Show info (copyable)
+% 	AL->>BC: get user 
+% 	BC-->>AL: MES User record
+% 	AL->>AL: check password strength
+% 	AL->>AL: Make new salt and hash
+% 	AL->>BC: write new info
+% 	AL->>BC: revoke all tokens
+% 	BC-->>AL: ok
+% 	AL-->>Node: success response
+% 	Node-->>Flutter: success response
+% 	Flutter-->>Admin: Show dialog with generated password a single time
 %====================================================================
 
 Figure~\ref{fig:s1-seq-AdminSetPw} depicts the admin set-password flow. The
@@ -605,39 +708,47 @@ active tokens for that account, and returns the new credential to the
 
 %=====SD-07===============================================================
 % sequenceDiagram
-%     actor User
-%     participant Flutter
-%     participant AL
-%     participant BC
+% 	actor Admin
+% 	participant Flutter
+% 	participant Node as Node.js Middleware
+% 	participant AL
+% 	participant BC
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-01 — user is logged in as Admin
-%     end
+% 	rect rgb(220,235,255)
+% 		Note over Admin,BC: ref SD-01 — user is logged in as Admin
+% 	end
 
-%     User->>Flutter: select new role + work centers
-%     Flutter->>AL: AdminChangeUserRole request
+% 	Admin->>Flutter: Select new role and or work centers
+% 	Flutter->>Node: POST /api/AdminChangeUserRole 
+% 	Node->>AL: MESWebService_AdminChangeUserRole
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-02 — AL validates token and checks Role = Admin
-%     end
+% 	rect rgb(220,235,255)
+% 		Note over Admin,BC: ref SD-02 — ValidateToken called
+% 	end
 
-%     AL->>BC: Get MES User
-%     BC-->>AL: record
-%     AL->>AL: check WC Cardinality
-%     alt Cardinality violation
-%         AL-->>Flutter: error message
-%         Flutter-->>User: Show error
-%     else Valid
-%         AL->>BC: Update MES User
-%         AL->>BC: remove All Work Center assignement for user
-%         loop For each wcNo in workCenterListJson
-%             AL->>BC: Insert MES User Work Center
-%         end
-%         BC-->>AL: ok
-%         AL-->>Flutter: success message
-%         Flutter->>Flutter: triggerRefresh
-%         Flutter-->>User: Updated role and departments in user row
-%     end
+% 	AL->>BC: get the user
+% 	BC-->>AL: MES User record
+% 	alt NewRole ≠ Admin
+% 		AL->>AL: Parse workCenterListJson — validate count > 0
+% 		AL->>AL: Validate Operator work center count ≤ 1
+% 		alt Cardinality violation
+% 			AL-->>Node: error response
+% 			Node-->>Flutter: error response
+% 			Flutter-->>Admin: Show error
+% 		end
+% 	end
+% 	AL->>BC: set new user role
+% 	AL->>BC: delete all user workcenter assignements
+% 	alt NewRole ≠ Admin
+% 		loop over new workcenters
+% 			AL->>BC: Insert MES User Work Center
+% 		end
+% 		end
+% 	BC-->>AL: ok
+% 	AL-->>Node: success response
+% 	Node-->>Flutter: success response
+% Flutter->>Flutter: triggers a call to refresh the user list
+% Flutter-->>Admin: Updated role and work centers shown in user row
 %====================================================================
 
 Figure~\ref{fig:s1-seq-AdminToggleActive} presents the account activation and
@@ -650,37 +761,88 @@ any currently authenticated sessions are immediately invalidated.
 	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/admin-toggle-account-active-status.png}%
 	\caption{SD-08: Admin - Toggle Account Active Status.}%
 	\label{fig:s1-seq-AdminToggleActive}%
-\end{figure}%
+\end{figure}
 
 %=====SD-08==========================================================
 % sequenceDiagram
-%     actor User
-%     participant Flutter
-%     participant AL
-%     participant BC
-
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-01 — user is logged in as Admin
-%     end
-
-%     User->>Flutter: Activate or Deactivate user
-%     Flutter->>AL: AdminSetActive request
-
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-02 — AL validates token and checks Role = Admin
-%     end
-
-%     AL->>BC: Get MES User
-%     BC-->>AL: record
-%     AL->>BC: Set IsActive
-%     alt Deactivating
-%         AL->>BC: Revok all tokens of the User
-%     end
-%     BC-->>AL: ok
-%     AL-->>Flutter: success message
-%     Flutter->>Flutter: triggerRefresh
-%     Flutter-->>User: User row shows updated status
+% 	actor Admin
+% 	participant Flutter
+% 	participant Node as Node.js Middleware
+% 	participant AL
+% 	participant BC
+%
+% 	rect rgb(220,235,255)
+% 		Note over Admin,BC: ref SD-01 — user is logged in as Admin
+% 	end
+%
+% 	Admin->>Flutter: activate or deactivate a user
+% 	Flutter->>Node: POST /api/AdminSetActive
+% 	Node->>AL: MESWebService_AdminSetActive
+%
+% 	rect rgb(220,235,255)
+% 		Note over Admin,BC: ref SD-02 — ValidateToken called
+% 	end
+%
+% 	AL->>BC: get user record
+% 	BC-->>AL: MES User record
+% 	AL->>BC: MES User.Modify — set Is Active = isActive
+% 	alt isActive = false (deactivating)
+% 		AL->>BC: revoke all tokens of the user
+% 	end
+% 	BC-->>AL: ok
+% 	AL-->>Node: {success: true, message}
+% 	Node-->>Flutter: success response
+% 	Flutter->>Flutter: triggers a call to refresh the user list
+% 	Flutter-->>Admin: User row shows updated active status
 %====================================================================
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/admin-regenerate-badge.png}%
+	\caption{SD-ADMIN-BADGE: Admin - regenerate 2FA user badge.}%
+	\label{fig:s1-seq-AdminRegenerateBadge}%
+\end{figure}
+
+
+%=====SD-ADMIN-BADGE==========================================================
+%  sequenceDiagram
+%       actor Admin
+%       participant Flutter
+%       participant Node as Node.js Middleware
+%       participant AL
+%       participant BC
+
+%       rect rgb(220,235,255)
+%           Note over Admin,BC: ref SD-01 — user is logged in as Admin
+%       end
+
+%       Admin->>Flutter: Tap View Badge
+%       Flutter->>Node: POST /api/GetBadgeSecret
+%       Node->>AL: MESWebService_GetBadgeSecret 
+
+%       AL->>BC: Get User
+%       BC-->>AL: MES User record 
+%       AL-->>Node: badge secret string
+%       Node-->>Flutter: badge secret string
+
+%       Flutter-->>Admin: Open UserBadgeDialog and Render QR code
+     
+%       opt Admin taps Regenerate
+%           Admin->>Flutter: Tap Regenerate button
+%           Flutter->>Flutter: Show confirmation AlertDialog
+%           Admin->>Flutter: Confirm
+%           Flutter->>Node: POST /api/RegenerateBadgeSecret 
+%           Node->>BC: MESWebService_RegenerateBadgeSecret 
+%           AL->>BC: Get User
+%           AL->>AL: Generate new secret
+%           AL->>BC: set Badge Secret
+%           BC-->>AL: ok
+%           AL-->>Node: success response
+%           Node-->>Flutter: success response
+%           Flutter-->>Admin: re-render QR with new secret
+%       end
+%=============================================================================
 
 
 \subsection{Class Diagram}
@@ -1034,17 +1196,30 @@ via \texttt{context.watch}.
 
 \subsubsection{User Interface}
 
-The \uilabel{Paring Page}, shown in Figure~\ref{fig:s1-ui-paring}, is the very
+The \uilabel{Paring Page}, shown in Figure~\ref{fig:s1-ui-paring-page}, is the very
 first screen presented when the application has no saved host URL. The user
 enters the middleware URL manually or taps \uilabel{Scan QR Code} to open the
 \techname{QrScannerDialog} and populate the field automatically. On submission
 the URL is validated and persisted via \texttt{AppConstants.changeHost()}.
 
+% \begin{figure}[H]
+% 	\centering
+% 	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/pairingPage/wide.png}
+% 	\caption{\uilabel{Paring Page}.}
+% 	\label{fig:s1-ui-paring}
+% \end{figure}
+
+
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/placeholder-image.png}
-	\caption{\uilabel{Paring Page}.}
-	\label{fig:s1-ui-paring}
+  \centering
+  \setlength{\fboxsep}{5pt}
+  \colorbox{black}{%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/pairingPage/wide.png}%
+    \hspace{\fboxsep}%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/pairingPage/small.png}%
+  }
+  \caption{\uilabel{Paring Page} --- desktop and mobile views.}
+  \label{fig:s1-ui-paring-page}
 \end{figure}
 
 The \uilabel{Login Page}, shown in Figure~\ref{fig:s1-ui-login}, is the application
@@ -1053,11 +1228,23 @@ entry screen presented to all users on launch. It contains \uilabel{User ID} and
 authentication redirects the user to the role-appropriate dashboard, or to the
 \uilabel{Badge Scan Dialog} if \domainterm{2FA} is enabled.
 
+% \begin{figure}[H]
+% 	\centering
+% 	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/image23.png}
+% 	\caption{\uilabel{Login Page}.}
+% 	\label{}
+% \end{figure}
+
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/image23.png}
-	\caption{\uilabel{Login Page}.}
-	\label{fig:s1-ui-login}
+  \centering
+  \setlength{\fboxsep}{5pt}
+  \colorbox{black}{%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/loginPage/wide.png}%
+    \hspace{\fboxsep}%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/loginPage/small.png}%
+  }
+  \caption{\uilabel{Login Page} --- desktop and mobile views.}
+  \label{fig:s1-ui-login}
 \end{figure}
 
 The \uilabel{Badge Scan Dialog}, shown in Figure~\ref{fig:s1-ui-badge-scan},
@@ -1067,11 +1254,23 @@ field is available as a fallback. The dialog displays any verification error and
 re-enables the scanner on failure. The user can cancel at any time, which clears
 the pending session state and returns to the login page.
 
+% \begin{figure}[H]
+% 	\centering
+% 	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/placeholder-image.png}
+% 	\caption{\uilabel{Badge Scan Dialog}.}
+% 	\label{fig:s1-}
+% \end{figure}
+
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/placeholder-image.png}
-	\caption{\uilabel{Badge Scan Dialog}.}
-	\label{fig:s1-ui-badge-scan}
+  \centering
+  \setlength{\fboxsep}{5pt}
+  \colorbox{black}{%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/badgeScanDialog/wide.png}%
+    \hspace{\fboxsep}%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/badgeScanDialog/small.png}%
+  }
+  \caption{\uilabel{Badge Scan Dialog} --- desktop and mobile views.}
+  \label{fig:s1-ui-badge-scan}
 \end{figure}
 
 The \uilabel{MES User List Page}, shown in Figure~\ref{fig:s1-ui-user-list}, is
@@ -1082,10 +1281,11 @@ and activate/deactivate each account.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/image24.png}
+	\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/userList/wide.png}
 	\caption{\uilabel{MES User List Page}.}
 	\label{fig:s1-ui-user-list}
 \end{figure}
+
 
 The \uilabel{Assign MES Role Dialog}, shown in Figure~\ref{fig:s1-ui-assign-role},
 is a modal dialog allowing the \userrole{Administrator} to select a
@@ -1095,7 +1295,7 @@ role (\userrole{Operator} or \userrole{Supervisor}), creating a new
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/image25.png}
+	\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/addUser/wide.png}
 	\caption{\uilabel{Assign MES Role Dialog}.}
 	\label{fig:s1-ui-assign-role}
 \end{figure}
@@ -1107,7 +1307,7 @@ password is displayed once and must be communicated to the user out-of-band.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/image26.png}
+	\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/generatePassword/wide.png}
 	\caption{\uilabel{Generate Password Dialog}.}
 	\label{fig:s1-ui-generate-password}
 \end{figure}
@@ -1119,7 +1319,7 @@ the user. The password is not stored in plaintext on the server after this point
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/image27.png}
+	\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/successPwGeneration/wide.png}
 	\caption{\uilabel{Password Generated Successfully Dialog}.}
 	\label{fig:s1-ui-password-success}
 \end{figure}
@@ -1130,10 +1330,15 @@ after login, requiring them to enter their current password and choose a new
 password before accessing the main application.
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/image28.png}
-	\caption{\uilabel{Change Password Page}.}
-	\label{fig:s1-ui-change-password}
+  \centering
+  \setlength{\fboxsep}{5pt}
+  \colorbox{black}{%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/changePassword/wide.png}%
+    \hspace{\fboxsep}%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/changePassword/small.png}%
+  }
+  \caption{\uilabel{Change Password Page} --- desktop and mobile views.}
+  \label{fig:s1-ui-change-password}
 \end{figure}
 
 The \uilabel{Change Role Dialog}, shown in Figure~\ref{fig:s1-ui-chRole-diag},
@@ -1146,11 +1351,12 @@ a multi-select list. An inline error banner displays any server-side validation
 failure. Tapping \uilabel{Save Changes} submits the update and revokes all
 active tokens for the affected user.
 
+
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/placeholder-image.png}
+	\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/changeRoleDep/wide.png}
 	\caption{\uilabel{Change Role Dialog}.}
-	\label{fig:s1-ui-chRole-diag}
+	\label{fig:s1-:ui-chRole-diag}
 \end{figure}
 
 The \uilabel{User Badge Dialog}, shown in Figure~\ref{fig:s1-ui-badge-dialog},
@@ -1161,7 +1367,7 @@ user row action menu and is available only for active accounts.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/placeholder-image.png}
+	\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/adminBadgeDialog/wide.png}
 	\caption{\uilabel{User Badge Dialog}.}
 	\label{fig:s1-ui-badge-dialog}
 \end{figure}
@@ -1175,19 +1381,10 @@ page whenever the values differ from the last saved state, offering
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/placeholder-image.png}
+	\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/settings/wide.png}
 	\caption{\uilabel{Settings Page}.}
 	\label{fig:s1-ui-settings}
 \end{figure}
-
-The user row in the \uilabel{MES User List Page} includes a
-\texttt{PopupMenuButton} action menu accessible via a trailing icon on each row.
-The menu exposes the following actions: \uilabel{Change Role / Department},
-\uilabel{Generate Password}, \uilabel{View Badge} (active users only),
-and \uilabel{Activate} or \uilabel{Deactivate} (label switches dynamically based
-on the user's current \texttt{isActive} flag). Selecting \uilabel{Deactivate}
-immediately revokes all active sessions for that account; selecting
-\uilabel{Activate} re-enables login.
 
 \section{Testing and Validation}
 \subsection{Integration testing}

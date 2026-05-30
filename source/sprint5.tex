@@ -316,50 +316,56 @@ synthesises a final reply.
 \end{figure}
 %=====SD-30==========================================================
 % sequenceDiagram
-%     actor User
-%     participant Flutter
-%     participant Node as Node.js Middleware
-%     participant Agent as Python AI Agent
-%     participant BC as Business Central
+%       actor User
+%       participant Flutter
+%       participant Node as Node.js Middleware
+%       participant Agent as Python AI Agent
+%       participant BC as AL
 
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-01 — user is logged in
-%     end
+%       rect rgb(220,235,255)
+%           Note over User,BC: ref SD-01 — user is logged in
+%       end
 
-%     User->>Flutter: Type message and send it
-%     Flutter->>Node: POST /api/ai/chat
+%       User->>Flutter: Type message and send it
+%       Flutter->>Node: POST /api/ai/chat 
+%       Node->>Agent: Forward to AI_AGENT_URL/chat
 
-%     Node->>Agent: Forward to AI_AGENT_URL/chat
+%       Agent->>Agent: classify the intent of the message
+   
+%       alt chain.is_composite = false scenario
+%           loop For each ToolStep in chain.steps
+%               Agent->>Agent: resolve $slot references from prior results
+%               opt allowed_machines empty and step.tool in MACHINE_SCOPED_TOOLS
+%                   Agent->>Node: POST /api/FetchMachines 
+%                   Node->>BC: MESWebService_FetchMachines 
+%                   BC-->>Node: Machine list JSON 
+%                   Node-->>Agent: decoded machine list
+%                   Agent->>Agent: Populate allowed_machines map 
+%               end
+%               alt step.tool in MACHINE_SCOPED_TOOLS and machineNo not in allowed_machines
+%                   Agent->>Agent: Log ACCESS DENIED — return error ToolResult, skip step
+%               else Access permitted or tool not machine-scoped
+%                   Agent->>Node: POST /api/{toolEndpoint} 
+%                   Node->>BC: MESWebService_{Endpoint} 
+%                   BC-->>Node: Tool result JSON
+%                   Node-->>Agent: decoded tool result
+%                   Agent->>Agent: Store result under step.result_key
+%               end
+%           end
 
-%     Agent->>Agent: LLMIntentIdentifier
-%     Note over Agent: LLM call N°1 — intent planning (optional, may fall back to regex)
+%           Agent->>Agent: _enrich using pure-Python analytics 
+%           Agent->>Agent: build context serializing to markdown
+%           Agent->>Agent:  LLM call N°2 with SYNTHESIS_SYSTEM + last 6 history turns + context block
+%           Agent->>Agent:  extract actions JSON block 
+%       end
 
-%     Agent->>Agent: Build allowed_machines from ListMachinesTool result
-%     Agent->>Node: POST /api/FetchMachines
-%     Node->>BC: MESWebService_FetchMachines endpoint 
-%     BC-->>Node: Machine list JSON
-%     Node-->>Agent: Machine list
+%       Agent-->>Node: ChatResponse 
+%       Note over Agent,Node: thinking{} is internal trace
+%       Node-->>Flutter: ChatResponse JSON 
 
-%     loop For each ToolStep in ToolChain
-%         Agent->>Agent: Resolve slot args and Access-control
-%         Agent->>Node: POST /api/{toolEndpoint}
-%         Node->>BC: MESWebService_{Endpoint}
-%         BC-->>Node: Tool result JSON
-%         Node-->>Agent: Tool result
-%         Agent->>Agent: Store result under result_key
-%     end
-
-%     Agent->>Agent: enrich results and Build context block
-
-%     Agent->>Agent: LLMClient.complete(synthesisPrompt + context)
-%     Note over Agent: LLM call N°2 — response synthesis
-
-%     Agent->>Agent: parse actions
-%     Agent-->>Node: ChatResponse {text, actions[], thinking{}}
-%     Node-->>Flutter: ChatResponse JSON
-
-%     Flutter->>Flutter: append the chat response
-%     Flutter-->>User: Display reply and the RedirectAction buttons
+%       Flutter->>Flutter: AiChatProvider appends assistant turn to _history
+%       Flutter->>Flutter: Render reply text + RedirectAction buttons (last assistant message only)
+%       Flutter-->>User: Display reply and action buttons
 %====================================================================
 
 Figure~\ref{fig:s5-seq-intent-classification} illustrates the two-tier intent classification flow, showing the LLM-based primary classifier, the JSON plan validation step, and the fallback path to the regex classifier. The \domainterm{ThinkingBlock} capturing the classification trace is also shown.
@@ -371,36 +377,32 @@ Figure~\ref{fig:s5-seq-intent-classification} illustrates the two-tier intent cl
   \label{fig:s5-seq-intent-classification}
 \end{figure}
 
-% sequenceDiagram
-%     participant Orch as Orchestrator
-%     participant LLMIntent as LLMIntentIdentifier
-%     participant LLMClient as LLMClient
-%     participant Regex as RegexClassifier (intent.py)
+%  sequenceDiagram
+%       participant Orch as Orchestrator
+%       participant LLMIntent as LLMIntentIdentifier
+%       participant LLMClient as LLMClient
 
-%     Orch->>LLMIntent: classify(message, role, workCenters)
+%       Orch->>LLMIntent: classify(message, role, work_centers)
 
-%     LLMIntent->>LLMIntent: Build system prompt
-%     LLMIntent->>LLMClient: complete([systemPrompt, userMessage])
-%     Note over LLMClient: LLM call N°1 — intent planning
+%       LLMIntent->>LLMIntent: build system prompt
+%       LLMIntent->>LLMClient: send the call to the client
+%       Note over LLMClient: LLM call N°1 — intent planning
 
-%     alt LLM responds with valid JSON
-%         LLMClient-->>LLMIntent: {intent, description, is_composite, steps[], reasoning}
-%         LLMIntent->>LLMIntent: check for llm halucinations and mistakes
-%         alt Validation passes
-%             LLMIntent->>LLMIntent: build ToolChain
-%             LLMIntent-->>Orch: (ToolChain, ThinkingBlock)
-%         else Validation fails
-%             LLMIntent->>LLMIntent: Record ThinkingBlock{method:regex_fallback, fallback_reason}
-%             LLMIntent->>Regex: classify(message, workCenters)
-%             Regex-->>LLMIntent: ToolChain{intent, steps[], is_composite}
-%             LLMIntent-->>Orch: (ToolChain, ThinkingBlock)
-%         end
-%     else LLM error or malformed JSON
-%         LLMClient-->>LLMIntent: Exception / unparseable response
-%         LLMIntent->>Regex: classify(message, workCenters)
-%         Regex-->>LLMIntent: ToolChain
-%         LLMIntent-->>Orch: (ToolChain, ThinkingBlock)
-%     end
+%       LLMClient-->>LLMIntent: raw response text (may be valid JSON, malformed, or error)
+
+%        alt LLM responds and JSON parses successfully
+%           LLMIntent->>LLMIntent: cleans and validates the llm output
+%          alt Validation passes
+%               LLMIntent->>LLMIntent: build ToolChain using the llm plan
+%               LLMIntent-->>Orch: (ToolChain, ThinkingBlock)
+%           else _validate_plan raises ValueError
+%               Note over LLMIntent: ValueError propagates to except Exception in classify()
+%           end
+%       else LLM timeout, connection error, or JSONDecodeError
+%           LLMIntent->>LLMIntent: Populate ThinkingBlock
+%           LLMIntent-->>Orch: (ToolChain, ThinkingBlock)
+%       end
+
 
 \subsection{System Architecture Diagram}
 

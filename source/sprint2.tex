@@ -249,59 +249,59 @@ textual description of the \textit{Start Operation} use case.
   
 \end{longtable}
 
-  \subsection{Sequence Diagrams}
-  The following sequence diagrams illustrate the communication flow between the
-  \techname{Flutter} frontend, the \techname{Business Central} OData layer, and
-  the \techname{AL} business logic for the machine-listing and order-management
-  flows introduced in Sprint~2.
-  
-  Figure~\ref{fig:s2-seq-fetch-machines} depicts the machine-list polling flow.
-  The \techname{Flutter} client issues a \texttt{FetchMachines} request for each
-  work centre resolved from the authenticated user's profile every five seconds.
-  For every machine returned by \techname{Business Central}, the \techname{AL}
-  layer fetches the latest \domainterm{MES Machine Status} row and the work-centre
-  name before assembling the response, which the client uses to rebuild the
-  \uilabel{MachineCard} grid.
+\subsection{Sequence Diagrams}
+The following sequence diagrams illustrate the communication flow between the
+\techname{Flutter} frontend, the \techname{Business Central} OData layer, and
+the \techname{AL} business logic for the machine-listing and order-management
+flows introduced in Sprint~2.
 
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-machines.png}
-    \caption{SD-09: Fetch Machines.}
-    \label{fig:s2-seq-fetch-machines}
-  \end{figure}
+Figure~\ref{fig:s2-seq-fetch-machines} depicts the machine-list polling flow.
+The \techname{Flutter} client issues a \texttt{FetchMachines} request for each
+work centre resolved from the authenticated user's profile every five seconds.
+For every machine returned by \techname{Business Central}, the \techname{AL}
+layer fetches the latest \domainterm{MES Machine Status} row and the work-centre
+name before assembling the response, which the client uses to rebuild the
+\uilabel{MachineCard} grid.
 
-  %=====SD-09==========================================================
-  % sequenceDiagram
-  %     participant Flutter
-  %     participant AL
-  %     participant BC
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-machines.png}
+  \caption{SD-09: Fetch Machines.}
+  \label{fig:s2-seq-fetch-machines}
+\end{figure}
 
-  %     rect rgb(220,235,255)
-  %         Note over Flutter,BC: ref SD-01 — user is logged in workCenterIds resolved from userData;
-  %     end
+%=====SD-09==========================================================
+% sequenceDiagram
+%   participant Flutter
+%   participant Node as Node.js Middleware
+%   participant AL
+%   participant BC
+%   rect rgb(220,235,255)
+%       Note over Flutter,BC: ref SD-01 — user is logged in
+%   end
+%   loop Every 20 seconds 
+%       Flutter->>Node: POST /api/FetchMachines 
+%       Node->>AL: MESWebService_FetchMachines
+%       AL->>BC: Filter Machine Center by Work Center No.
+%       BC-->>AL: machine list
+%       loop For each machine
+%           AL->>BC: get the current status of the machine
+%           AL->>BC: get the names of each workcenter
+%           BC-->>AL: machine status + work center name
+%       end
+%       AL-->>Node: response
+%       Node-->>Flutter: response
+%       Flutter->>Flutter: rebuild the machine list page
+%   end
+%====================================================================
 
-  %     loop Every 5 seconds per work center
-  %         Flutter->>AL: FetchMachines request
-  %         AL->>BC: Filter Machine Center by workCenterNo
-  %         BC-->>AL: machine list
-  %         loop For each machine
-  %             AL->>BC: Get latest MES Machine Status row
-  %             BC-->>AL: machine data
-  %             AL->>BC: Get Work Center name
-  %             BC-->>AL: name
-  %         end
-  %         AL-->>Flutter: request response
-  %         Flutter->>Flutter: Rebuild MachineCard grid
-  %     end
-  %====================================================================
-
-  Figure~\ref{fig:s2-seq-machine-orders} presents the machine-orders retrieval flow,
-  triggered when the user opens the \uilabel{Orders} tab. The \techname{AL} layer
-  filters \domainterm{ProdOrderRoutingLine} records for the selected machine,
-  skips any operation that has already been started, and enriches each remaining
-  routing line with the corresponding \domainterm{ProdOrderLine} details before
-  returning the list to the \techname{Flutter} client as a set of
-  \uilabel{OrderCard} entries.
+Figure~\ref{fig:s2-seq-machine-orders} presents the machine-orders retrieval flow,
+triggered when the user opens the \uilabel{Orders} tab. The \techname{AL} layer
+filters \domainterm{ProdOrderRoutingLine} records for the selected machine,
+skips any operation that has already been started, and enriches each remaining
+routing line with the corresponding \domainterm{ProdOrderLine} details before
+returning the list to the \techname{Flutter} client as a set of
+\uilabel{OrderCard} entries.
 
   \begin{figure}[H]
     \centering
@@ -311,27 +311,36 @@ textual description of the \textit{Start Operation} use case.
   \end{figure}
 
   %=====SD-10==========================================================
-  % sequenceDiagram
-  %     actor User
-  %     participant Flutter
-  %     participant AL
-  %     participant BC
+%  sequenceDiagram
+%       actor User
+%       participant Flutter
+%       participant Node as Node.js Middleware
+%       participant AL
+%       participant BC
 
-  %     rect rgb(220,235,255)
-  %         Note over User,BC: ref SD-01 — user is logged in
-  %     end
+%       rect rgb(220,235,255)
+%           Note over User,BC: ref SD-01 — user is logged in
+%       end
 
-  %     User->>Flutter: Open Orders tab
-  %     Flutter->>AL: getMachineOrders request
-  %     AL->>BC: Filter ProdOrderRoutingLine
-  %     BC-->>AL: routing lines
-  %     loop For each routing line
-  %         AL->>BC: Check if operation started - skip if yes
-  %         AL->>BC: Get ProdOrderLine
-  %         BC-->>AL: line detail
-  %     end
-  %     AL-->>Flutter: orders data
-  %     Flutter-->>User: OrderCard list
+%       User->>Flutter: Open Orders tab
+%       Flutter->>Node: POST /api/getMachineOrders 
+%       Node->>AL: MESWebService_getMachineOrders
+
+%       AL->>BC: get Prod. Order Routing Line by machineNo and Status 
+%       BC-->>AL: routing lines
+%       loop For each routing line
+%           AL->>BC: check if execution exists
+%           alt Execution exists — operation already started
+%               AL->>AL: Skip this routing line
+%           else No execution — operation not yet started
+%               AL->>BC: get Prod. Order Line detail
+%               BC-->>AL: line detail
+%           end
+%       end
+%       AL-->>Node: response
+%       Node-->>Flutter: response
+%       Flutter-->>User: OrderCard list
+
   %====================================================================
 
   Figure~\ref{fig:s2-seq-start-operation} illustrates the operation start flow.
@@ -351,119 +360,160 @@ textual description of the \textit{Start Operation} use case.
   \end{figure}
 
 
-  %=====SD-11==========================================================
-  % sequenceDiagram
-  %     actor User
-  %     participant Flutter
-  %     participant AL
-  %     participant BC
+%=====SD-11==========================================================
+% sequenceDiagram
+%       actor User
+%       participant Flutter
+%       participant Node as Node.js Middleware
+%       participant AL
+%       participant BC
 
-  %     rect rgb(220,235,255)
-  %         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
-  %     end
-  %     rect rgb(220,235,255)
-  %         Note over User,BC: ref SD-10 — machine orders loaded user selects a Released order
-  %     end
+%       rect rgb(220,235,255)
+%           Note over User,BC: ref SD-01 — user is logged in
+%       end
+%       rect rgb(220,235,255)
+%           Note over User,BC: ref SD-10 — machine orders loaded, user selects a Released order
+%       end
 
-  %     User->>Flutter: Tap Start on OrderCard
-  %     Flutter->>AL: startOperation request
+%       User->>Flutter: Tap Start on OrderCard
+%       Flutter->>Node: POST /api/startOperation
+%       Node->>AL: MESWebService_startOperation 
 
-  %     rect rgb(220,235,255)
-  %         Note over User,BC: ref SD-02 — AL validates token and resolves operatorId
-  %     end
+%       AL->>BC:  check Status is Released
+%       AL->>BC: check that the operation is not running
+%       AL->>BC:check that the machine is not working on another operation
+%       alt Not Released or Operation or machine already running
+%           AL-->>Node: error response
+%           Node-->>Flutter: error response
+%           Flutter-->>User: Show error response
+%       end
 
-  %     AL->>BC: check the order is released
-  %     BC-->>AL: routing line
-  %     AL->>BC: Check that the Operation is not running
-  %     AL->>BC: Check that the machine is not working
-  %     BC-->>AL: clear
-  %     alt Not Released or already running
-  %         AL-->>Flutter: error message
-  %         Flutter-->>User: Show error snackbar
-  %     else Valid
-  %         AL->>BC: Insert MES Operation Execution
-  %         BC-->>AL: executionId
-  %         AL->>BC: Insert MES Operation State
-  %         AL->>BC: Insert MES Operation Progression
-  %         AL->>BC: set machine as working
-  %         AL->>BC: Insert MES User Execution Interaction
-  %         BC-->>AL: ok
-  %         AL-->>Flutter: request response
-  %         Flutter->>User: redirect to Progress tab
-  %     end
-  %====================================================================
+%       AL->>BC: get previous operation
+%       alt Previous Operation is set
+%           AL->>BC: Find previous MES Operation Execution
+%           BC-->>AL: previous execution record
+%           alt Previous execution not found
+%               AL-->>Node: {value: false, message: 'Previous operation has not started yet.'}
+%               Node-->>Flutter: error response
+%               Flutter-->>User: Show error response
+%           end
+%           AL->>BC:get the status of the last operation
+%           BC-->>AL: previous latest state
+%           alt Previous status = Cancelled
+%               AL->>AL: Skip check — allow start
+%           else SendAheadQuantity = 0
+%               AL->>AL: Previous must be Finished — error if not
+%           else SendAheadQuantity > 0
+%               AL->>BC: MES Operation Progression — GetLatestProgression for previous execution
+%               AL->>AL: TotalProducedQuantity >= SendAheadQuantity — error if not
+%           end
+%       end
 
-  Figures~\ref{fig:s2-seq-fetch-progress} and~\ref{fig:s2-seq-fetch-history} present
-  the two polling flows that supply real-time and historical data to the
-  \uilabel{MachineDetailPage}. Both are triggered either on demand or on a
-  fixed five-second interval once an operation is active.
-  
-  Figure~\ref{fig:s2-seq-fetch-progress} describes the ongoing-operations state
-  polling flow. The \techname{AL} layer retrieves all active operations for the
-  machine, resolves their current state and cumulative produced quantity from
-  \techname{Business Central}, and returns the aggregated data to the
-  \techname{Flutter} client.
+%       AL->>BC: Initialise the necessary records
+%       AL->>BC: set machine to running
 
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-operation-progress.png}
-    \caption{SD-23: Fetch Operation progress.}
-    \label{fig:s2-seq-fetch-progress}
-  \end{figure}
+%       BC-->>AL: ok
+%       AL-->>Node: success response
+%       Node-->>Flutter: success response
+%       Flutter->>Flutter: switch to Progress tab
+%       Flutter-->>User: Progress tab shown with active operation
+%====================================================================
 
-  %=====SD-23==========================================================
-  % sequenceDiagram
-  %   participant Flutter
-  %   participant AL as AL Extension
-  %   participant BC as Business Central
+Figures~\ref{fig:s2-seq-fetch-progress} and~\ref{fig:s2-seq-fetch-history} present
+the two polling flows that supply real-time and historical data to the
+\uilabel{MachineDetailPage}. Both are triggered either on demand or on a
+fixed five-second interval once an operation is active.
 
-  %   rect rgb(220,240,200)
-  %     Note over Flutter, BC: ref SD-11 — operation was started executionId is known
-  %   end
-  %   loop On trigger or every 5 s
-  %     Flutter->>AL: fetchOngoingOperationsState request
-  %     AL->>BC: Get Operations by machine
-  %     AL->>BC: Get current state of each operation
-  %     AL->>BC: get total Qte made per operation
-  %     BC-->>AL: Operation info
-  %     AL-->>Flutter: Operations data per machine
-  %   end
-  %====================================================================
+Figure~\ref{fig:s2-seq-fetch-progress} describes the ongoing-operations state
+polling flow. The \techname{AL} layer retrieves all active operations for the
+machine, resolves their current state and cumulative produced quantity from
+\techname{Business Central}, and returns the aggregated data to the
+\techname{Flutter} client.
 
-  Figure~\ref{fig:s2-seq-fetch-history} presents the operation history retrieval
-  flow, triggered when the user opens the \uilabel{MachineDetailPage}. The
-  \techname{AL} layer queries \techname{Business Central} for finished and
-  cancelled operations associated with the machine, enriches each record with
-  production quantities and start and end times, and returns the assembled list
-  so the \techname{Flutter} client can display the operations history.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-operation-progress.png}
+  \caption{SD-23: Fetch Operation progress.}
+  \label{fig:s2-seq-fetch-progress}
+\end{figure}
 
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-operation-history.png}
-    \caption{SD-24: Fetch Operation History}
-    \label{fig:s2-seq-fetch-history}
-  \end{figure}
+%=====SD-23==========================================================
+% sequenceDiagram
+%       participant Flutter
+%       participant Node as Node.js Middleware
+%       participant AL
+%       participant BC
 
-  %=====SD-24==========================================================
-  % sequenceDiagram
-  %   actor User
-  %   participant Flutter
-  %   participant AL as AL Extension
-  %   participant BC as Business Central
+%       rect rgb(220,240,200)
+%           Note over Flutter,BC: ref SD-11 — operation was started, executionId known
+%       end
 
-  %   rect rgb(200,220,240)
-  %     note over Flutter,BC: ref: ref SD-01 — user is logged in and holds a valid token
-  %   end
-  %   User->>Flutter: open the machineDetailPage
-  %   Flutter->>AL: fetchOperationsHistory request
-  %   AL->>BC: get machine operations
-  %   AL->>BC: get finished and cancelled operations
-  %   AL->>BC: get production quantities
-  %   AL->>BC: get start/end times
-  %   BC-->>AL: Historical operation rows
-  %   AL-->>Flutter: completed operations data
-  %   Flutter->>User: show the operations history
-  %====================================================================
+%       loop On trigger or every 5 seconds 
+%           Flutter->>Node: POST /api/fetchOngoingOperationsState 
+%           Node->>AL: MESWebService_fetchOngoingOperationsState 
+          
+%           AL->>BC: get all executions for machine
+%           BC-->>AL: execution records
+
+%           loop For each execution
+%               AL->>BC: get all the non finished operations of the machine
+%               BC-->>AL: latest state row (status, DeclaredAt as start time)
+%               AL->>BC: get the progress for each operation 
+%               BC-->>AL: latest progression (TotalProducedQuantity, OrderQuantity, progressPercent)
+%           end
+
+%           AL-->>Node: response
+%           Node-->>Flutter: response
+%           Flutter->>Flutter: updates and rebuild all subscribed interfaces
+%       end
+%====================================================================
+
+Figure~\ref{fig:s2-seq-fetch-history} presents the operation history retrieval
+flow, triggered when the user opens the \uilabel{MachineDetailPage}. The
+\techname{AL} layer queries \techname{Business Central} for finished and
+cancelled operations associated with the machine, enriches each record with
+production quantities and start and end times, and returns the assembled list
+so the \techname{Flutter} client can display the operations history.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/diagrams/sequence/fetch-operation-history.png}
+  \caption{SD-24: Fetch Operation History}
+  \label{fig:s2-seq-fetch-history}
+\end{figure}
+
+%=====SD-24==========================================================
+%  sequenceDiagram
+%       actor User
+%       participant Flutter
+%       participant Node as Node.js Middleware
+%       participant AL
+%       participant BC
+
+%       rect rgb(200,220,240)
+%           Note over User,BC: ref SD-01 — user is logged in and holds a valid token
+%       end
+
+%       User->>Flutter: Open History tab
+%       Flutter->>Node: POST /api/fetchOperationsHistory
+%       Node->>AL: MESWebService_fetchOperationsHistory 
+    
+%       AL->>BC: get all the execution records of the machine
+%       BC-->>AL: execution records
+
+%       loop For each execution
+%           AL->>BC: get the current state of each execution
+%           BC-->>AL: latest state row
+%           AL->>AL: filter only the end states (finished,interupted,cancelled)
+%           AL->>BC: get the start and the endtime
+%           AL->>BC: get the last progress of the execution
+%           BC-->>AL: latest progression
+%       end
+
+%       AL-->>Node: response
+%       Node-->>Flutter: response
+%       Flutter-->>User: History card list shown
+%====================================================================
 
 \subsection{Class Diagram}
 
@@ -778,9 +828,9 @@ across both desktop and mobile platforms.
   \centering
   \setlength{\fboxsep}{5pt}
   \colorbox{black}{%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/desktop-machines.png}%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineList/wide.png}%
     \hspace{\fboxsep}%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/mobile-machines.png}%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineList/small.png}%
   }
   \caption{\uilabel{Machine List Page} --- desktop and mobile views.}
   \label{fig:s2-ui-machine-list}
@@ -796,9 +846,9 @@ The \uilabel{Machine Orders Page} displays the production routing lines assigned
   \centering
   \setlength{\fboxsep}{5pt}
   \colorbox{black}{%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/dektop-waiting_orders.png}%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineOrders/wide.png}%
     \hspace{\fboxsep}%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/mobile-waiting_orders.png}%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineOrders/small.png}%
   }
   \caption{\uilabel{Machine Orders Page} --- desktop and mobile views.}
   \label{fig:s2-ui-machine-orders}
@@ -817,9 +867,9 @@ Figure~\ref{fig:s2-ui-operations-progress}.
   \centering
   \setlength{\fboxsep}{5pt}
   \colorbox{black}{%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/desktop-order_progress.png}%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/placeholder-image.png}%
     \hspace{\fboxsep}%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/mobile-order_progress.png}%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineOrderProgress/small.png}%
   }
   \caption{\uilabel{Orders Progression Page} --- desktop and mobile views.}
   \label{fig:s2-ui-operations-progress}
@@ -831,9 +881,9 @@ The \uilabel{Machine History Page} (Figure~\ref{fig:s2-ui-hist-page}) displays c
   \centering
   \setlength{\fboxsep}{5pt}
   \colorbox{black}{%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/desktop-histPage.png}%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/placeholder-image.png}%
     \hspace{\fboxsep}%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/mobile-histPage.png}%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/placeholder-image.png}%
   }
   \caption{\uilabel{Machine History Page} --- desktop and mobile views.}
   \label{fig:s2-ui-hist-page}
