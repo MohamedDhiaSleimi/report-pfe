@@ -163,7 +163,7 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small MES System}
+\fancyhead[L]{\small \ProjectName{}}
 \fancyhead[R]{\small \leftmark}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
@@ -268,13 +268,13 @@
 \end{Arabic}
 \newpage
 
-% %── ─ Dédicaces ────────────────────────────────────────────────────────────────
-% \chapter*{Dédicaces}
-% \addstarredchapter{Dédicaces}
-% \markboth{Dédicaces}{}
-% [Dédicace de \StudentOne{}] \\[12pt]
-% [Dédicace de \StudentTwo{}]
-% \newpage
+%── ─ Dédicaces ────────────────────────────────────────────────────────────────
+\chapter*{Dédicaces}
+\addstarredchapter{Dédicaces}
+\markboth{Dédicaces}{}
+[Dédicace de \StudentOne{}] \\[12pt]
+[Dédicace de \StudentTwo{}]
+\newpage
 
 
 %─Acknowledgements────────────────────────────────────────────────────────
@@ -294,8 +294,11 @@ invaluable. Their strategic vision, domain expertise and availability greatly fa
 our progress and allowed us to gain an enriching professional experience.
 
 \newpage
-
+\pagenumbering{roman}
+\setcounter{page}{1}
 % ── Global Table of Contents ────────────────────────────────────────────────
+
+\setcounter{tocdepth}{3}
 \tableofcontents
 \newpage
 
@@ -421,7 +424,7 @@ performance, serving both operators and management alike.
 % ---------------------------------------------------------------------------
 % Sprint 4 Administration, Printing \& Scanning
 % ---------------------------------------------------------------------------
-\chapter{Sprint 4 Administration, Printing \& Scanning}
+\chapter{Sprint 4 Administration \& System Monitoring}
 \graphicspath{{./media/MES_Sprint-4-Report/}}
 \minitoc
 \newpage
