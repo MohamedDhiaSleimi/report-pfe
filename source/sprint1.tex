@@ -9,18 +9,13 @@ password management, alongside role-based page access control to ensure each
 user can only reach features appropriate to their role.
 
 In addition, the \userrole{Administrator} is given the ability to add new MES
-users, generate secure passwords on their behalf, change a user's role and
-work-centre assignment, and activate or deactivate accounts. The sprint also
-delivers two-factor authentication via badge QR~code scanning, administrator
-badge management (view, print, regenerate), a configurable password expiry
-policy, and the first-launch host pairing screen that connects the Flutter
-application to the correct \techname{Node.js} middleware instance.
-
-By the end of this sprint, a fully functional \uilabel{login} screen,
-\uilabel{badge scan} flow, \uilabel{change password} flow,
-\uilabel{admin user management dashboard}, \uilabel{role management dialog},
-\uilabel{settings page}, \uilabel{paring page}, and \uilabel{logout}
-functionality will all be in place.
+users, generate temporary secure passwords on their behalf for the first login,
+change a user's role and work-centre assignment, export users into a file, and 
+activate or deactivate accounts. The sprint also delivers two-factor authentication
+via badge QR~code scanning, administrator badge management (view, print, regenerate), 
+a configurable password expiry policy, and the first-launch host pairing screen
+that connects the Flutter application to the correct \techname{Node.js} middleware 
+instance.
 
 
 % -----------------------------------------------------------------------
@@ -56,13 +51,12 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Implement the functions \texttt{AdminCreateUser()} and \texttt{AdminSetActive()} in codeunit \techname{MES Unbound Actions}.
 		\item Expose \texttt{AdminCreateUser()} and \texttt{AdminSetActive()} through codeunit \techname{MES Web Service}.
-		\item Create API page \techname{MES User Create API}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Update \techname{ApiService} to consume the new endpoints.
-		\item Implement  \techname{MesUserService} to consume \texttt{fetchMesUsers()} and \texttt{createMesUser()} endpoints.
+		\item Implement  \techname{MesUserService} to consume \texttt{fetchMesUsers()} and \texttt{AdminCreateUser()} endpoints.
 		\item Create provider \techname{MesUserProvider} to manage its state.
 	\end{itemize}
 \\ & &
@@ -74,12 +68,12 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	\midrule
 	\textbf{US-1.2}
 	& As a User (\userrole{Operator} / \userrole{Supervisor} / \userrole{Administrator}),
-	I need to log into the system with my credentials so that I can access
+	I need to log into and out of the system with my credentials so that I can access
 	features appropriate to my role.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Create the tables \techname{MES USER} and \techname{MES AuthToken}.
-		\item Create enum \techname{MES UserRole}.
+		\item Create enum \techname{MES User Role}.
 		\item Implement functions \texttt{MakeSalt()}, \texttt{HashPassword()}, and \texttt{VerifyPassword()} in codeunit \techname{MES Password Mgt}.
 		\item Implement functions \texttt{CreateUser()}, \texttt{SetPassword()}, \texttt{ValidateCredentials()}, \texttt{IssueNewToken()}, \texttt{ValidateToken()}, \texttt{TouchToken()}, \texttt{Logout()}, \texttt{ValidateChangePassword()}, \texttt{ValidateAdminToken()}, \texttt{SetActive()}, and \texttt{CleanupExpiredTokens()} in codeunit \techname{MESAuthMgt}.
 		\item Implement functions \texttt{Login()}, \texttt{Logout()}, \texttt{Me()}, and \texttt{ChangePassword()} in codeunit \techname{MES Unbound Actions}.
@@ -101,7 +95,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Implement user search in \techname{AddUserPage}.
 		\item Implement role filtering in \techname{AddUserPage}.
-		\item Combine role and search filters in \techname{AddUserPage}.
+		
 	\end{itemize} \\
 	\midrule
 	\textbf{US-1.4}
@@ -235,6 +229,15 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 		\item Add \uilabel{Change Host} link on \techname{LoginPage} for reconfiguration.
 		\item Add \texttt{AppConstants.loadHost()} call to the app initialisation sequence in \texttt{main()}.
 	\end{itemize}\\
+	\midrule
+	\textbf{US-1.10}
+	& As an \userrole{Administrator}, I need to be able to export the list of users so that I can
+	use the info in other applications or processes.
+	& \noindent\textit{Flutter}
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+		\item [need to fill the tasks here]
+	\end{itemize}\\
+
 
 \end{longtable}
 
@@ -277,16 +280,16 @@ use cases available exclusively to the \userrole{Administrator}, as well as the
 \subsection{Textual Use Case Description}
 
 \begin{longtable}{@{} P{0.22\linewidth} P{0.78\linewidth} @{}}
-	
+	\caption{Textual Use Case Description --- Login}
+	\label{tab:s1-use-case-login}
+	\endlastfoot
 	\toprule
 	\endfirsthead
-	
-	\midrule
+	\toprule
 	\endhead
-	
 	\multicolumn{2}{r}{\small Continued on next page}\\
 	\endfoot
-	
+	\bottomrule
 	\endlastfoot
 	
 	\textbf{Use Case Name}  & Login                                                                \\
@@ -295,10 +298,9 @@ use cases available exclusively to the \userrole{Administrator}, as well as the
 	\midrule
 	\textbf{Preconditions}  &                                                                      
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item The user account exists in the \techname{ERP} system.
+	\item The employee account exists in the \techname{ERP} system.
 	\item The user has an assigned role and department.
-	\item The account must have a password (there is a possibility that
-	there is an account without a password).
+	\item The account must have a password.
 	\item The user account is active.
 	\end{itemize} \\
 	\midrule
@@ -324,23 +326,20 @@ use cases available exclusively to the \userrole{Administrator}, as well as the
 	\textbf{Main Scenario}  &                                                                      
 	\begin{enumerate}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item The user launches the application.
-	\item If no host URL is configured, the system displays the \uilabel{Paring} page; the user enters or scans the middleware URL.
+	\item If no host URL is configured, the system displays the \uilabel{Paring} page, the user enters or scans the middleware URL.
  	\item The system displays the \uilabel{login screen}.
 	\item The user enters \uilabel{Auth ID} and \uilabel{password}.
 	\item The system automatically detects the device ID.
 	\item The user clicks the \uilabel{Login} button.
 	\item The system validates the credentials against the \techname{ERP} database.
 	\item The system generates a secure session token.
-	\item If \domainterm{2FA} is enabled, the system opens the \uilabel{Badge Scan} dialog; the user scans their badge QR or enters the code manually.
+	\item If \domainterm{2FA} is enabled, the system opens the \uilabel{Badge Scan} dialog, the user scans their badge QR or enters the code manually.
 	\item The system verifies the badge secret and generates a secure session token.
 	\item The system checks the user role.
 	\item The system redirects the user to the appropriate dashboard
 	(\userrole{Admin} or MES).
 	\end{enumerate} \\
-	\midrule
-	\noalign{\vskip 4pt}
-	\caption{Textual Use Case Description --- Login}
-	\label{tab:s1-use-case-login}
+	
 	
 \end{longtable}
 
@@ -874,7 +873,7 @@ The backend project structure is illustrated in Figure~\ref{fig:s1-backend-struc
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/image3.png}
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/placeholder-image.png}
 	\caption{Backend project structure.}
 	\label{fig:s1-backend-structure}
 \end{figure}
@@ -996,8 +995,8 @@ in Table~\ref{tab:s1-mes_auth_token_fields}.
 	Updated on every successful token validation. Supports session monitoring (activity/idle detection). Not used for expiry enforcement (use \texttt{Expires At}). \\
 	\midrule
 	
-	Revoked       & Boolean       &                      
-	If true, token is explicitly invalidated and must be rejected even if not expired. Set on logout and during bulk revocation (e.g., password change, account deactivation). \\
+	State       & Enum (\texttt{MES Auth Token State})       &                      
+	The state of the authentication token (Pending, Active, Revoked) set to pending when 2FA is on, and revoked when logging out and bulk revocation (password change, account deactivation). \\
 	\midrule
 	\noalign{\vskip 4pt}
 	\caption{MES Auth Token (Table 50106) --- Field Dictionary}
@@ -1063,17 +1062,18 @@ classified as \emph{Customer Content} or \emph{System Metadata}.
 The login validates the user credentials against the \modulename{MES User}
 table. If the credentials are correct and the account is active, and
 \domainterm{2FA} is disabled in \modulename{MES Settings}, a token is generated
-and stored in the \modulename{MES Auth Token} table. When \domainterm{2FA} is
-enabled, the backend returns the \texttt{twoFAEnabled} flag and the
+and stored in the \modulename{MES Auth Token} table and set as active. When \domainterm{2FA} is
+enabled, a token is generated
+and stored in the \modulename{MES Auth Token} table and set as pending, the backend returns the \texttt{twoFAEnabled} flag and the
 \techname{Flutter} client suspends the session until the badge QR~code is
-verified via the \texttt{VerifyBadge} endpoint.
+verified via the \texttt{VerifyBadge} endpoint at which point the token is set to active.
 
 \textbf{Logout}
 
 On logout, the user's session authentication token is revoked. The token
 record matching the supplied session token is located in the
-\modulename{MES Auth Token} table and its \texttt{Revoked} flag is set to
-\texttt{true}, immediately invalidating the session (soft revocation).
+\modulename{MES Auth Token} table and its \texttt{State} is set to
+\texttt{Revoked}, immediately invalidating the session (soft revocation).
 
 \textbf{Change Password}
 
@@ -1096,21 +1096,6 @@ are prompted to change their password on their next login.
 To enable communication between \techname{Flutter} and
 \techname{Microsoft Dynamics Business Central}, a set of \domainterm{RESTful APIs}
 were implemented using AL.
-
-\subsubsection{API Pages for MES User Management}
-
-The \domainterm{API Page} definition for the \apiendpoint{/mesUsers} endpoint
-exposes the \modulename{MES User} table as a read-only \domainterm{OData} feed.
-
-The \domainterm{API Page} definition for the \apiendpoint{/createMesUser}
-endpoint differs from the read endpoint by setting validation triggers.
-\texttt{DelayedInsert\,=\,true} buffers all field values until the
-complete request body has been received before committing the new
-\modulename{MES User} record to the database.
-
-Key point: the difference between these two APIs is the \domainterm{Delayed Insert} flag.
-When set to \texttt{true}, it delays insertion until all fields are received,
-which is required for \texttt{POST} operations. \texttt{GET} is not affected.
 
 \subsubsection{OData Functions and Web Service Configuration}
 
@@ -1160,7 +1145,7 @@ and a \textbf{\domainterm{Model Layer}} for Data Models.
 \begin{minipage}[t]{0.38\textwidth}
   \vspace{0pt}
   \centering
-  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/image13.png}
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/placeholder-image.png}
   \captionof{figure}{\techname{Flutter} layered architecture.}
   \label{fig:s1-flutter-architecture-s1}
 \end{minipage}
@@ -1361,7 +1346,7 @@ active tokens for the affected user.
 
 The \uilabel{User Badge Dialog}, shown in Figure~\ref{fig:s1-ui-badge-dialog},
 allows the \userrole{Administrator} to view a user's badge QR~code, print it as
-a PDF (with landscape/portrait toggle), and regenerate the underlying secret
+a PDF, and regenerate the underlying secret
 after confirmation. It is accessible via the \uilabel{View Badge} action in the
 user row action menu and is available only for active accounts.
 

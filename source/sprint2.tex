@@ -9,7 +9,7 @@ states and a full audit trail of completed operations.
 It addresses three related sub-domains: live machine status tracking from
 \techname{Business Central} to the \techname{Flutter} frontend, production order
 management with operation lifecycle initiation, and a history view showing all
-completed and cancelled operations per machine.
+completed,interrupted and cancelled operations per machine.
 
 % ---------------------------------------------------------------------------
 % 1. SPRINT BACKLOG
@@ -46,7 +46,7 @@ This sprint covers \textbf{Domain 2:}
   which machines are currently active.
   & \noindent\textit{Business Central (AL):}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-  \item Create table \techname{MES MachineStatus}.
+  \item Create table \techname{MES Machine Status}.
   \item Create enum \techname{MES Machine Status}.
   \item Create function \texttt{FetchMachines()} in codeunit \techname{MES Machine Fetch}.
   \item Expose \texttt{FetchMachines()} through codeunit \techname{MES Web Service}.
@@ -79,8 +79,6 @@ This sprint covers \textbf{Domain 2:}
     \item Create service \techname{ErpMachineOrdersService} to consume the \texttt{getMachineOrders()} API.
     \item Create provider \techname{MachineordersProvider}.
     \item Create page \techname{MachineOrderPage}.
-    \item Create widget \techname{OrderCard}.
-    \item Create model \techname{BadgeStyle}.
   \end{itemize}\\
   \midrule
   \textbf{US-2.3}
@@ -88,7 +86,7 @@ This sprint covers \textbf{Domain 2:}
   production operation so that the system records that the order has begun.
   & \noindent\textit{Business Central (AL):}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-    \item Create table \techname{MES Operation state}.
+    \item Create table \techname{MES Operation State}.
     \item Create enum \techname{MES Operation Status}.
     \item Create function \texttt{TryStartOperation()} in codeunit \techname{MES Machine Validation}.
     \item Create function \texttt{InsertMESOperation()} in codeunit \techname{MES Machine Write}.
@@ -216,8 +214,8 @@ textual description of the \textit{Start Operation} use case.
   \item The \userrole{Operator} is authenticated and has a valid session token.
   \item The target routing line has status \domainterm{Released}.
   \item No other operation is currently \domainterm{Running} on the same machine.
-  \item The operation has not already been started (no existing
-  \domainterm{Running} record for this order/operation pair).
+  \item The operation has not already been started (no existing \domainterm{Running} record for this order/operation pair).
+  \item The previous operation in the same production order (if any) is marked as \domainterm{Completed} or produced enough for the send ahead quantity.
   \end{itemize} \\
   \midrule
   
@@ -776,7 +774,7 @@ layer double-decodes.
 \begin{minipage}[t]{0.38\textwidth}
   \vspace{0pt}
   \centering
-  \includegraphics[width=\linewidth]{./media/MES_Sprint-2-Repport/screenshots/frontend-structure.png}
+  \includegraphics[width=\linewidth]{./media/MES_Sprint-2-Repport/placeholder-image.png}
   \captionof{figure}{\techname{Flutter} machines domain --- layered architecture.}
   \label{fig:s2-flutter-architecture-s2}
 \end{minipage}

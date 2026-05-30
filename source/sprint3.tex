@@ -25,11 +25,11 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	\caption{US-3.1 --- Declare Production}
 	\label{tab:s3-US-3.1} \\
 	\toprule
-	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} \\
+	\textbf{ID} & \textbf{User Story} & \textbf{Tasks} \\
 	\midrule
 	\endfirsthead
 	\toprule
-	\textbf{ID} & \textbf{User Story} & \textbf{Acceptance Criteria} \\
+	\textbf{ID} & \textbf{User Story} & \textbf{Tasks} \\
 	\midrule
 	\endhead
 	\multicolumn{3}{r}{\small Continued on next page} \\
@@ -84,7 +84,7 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	\end{itemize} \\
 	\midrule
 	\textbf{US-3.3}
-	& As a \userrole{Supervisor}, I need to finish or cancel a production
+	& As a \userrole{Supervisor}, I need to finish, interrupt or cancel a production
 	operation so that the machine is released and the order is closed in the
 	system.
 	& \noindent\textit{Business Central (AL):}
@@ -165,7 +165,7 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	components are required and how much has already been consumed.
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Create table \techname{MES Component Consumption}.
+		\item Create table \techname{MES Component Scan}.
 		\item Create function \texttt{fetchBom()} in codeunit \techname{MESMachineFetch}.
 		\item Expose \texttt{fetchBom()} through codeunit \techname{MES Web Service}.
 		\item Create page \techname{MES Component Consumption}.
@@ -1023,8 +1023,6 @@ model.
 	Execution Id & Code[50] & Foreign key to MES Operation Execution. \\
 	\midrule
 	Cycle Quantity & Decimal & Units declared in this single production cycle. \\
-	\midrule
-	Scrap Quantity & Decimal & Units scrapped in this cycle (currently always 0). \\
 	\midrule
 	Total Produced Quantity & Decimal & Running total: previous total + Cycle Quantity. \\
 	\midrule
