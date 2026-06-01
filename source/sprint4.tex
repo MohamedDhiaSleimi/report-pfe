@@ -3,11 +3,10 @@
 
 This sprint delivers the administration layer, multi-language support, and
 in-app onboarding tutorials that complete the \domainterm{MES} solution.
-Administrators receive a persistent navigation shell giving access to a
-a paginated activity log, and a user role management interface. Cross-cutting
-quality-of-life features include full internationalisation with English, French,
-and Arabic support, automatic right-to-left layout for Arabic, and guided 
-coach-mark tutorials shown once per screen on first use. This sprint also 
+Administrators receives access to an activity log, and a user role management
+interface. Quality-of-life features include full internationalisation with English,
+French, and Arabic support, automatic right-to-left layout for Arabic, and guided 
+coach-mark tutorials shown once in the main screens on first use. This sprint also 
 delivers machine performance dashboard for the \userrole{Supervisor}. No new
 \techname{Business Central} tables are introduced in this sprint; all data is
 derived by querying and aggregating the tables created in Sprints~1 through~3.
@@ -74,16 +73,6 @@ This sprint covers \textbf{Domain 4:}
       \end{itemize} \\
       \midrule
       \textbf{US-4.3}
-      & As an \userrole{Administrator}, I need a persistent sidebar so that I can
-      navigate between all admin sections without losing context.
-      & \noindent\textit{Flutter:}
-      \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-            \item Create page \techname{AdminPage}.
-            \item Create widget \techname{SidebarItem}.
-            \item Implement sidebar navigation and profile-page navigation in \techname{AdminPage}.
-      \end{itemize} \\
-      \midrule            
-      \textbf{US-4.4}
       & As any user, I need the application available in English, French, and
       Arabic so that I can use it in my preferred language.
       & \noindent\textit{Flutter:}
@@ -96,7 +85,7 @@ This sprint covers \textbf{Domain 4:}
             \item Implement right-to-left layout support through \texttt{MaterialApp}.
       \end{itemize} \\
       \midrule
-      \textbf{US-4.5}
+      \textbf{US-4.4}
       & As a first-time user, I need guided coach-mark tutorials so that I can
       learn the interface without external documentation.
       & \noindent\textit{Flutter:}
@@ -156,7 +145,6 @@ represents the most significant new administrator workflow in this sprint.
       \textbf{Preconditions}  &                          
       \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
       \item The user is authenticated with the \domainterm{Supervisor} role.
-      \item At least one \techname{MES Operation Execution} record exists.
       \end{itemize} \\
       \midrule
       \textbf{Postconditions} &                          
@@ -189,8 +177,8 @@ introduced in Sprint~4.
 
 Figure~\ref{fig:s4-seq-fetch-dashboard} depicts the machine dashboard retrieval
 flow. The \techname{AL} layer iterates over all \domainterm{Machine Center}
-records and, for each machine, computes the total operation count, cumulative
-produced and scrap quantities, and uptime percentage from the corresponding
+records and, for each machine, computes the total operation count, cancelled/Interrupted operations,
+total production and scrap quantities, and uptime percentage from the corresponding
 \techname{Business Central} records before assembling the per-machine KPI rows
 returned to the \techname{Flutter} client.
 
@@ -294,131 +282,130 @@ renders it as a chronological activity table.
 
 \subsection{Backend Implementation}
 
-No new \techname{Business Central} tables are created in this sprint. All
-backend work consists of new query and aggregation procedures added to the
-existing \techname{MES Web Service} codeunit (50126), reading from the tables
-defined in Sprints~1 through~3.
+No new \techname{Business Central} tables are introduced in this sprint.
+All backend work consists of new query and aggregation procedures added to
+\techname{MES Web Service} (codeunit~50126), reading from tables defined in
+Sprints~1 through~3.
 
 \subsubsection{Dashboard Aggregation}
 
-\texttt{fetchMachineDashboard()} accepts a \texttt{hoursBack} integer and an
-optional \texttt{workCenterNoJson} (JSON array of work centre numbers). It iterates all \modulename{Machine Center} records,
-and for each machine it filters \modulename{MES Operation Execution} records
-whose \texttt{Start Time} falls within the requested window. For each matched
-execution it sums the \texttt{Cycle Quantity} fields from linked
-\modulename{MES Operation Progression} records to obtain \texttt{totalProduced},
-and counts records marked as scrap to obtain \texttt{totalScrap}. Running
-minutes are derived from the difference between \texttt{End Time} (or the
-current datetime for open executions) and \texttt{Start Time}. Uptime
-percentage is computed as \texttt{runningMinutes / (hoursBack × 60) × 100},
-capped at 100.
+\texttt{fetchMachineDashboard()} accepts a \texttt{hoursBack} window and an
+optional \texttt{workCenterNoJson} filter. For each \modulename{Machine Center}
+it aggregates the matched \modulename{MES Operation Execution} records,
+summing \texttt{Cycle Quantity} from linked \modulename{MES Operation
+Progression} entries to obtain total produced and scrap counts, and computing
+uptime as \texttt{runningMinutes / (hoursBack × 60) × 100}, capped at 100.
 
 \subsubsection{Activity Log Aggregation}
 
-\texttt{fetchActivityLog()} queries four tables in descending timestamp order,
-filtered to the \texttt{hoursBack} window: \modulename{MES Operation State}
-(type \texttt{status\_change}), \modulename{MES Operation Progression} (type
-\texttt{production}), \modulename{MES Operation Scrap} (type \texttt{scrap}),
-and \modulename{MES Component Consumption} (type \texttt{scan}).
-For each record the operator's first and last name are resolved from the
-\modulename{Employee} table via the \texttt{Operator Id} foreign key. The
-results are merged into a single chronological list before being returned as
-a JSON array.
+\texttt{fetchActivityLog()} queries four tables within the \texttt{hoursBack}
+window --- \modulename{MES Operation State}, \modulename{MES Operation
+Progression}, \modulename{MES Operation Scrap}, and \modulename{MES Component
+Consumption} --- resolves operator names via the \modulename{Employee} table,
+and merges the results into a single descending-timestamp JSON array.
 
 \subsubsection{API Endpoints Added in Sprint 4}
 
-\begin{longtable}{@{} P{0.35\linewidth} P{0.22\linewidth} P{0.38\linewidth} @{}}
-      \caption{New API Endpoints --- Sprint 4}
-      \label{tab:s4-api-endpoints-s4} \\
-      \toprule
-      \textbf{Endpoint}              & \textbf{Key Parameters} & \textbf{Response} \\
-      \midrule
-      \endfirsthead
-      \toprule
-      \textbf{Endpoint}              & \textbf{Key Parameters} & \textbf{Response} \\
-      \midrule
-      \endhead
-      \multicolumn{3}{r}{\small Continued on next page} \\
-      \endfoot
-      \bottomrule
-      \endlastfoot
-            
-      \texttt{fetchMachineDashboard} & hoursBack, workCenterNoJson &                   
-	JSON array of \texttt{MachineDashboardModel} objects \\ \midrule
-            
-      \texttt{fetchActivityLog}      & hoursBack               &                   
-	JSON array of \texttt{ActivityLogModel} objects \\
+All endpoints are exposed as ODataV4 unbound actions through
+\techname{MES Web Service} (codeunit~50126) and are served by the
+middleware at:
+
+\begin{center}
+  \texttt{middlewareHostURL/api/<endpointName>}
+\end{center}
+
+\noindent Each request is forwarded to the \techname{AL} layer as an
+ODataV4 action call of the form:
+
+\begin{center}
+  \texttt{POST~<baseUrl>/ODataV4/MESWebService\_<ProcedureName>?company=<companyId>}
+\end{center}
+
+\begin{longtable}{@{} P{0.48\linewidth} @{\hspace{0.04\linewidth}} P{0.48\linewidth} @{}}
+  \caption{New API Endpoints --- Sprint 3}
+  \label{tab:s4-api-endpoints}\\
+  \toprule
+  \textbf{Endpoint} & \textbf{Endpoint}\\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Endpoint} & \textbf{Endpoint}\\
+  \midrule
+  \endhead
+  \multicolumn{2}{r}{\small Continued on next page}\\
+  \endfoot
+  \bottomrule
+  \endlastfoot
+
+  \apiendpoint{fetchMachineDashboard} & \apiendpoint{fetchActivityLog} \\ 
 \end{longtable}
 
 \subsection{Frontend Implementation}
 
 \subsubsection{Shared HTTP Infrastructure}
 
-All services in this sprint (and retroactively migrated services from earlier
-sprints) use a shared \techname{HttpClient} and \techname{HttpResponseParser}
-layer, replacing the inline \texttt{http.post} calls used in Sprint~1.
-
-\textbf{\modulename{HttpClient.post()}}: centralised \texttt{http.post} wrapper
-that injects JSON content-type headers and encodes the request body. All
-services call this method rather than the raw \texttt{http} package directly.
-
-\textbf{\modulename{HttpResponseParser}}: provides four static methods.
-\texttt{parseList()} decodes \techname{Business Central} OData list responses
-(nested value string). \texttt{parseObject()} decodes single-object responses.
-\texttt{parseWriteResult()} decodes write-result responses and throws with the
-backend error message on failure. \texttt{\_assertSuccess()} validates HTTP
-status codes and throws a structured exception for non-2xx responses.
+All sprint services (including retroactively migrated ones) share a
+\techname{HttpClient} and \techname{HttpResponseParser} layer, replacing
+the inline \texttt{http.post} calls from Sprint~1.
+\techname{HttpClient.post()} is a centralised wrapper that injects
+JSON headers and encodes the request body.
+\techname{HttpResponseParser} exposes four static helpers:
+\texttt{parseList()} and \texttt{parseObject()} decode OData list and
+single-object responses respectively; \texttt{parseWriteResult()} decodes
+write responses and surfaces backend errors; \texttt{\_assertSuccess()}
+validates HTTP status codes and throws a structured exception on non-2xx
+responses.
 
 \subsubsection{Provider Architecture}
 
 \begin{longtable}{@{} P{0.30\linewidth} P{0.65\linewidth} @{}}
-      \caption{Provider Responsibilities --- Sprint 4 Additions}
-      \label{tab:s4-providers-s4} \\
-      \toprule
-      \textbf{Provider}             & \textbf{Responsibility}                              \\
-      \midrule
-      \endfirsthead
-      \toprule
-      \textbf{Provider}             & \textbf{Responsibility}                              \\
-      \midrule
-      \endhead
-      \multicolumn{2}{r}{\small Continued on next page} \\
-      \endfoot
-      \bottomrule
-      \endlastfoot
-            
-      \techname{LogProvider}        & Owns dashboard and activity log fetch calls; exposes 
-      \texttt{selectedHours}, \texttt{hourOptions}, and \texttt{setHours()} shared
-      between the two admin pages. \\ \midrule
-            
-      \techname{MesBarcodeProvider} & Exposes \texttt{fetchAllBarcodes()},                 
-      \texttt{insertScans()}, and \texttt{resolveBarcode()}; resolves session token
-      automatically from \techname{AuthProvider}. \\
+  \caption{Provider Responsibilities --- Sprint 4 Additions}
+  \label{tab:s4-providers-s4} \\
+  \toprule
+  \textbf{Provider}             & \textbf{Responsibility} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Provider}             & \textbf{Responsibility} \\
+  \midrule
+  \endhead
+  \multicolumn{2}{r}{\small Continued on next page} \\
+  \endfoot
+  \bottomrule
+  \endlastfoot
+
+  \techname{LogProvider}        &
+   Owns dashboard and activity log fetch calls; exposes \texttt{selectedHours},
+   \texttt{hourOptions}, and \texttt{setHours()} shared between the two admin pages. \\
+  \addlinespace
+  \techname{MesBarcodeProvider} & 
+  Exposes \texttt{fetchAllBarcodes()}; resolves the session token automatically from
+  \techname{AuthProvider}. \\
 \end{longtable}
 
 \subsubsection{User Interface}
 
-Figures~\ref{fig:s4-ui-machine-dashboard} and~\ref{fig:s4-ui-activity-log} illustrate
-the two  pages. The \uilabel{Machine Dashboard Page} renders
-one card per machine, each displaying a circular uptime
-indicator and four metric rows (operations, produced, scrap, running minutes);
-the AppBar hosts a time-range dropdown that re-fetches data on change. The
-\uilabel{Activity Log Page} presents a paginated list of all system events
-ordered newest-first; each row shows a type icon, operator name, machine, action
-text (expandable for long entries), and timestamp; type and time-range dropdowns
-in the AppBar narrow the view.
 
 \begin{figure}[H]
-      \centering
-      \setlength{\fboxsep}{5pt}
-      \colorbox{black}{%
-            \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/UI/dashboard/wide.png}%
-            \hspace{\fboxsep}%
-            \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/UI/dashboard/small.png}%
-      }
-      \caption{\uilabel{Machine Dashboard Page} --- desktop and mobile views.}
-      \label{fig:s4-ui-machine-dashboard}
+  \centering
+  \setlength{\fboxsep}{5pt}
+  \colorbox{black}{%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/UI/dashboard/wide.png}%
+    \hspace{\fboxsep}%
+    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/UI/dashboard/small.png}%
+  }
+  \caption{\uilabel{Machine Dashboard Page} --- desktop and mobile views.}
+  \label{fig:s4-ui-machine-dashboard}
 \end{figure}
+
+Figures~\ref{fig:s4-ui-machine-dashboard} and~\ref{fig:s4-ui-activity-log} illustrate
+the two pages. The \uilabel{Machine Dashboard Page} renders one card per machine
+with a circular uptime indicator and four metric rows (finished operations, 
+Cancelled and Interrupted operations, produced, scrap, uptime), and
+an AppBar time-range dropdown that re-fetches on change. The \uilabel{Activity Log Page}
+presents a paginated, newest-first event list where each row shows a type icon, 
+operator, machine, and expandable action text; AppBar dropdowns filter by type and 
+time range.
 
 \begin{figure}[H]
   \centering
@@ -426,7 +413,6 @@ in the AppBar narrow the view.
   \caption{\uilabel{Activity Log Page} --- desktop and mobile views.}
   \label{fig:s4-ui-activity-log}
 \end{figure}
-
 \section{Test and validation}
 \subsection{Integration test}
 

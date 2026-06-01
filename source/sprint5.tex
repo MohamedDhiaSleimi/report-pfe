@@ -215,7 +215,7 @@ Both roles benefit from the fuzzy machine resolution and redirect action use cas
   \centering
   \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}
   \caption{UML Use Case Diagram --- Sprint 5}
-  \label{fig:s5-use-case-diagram-s5}
+  \label{fig:s5-use-case-diagram}
 \end{figure}
 
 \subsection{Textual Use Case Description}
@@ -296,24 +296,24 @@ the central interaction delivered in this sprint.
 
 \subsection{Sequence Diagrams}
 
-The following sequence diagrams illustrate the communication flow between the
+The following sequence diagram illustrate the communication flow between the
 \techname{Flutter} frontend, the \techname{Node.js} middleware, the
 \techname{Python} AI agent, and the \techname{Business Central} OData layer.
  
-Figure~\ref{fig:s5-seq-single-machine} depicts the standard single-machine query
-flow (e.g., ``What is MC-001 producing?''). The \techname{Flutter} client posts the
-message and user context to the middleware; the middleware forwards to the AI
-agent; the agent classifies intent, builds a \modulename{ToolChain} with two steps
-(\texttt{get\_ongoing\_operations} then \texttt{get\_operation\_live\_data} via slot
-reference), executes each step sequentially against BC, enriches the results, and
-synthesises a final reply.
+% Figure~\ref{fig:s5-seq-single-machine} depicts the standard single-machine query
+% flow (e.g., ``What is MC-001 producing?''). The \techname{Flutter} client posts the
+% message and user context to the middleware; the middleware forwards to the AI
+% agent; the agent classifies intent, builds a \modulename{ToolChain} with two steps
+% (\texttt{get\_ongoing\_operations} then \texttt{get\_operation\_live\_data} via slot
+% reference), executes each step sequentially against BC, enriches the results, and
+% synthesises a final reply.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/diagrams/sequence/AIChat-MainFlow.png}
-  \caption{SD-30: AI Chat --- Main Flow.}
-  \label{fig:s5-seq-ai-chat}
-\end{figure}
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/diagrams/sequence/AIChat-MainFlow.png}
+%   \caption{SD-30: AI Chat --- Main Flow.}
+%   \label{fig:s5-seq-ai-chat}
+% \end{figure}
 %=====SD-30==========================================================
 % sequenceDiagram
 %       actor User
@@ -406,39 +406,31 @@ Figure~\ref{fig:s5-seq-intent-classification} illustrates the two-tier intent cl
 
 \subsection{System Architecture Diagram}
 
-Figure~\ref{fig:s5-architecture} shows the physical architecture of the AI
-assistant layer, illustrating how the \techname{Flutter} client, \techname{Node.js}
-middleware, \techname{Python} AI agent, and \techname{Business Central} server
-interact. The middleware plays a dual role: it proxies all regular MES API calls
-using PowerShell \domainterm{SSPI} authentication, and it also routes AI chat
-requests to the Python agent which calls back into the same middleware for its
-data fetching needs.
-
-\begin{figure}[H]
+\noindent
+\begin{minipage}[t]{0.6\textwidth}
+	\vspace{0pt}
+	Figure~\ref{fig:s5-architecture} shows the physical architecture of the AI
+	assistant layer, illustrating how the \techname{Flutter} client, \techname{Node.js}
+	middleware, \techname{Python} AI agent, and \techname{Business Central} server
+	interact. The middleware plays a dual role: it proxies all regular MES API calls
+	using PowerShell \domainterm{SSPI} authentication, and it also routes AI chat
+	requests to the Python agent which calls back into the same middleware for its
+	data fetching needs.
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.38\textwidth}
+	\vspace{0pt}
 	\centering
-	% \missingfigure{Physical architecture: Flutter $\leftrightarrow$ Node.js
-	% 	(port 3000) $\leftrightarrow$ Python FastAPI (port 8000); Node.js
-	% 	$\leftrightarrow$ BC (PowerShell SSPI); Python agent $\leftrightarrow$
-	% 	Node.js /api/* for tool calls}
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}
-  	\caption{AI Assistant Layer --- Physical Architecture.}
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/screenshots/aiArchitecture.png}
+  	\captionof{figure}{AI Assistant Layer - Physical Architecture.}
 	\label{fig:s5-architecture}
-\end{figure}
+\end{minipage}
 
 \subsection{Class Diagram}
 
-The UML Class Diagram (Figure~\ref{fig:s5-class-diagram}) covers the main
-structural components of the AI agent: the \modulename{MESAgentOrchestrator}
-central controller, the \modulename{ToolChain} and \modulename{ToolStep}
-planning structures produced by the classifiers, the \modulename{ResolveResult}
-returned by the fuzzy resolver, and the \modulename{CompositeResult} produced
-by the fan-out executor. The 17 tool classes in \texttt{tools/mes\_tools.py}
-are represented as a single \modulename{BaseTool} with a \modulename{TOOL\_MAP}
-registry.
-
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/diagrams/class/sprint5.png}
   \caption{UML Class Diagram --- AI Assistant \& Analytical Intelligence.}
   \label{fig:s5-class-diagram-s5}
 \end{figure}

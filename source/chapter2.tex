@@ -46,12 +46,14 @@ will interact with our system:
 	Supervisor     &
 	This is an intermediate user. They can monitor the progress of production operations
 	on their work centre, view machine status and track the progress of production
-	orders. Mark operation as finished or cancel/interupt uneeded operations. \\[6pt]
+	orders. Mark operation as finished or cancel/interupt uneeded operations. 
+	View machine dashboards. Have access to all the access of the operators \\[6pt]
 
 	Operator       &
 	This is the end user of the MES application. Assigned to a work centre
 	(\textit{Work Center}), they can view the production orders assigned to their machine,
-	start, pause or resume an operation, and declare produced quantities. \\
+	start, pause or resume an operation, declare produced quantities, declare defective 
+	material, and scan components for consumption. \\
 
 \end{longtable}
 
@@ -87,7 +89,7 @@ solution meets these functional requirements.
 	      \begin{itemize}
 	      	\item View the complete list of MES users.
 	      	\item Create a new user account by linking it to a Business
-	      	      Central employee and assigning them a work centre.
+	      	      Central employee and assigning them a role and work centre(s) if needed.
 	      	\item Generate and assign a temporary password.
 	      	\item Activate or deactivate an account (automatic revocation of active tokens).
 	      	\item Change a user's role (Operator, Supervisor, Administrator) and work centre assignment.
@@ -106,7 +108,7 @@ solution meets these functional requirements.
 	      	\item View the production order currently running on each machine.
 	      \end{itemize}
 
-	\item \textbf{Production Order Management}: This feature allows the operator to:
+	\item \textbf{Production Order Management}: This feature allows the \userrole{Operator} and the \userrole{supervisor} to:
 	      \begin{itemize}
 	      	\item View production orders (Planned, Firm, Released) assigned to their machine.
 	      	\item Filter and sort orders by status or date.
@@ -120,8 +122,8 @@ solution meets these functional requirements.
 	      	\item Start an operation (validation of prerequisites: released order, free machine, previous operation completed if applicable).
 	      	\item Pause or resume an ongoing operation.
 		 	\item Declare produced quantities (validation: quantity $> 0$, no excess of the ordered quantity).
-	      	\item View progress in real time (produced quantity, completion percentage, operation status).
-			\item View the Bill of Materials for the current operation with component
+	      	\item View progress in real time (produced quantity, completion percentage, operation status, scrapped units).
+			\item View the Bill of Materials for the current operation with component consumption
 	      	\item Report scrapped units with a reason code.
 	      	\item scan components into the operation to record consumption against the BOM.
 	      \end{itemize}
@@ -213,7 +215,7 @@ these non-functional requirements:
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item User can enter username and password.
-	\item System validates credentials against the \techname{ERP}.
+	\item System validates credentials against the \techname{MES}.
 	\item Session token is created upon successful authentication.
 	\item User is redirected to the appropriate dashboard based on role.
 	\end{itemize} &
@@ -234,7 +236,7 @@ these non-functional requirements:
 	users with their details so that I can manage accounts.
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item The user list displays each account's full name, email, role, and work centre.
-	\item Clicking on the action button shows a dropdown menu with available actions.
+	\item Clicking on the action button shows a dropdown menu with available actions(change role, generate password, view badge, and toggle activation).
 	\item The list refreshes automatically after a new user is created.
 	\end{itemize} & High \\ \midrule
 
@@ -299,7 +301,7 @@ these non-functional requirements:
 	\item Badge QR rendered from the user's \domainterm{Badge Secret} via a barcode widget.
 	\item Print button generates a PDF with landscape/portrait toggle.
 	\item Regenerate action shows a confirmation dialog before replacing the secret.
-	\item New QR is displayed immediately after regeneration without a page reload.
+	\item New QR is displayed immediately after regeneration.
 	\item Actions are available only for active users and to the \userrole{Admin} role.
 	\end{itemize}
 	&
@@ -338,7 +340,7 @@ these non-functional requirements:
 
 
 % ===================== DOMAIN 2: MACHINE MONITORING =====================
-\subsubsection{Domain 2: Machine Monitoring}
+\subsubsection{Domain 2: Machine \& Production Management}
 \label{domain2}
 
 \vspace{0.3cm}
@@ -361,14 +363,14 @@ these non-functional requirements:
 
 	\textbf{US-2.1} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to see the list
-	of machines in my work centre with their current status so that I can see
+	of machines in my work center with their current status so that I can see
 	which machines are currently active.
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Machine list is scoped to the authenticated user's work centre.
 	\item Each card shows machine name, current status (\domainterm{Idle},
 	\domainterm{Working}), active production order number, operation No, and
 	the item name.
-	\item The list refreshes automatically every 5 seconds.
+	\item The list refreshes automatically every 20 seconds.
 	\end{itemize} &
 	High \\
 	\midrule
@@ -381,7 +383,7 @@ these non-functional requirements:
 	\item Only \domainterm{Planned}, \domainterm{Firm Planned}, or
 	\domainterm{Released} orders are shown.
 	\item Each card displays order number, item description, planned quantity,
-	planned start and end dates, and operation number.
+	planned start and end dates, operation description, and operation number.
 	\end{itemize} &
 	High \\
 	\midrule
@@ -390,12 +392,12 @@ these non-functional requirements:
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to start a
 	production operation so that the system records that the order has begun.
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item Only \domainterm{Released} routing lines may be started.
+	\item Only \domainterm{operation} from \domainterm{Released} orders may be started.
 	\item An operation cannot be started if it is already running.
 	\item A machine cannot run two operations simultaneously.
 	\item A new MES Operation State record is created with status.
 	\item An operation cannot be started if the previous operation in 
-	the same order is not started.
+	the same order is not either finished, interupted after the its start, or running but produced enough for the send ahead quantity.
 	\domainterm{Running}.
 	\end{itemize} & High \\ \midrule
 
@@ -406,7 +408,7 @@ these non-functional requirements:
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item The Operations Progress tab shows all operations whose latest status
 	record is \domainterm{Running} or \domainterm{Paused}.
-	\item Each card shows order number, operation number, current status, and
+	\item Each card shows order number, operation number, current status, operation description, and
 	last updated timestamp.
 	\item Data refreshes automatically every 5 seconds.
 	\end{itemize} & High \\ \midrule
@@ -417,8 +419,8 @@ these non-functional requirements:
 	operation progress without leaving the machine context.
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Selecting a machine from the list opens a dedicated machine page.
-	\item The page provides at least two tabs: \domainterm{Orders} and
-	\domainterm{Progress}.
+	\item The page provides at least two tabs: \domainterm{Orders},
+	\domainterm{Progress}, and \domainterm{History}.
 	\item The active tab is visually highlighted in the navigation bar.
 	\end{itemize} & High \\ \midrule
 
@@ -478,7 +480,7 @@ these non-functional requirements:
 	\item Declared quantity must be positive and not exceed remaining quantity that need to be produced.
 	\item Declared quantity must be less than the amount that can be produced with the available components scanned remaining.
 	\item Each declaration creates a new progression cycle record.
-	\item Cumulative quantity and progress percentage update immediately.
+	\item Produced quantity and progress percentage update immediately.
 	\end{itemize}
 	& High \\ \midrule
 
@@ -498,8 +500,8 @@ these non-functional requirements:
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Finishing a complete order (100\%) shows a green confirmation dialog.
-	\item Cancelling an incomplete order shows a red warning dialog.
-	\item If the operation is started then it is marked as cancelled otherwise as cancelled
+	\item Cancelling either an incomplete or unstarted order shows a red warning dialog.
+	\item If the operation is started then it is marked as interrupted otherwise as cancelled
 	\item Closing sets the execution end time and inserts an Idle machine status.
 	\end{itemize}
 	& High \\ \midrule
@@ -511,7 +513,6 @@ these non-functional requirements:
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Shows status, order number, product, required and produced quantities.
 	\item Live data streams without a manual refresh.
-	\item Adapts between mobile and desktop layouts.
 	\end{itemize}
 	& High \\ \midrule
 
@@ -532,7 +533,7 @@ these non-functional requirements:
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Line chart plots cycle quantity vs.\ declaration time.
-	\item Touch tooltip shows operator, quantity, cumulative total, timestamp.
+	\item Touch tooltip shows operator, quantity, total production, timestamp.
 	\item Auto-scrolls to most recent data point on load and refresh.
 	\end{itemize}
 	& Medium \\ \midrule
@@ -542,12 +543,10 @@ these non-functional requirements:
 	of Materials for an operation to know which components are required.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item Components linked to the current routing step are colour-coded by
-	availability (Available / Low Stock / Missing).
+	\item Components are colour-coded by scanned amount (the needed amount (green) / less then necessary to make a single item (red) otherwise (yellow)).
 	\item BOM data refreshes after every consumption event.
 	\item can be expanded to a dialog for a better view on larger screens.
 	\item search by name and filter by state
-	\item shows only the components linked to the operation with the routing link code
 	\end{itemize}
 	& High \\ \midrule
 
@@ -571,8 +570,8 @@ these non-functional requirements:
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Supervisor role sees an operator selector in the declare dialog.
-	\item Selected operator's ID is written to the Declared By field.
-	\item If no operator is selected, the supervisor's ID is used.
+	\item Selected operator's ID is stored with the declaration record for tracibility.
+	\item If no operator is selected, it is declared as if the supervisor made the declaration.
 	\end{itemize}
 	& Medium \\ \midrule
 
@@ -581,8 +580,7 @@ these non-functional requirements:
 	components into an operation so that consumption is recorded against the BOM.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item Live camera feed reads DataMatrix barcodes.
-	\item Internal format parsed locally; external resolved via API.
+	\item any scanner connected to the device reads  barcodes.
 	\item Duplicate scan increments quantity on the existing row.
 	\item Confirming scans inserts consumption records and refreshes the BOM.
 	\item After confirmation, the inventory in the ERP is updated to reflect the consumed quantity.
@@ -639,7 +637,7 @@ these non-functional requirements:
 	machines so that I can monitor production health across the facility.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item Dashboard shows uptime \%, operation count, total produced, and scrap
+	\item Dashboard shows uptime \%, operation cancelled or finished count, total produced, and scrap
 	per machine.
 	\item Configurable time-range (hours back) filter.
 	\end{itemize}
@@ -661,7 +659,7 @@ these non-functional requirements:
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Sidebar has sections for Users \& Roles,
-	Activity Logs, and Settings.
+	Activity Logs, system barcodes and Settings.
 	\item Active section is visually highlighted.
 	\end{itemize}
 	& High \\ \midrule
@@ -798,36 +796,38 @@ functional increment verified by a sprint review with the professional superviso
 	\textbf{Sprint} & \textbf{Domain}                                   & \textbf{Scope} \\
 	\midrule
 	\endfirsthead
+
 	\toprule
 	\textbf{Sprint} & \textbf{Domain}                                   & \textbf{Scope} \\
 	\midrule
 	\endhead
+
 	\multicolumn{3}{r}{\small Continued on next page} \\
 	\endfoot
 
+	\endlastfoot
+
 	Sprint~1        & Authentication \& User Management                 &
 	Secure login,2 factor authentification(2FA), change password, profile page
-	and session token management, role-based access control,
-	administrator user creation, password generation and reset,
-	role and work-centre change, account activation/deactivation,
-	two-factor authentication with badge QR~code, badge management
-	(view, print, regenerate), password expiry policy configuration, export users
-	and first-launch host pairing. \\ \midrule
+	and session token management, role-based access control, administrator user
+	creation, password generation and reset, role and work-centre change, account
+	activation/deactivation, badge management (view, print, regenerate), password
+	expiry	policy configuration, export users and first-launch host pairing. \\ \midrule
 
 	Sprint~2        & Machine Monitoring \& Production Order Management &
 	Real-time machine status tracking, production order list per machine,
 	operation start, tabbed machine view with Orders / Progress / History tabs,
-	order filtering and sorting, completed operation history. \\ \midrule
+	order filtering and sorting. \\ \midrule
 
 	Sprint~3        & Production Execution \& Traceability              &
-	Production cycle declarations, pause/resume/finish/cancel operations,
+	Production cycle declarations, pause/resume/finish/cancel/interupt operations,
 	operation detail page with live data, production chart, Bill of Materials
 	visibility, component barcode scanning, scrap declaration,
 	supervisor proxy declaration, and label printing. \\ \midrule
 
 	Sprint~4        & Administration and System Monitoring \& Configuration              &
-	Monitoring dashboard and Administrator activity log, multi-language support
-	(EN/FR/AR) and RTL layout, in-app onboarding tutorials. \\ \midrule
+	Monitoring dashboard and Administrator activity log, barcode view and printing, user
+	export, multi-language support (EN/FR/AR) and RTL layout, in-app onboarding tutorials. \\ \midrule
 
 	Sprint~5        & AI Assistant \& Analytical Intelligence           &
 	Natural-language chat assistant, \techname{Node.js} reverse proxy middleware,
@@ -835,7 +835,7 @@ functional increment verified by a sprint review with the professional superviso
 	fuzzy machine resolution, composite fan-out queries, data enrichment,
 	anomaly detection (scrap spikes, overdue orders), and contextual
 	redirect actions. \\
-	\bottomrule
+	\midrule
 \end{longtable}
 
 \section{Global Application Architecture}
@@ -845,27 +845,31 @@ functional increment verified by a sprint review with the professional superviso
 The physical architecture of the MES system rests on three main nodes:
 
 	\begin{itemize}
-	      \item \textbf{Business Central Server (on-premises / SaaS)}: hosts the AL extension
-	            that exposes OData V4 endpoints and the business REST APIs. In on-premises mode, the
-	            server runs on a BC210 instance accessible on port 7048. In SaaS mode, the base URLs
-	            follow the schema
-	            \texttt{api.businesscentral.dynamics.com/v2.0/<tenantId>/<environment>/ODataV4/}.
+	    \item \textbf{Business Central Server (on-premises / SaaS)}: hosts the AL extension
+	    that exposes OData V4 endpoints and the business REST APIs. In on-premises mode, the
+	    server runs on a BC210 instance accessible on port 7048. In SaaS mode, the base URLs
+	    follow the schema
+	    \texttt{api.businesscentral.dynamics.com/v2.0/<tenantId>/<environment>/ODataV4/}.
 
-	      \item \textbf{Node.js Middleware}: a reverse-proxy layer running between the Flutter
-	            client and Business Central. It handles SSPI/Windows authentication toward BC,
-	            exposes a unified REST API consumed by Flutter, and routes AI chat requests to the Python
-	            AI agent.
+	    \item \textbf{Node.js Middleware}: a reverse-proxy layer running between the Flutter
+	    client and Business Central. It handles SSPI/Windows authentication toward BC,
+	    exposes a unified REST API consumed by Flutter, and routes AI chat requests to the Python
+	    AI agent.
 
-	      \item \textbf{Flutter Client (mobile / web / desktop)}: application compiled for
-	            Android, iOS, Web or desktop, communicating with the Node.js middleware via HTTP
-	            requests. The middleware proxies these to the BC OData V4 endpoints.
+	    \item \textbf{Flutter Client (mobile / web / desktop)}: application compiled for
+	    Android, iOS, Web or desktop, communicating with the Node.js middleware via HTTP
+	    requests. The middleware proxies these to the BC OData V4 endpoints.
+		
+		\item \textbf{A Python AI agent (Server)}: a module that acts as an interface between
+		the application and the llm model chosen,includes intent classification tool calls.
 	\end{itemize}
 
 % IMAGE PLACEHOLDER - physical architecture diagram (BC server + Flutter clients)
+
+
 \begin{figure}[H]
 	\centering
-	\missingfigure{Physical architecture diagram: Business Central server (OData
-		V4) $\leftrightarrow$ network $\leftrightarrow$ Flutter clients (Android / iOS / Web)}
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_chapter-2-repport/systemArchitecture.png}
 	\caption{MES System Physical Architecture}
 	\label{fig:mescha-archi_physique}
 \end{figure}
@@ -879,22 +883,24 @@ The software architecture of the system is organised around four distinct layers
 The back-end is structured in five layers:
 
 \begin{itemize}
-	\item \textbf{Tables (1-Tables)}: define the persistent data model ---
-	      MES User, MES Auth Token, MES Machine Status, MES Operation State,
-		  MES Operation Scrap, MES Operation Execution, MES Operation
-	      Progression, MES Settings, MES Component Consumption, MES User Execution Interaction, .
-	\item \textbf{Enums (2-Enum)}: define the enumerated types --- MES User Role
-	      (Operator, Supervisor, Admin), MES Machine Status (Idle, Working),
-	      MES Operation State (Running, Paused, Finished, Cancelled, Interrupted), 
-		  MES Token State (Revoked, Pending, Active).
-	\item \textbf{Codeunits (3-CodeUnit)}: contain the business logic --- MES Auth Mgt
-	      (authentication, tokens), MES Password Mgt (SHA-256 hashing), MES Machine Fetch
-	      (read operations), MES Machine Write (state orchestration), MES Machine Insert
-		  (table writes), MES Machine Validation (business rule guards), MES Unbound Actions.
-	\item \textbf{API Pages (4-API)}: expose data for reading/writing via the BC REST
-	      API --- employees, work centres.
-	\item \textbf{Pages (5-Pages)}: administration and debugging interfaces in the BC
-	      client (lists, cards, API debug page, etc...).
+	\item \textbf{Tables (1-Tables)}: define the persistent data model; 
+	MES User, MES Auth Token, MES Machine Status, MES Operation State, 
+	MES Operation Scrap, MES Operation Execution, MES Operation Progression,
+	MES Settings, MES Component Scan, and MES User Execution Interaction.
+	\item \textbf{Enums (2-Enum)}: define the enumerated types; MES User 
+	Role (Operator, Supervisor, Admin), MES Machine Status (Idle, Working), 
+	MES Operation State (Running, Paused, Finished, Cancelled, Interrupted), 
+	MES Token State (Revoked, Pending, Active).
+	\item \textbf{Codeunits (3-CodeUnit)}: contain the business logic; 
+	MES Auth Mgt (authentication, tokens), MES Password Mgt (SHA-256 hashing), 
+	MES Machine Fetch (read operations), MES Machine Write (state orchestration),
+	MES Machine Insert (table writes), MES Machine Validation (business rule guards),
+	MES Authentification (user authentication), and the \domainterm{Mes Web Service}
+	(wrappers exposed as web services).
+	\item \textbf{API Pages (4-API)}: expose data for reading/writing via the BC REST 
+	API; employees, work centres.
+	\item \textbf{Pages (5-Pages)}: administration and debugging interfaces 
+	in the BC client (lists, cards, API debug page, etc...).
 \end{itemize}
 
 \subsubsection{Node.js Middleware}
@@ -926,16 +932,6 @@ The Flutter front-end follows a three-layer architecture:
 	      organised by functional domain (auth, admin, machine) with dedicated responsive
 	      layouts (mobile, tablet, PC).
 \end{itemize}
-
-% IMAGE PLACEHOLDER - layered software architecture diagram
-\begin{figure}[H]
-	\centering
-	\missingfigure{Layered software architecture diagram: BC AL (Tables /
-		Enums / Codeunits / API Pages) $\leftrightarrow$ OData V4 $\leftrightarrow$ Flutter
-	(Data / Domain / Presentation)}
-	\caption{MES System Software Architecture}
-	\label{fig:mescha-archi_logicielle}
-\end{figure}
 
 % ── 2.5 ─────────────────────────────────────────────────────────────────────
 \section{Work Environment}
