@@ -404,28 +404,6 @@ Figure~\ref{fig:s5-seq-intent-classification} illustrates the two-tier intent cl
 %       end
 
 
-\subsection{System Architecture Diagram}
-
-\noindent
-\begin{minipage}[t]{0.6\textwidth}
-	\vspace{0pt}
-	Figure~\ref{fig:s5-architecture} shows the physical architecture of the AI
-	assistant layer, illustrating how the \techname{Flutter} client, \techname{Node.js}
-	middleware, \techname{Python} AI agent, and \techname{Business Central} server
-	interact. The middleware plays a dual role: it proxies all regular MES API calls
-	using PowerShell \domainterm{SSPI} authentication, and it also routes AI chat
-	requests to the Python agent which calls back into the same middleware for its
-	data fetching needs.
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.38\textwidth}
-	\vspace{0pt}
-	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/screenshots/aiArchitecture.png}
-  	\captionof{figure}{AI Assistant Layer - Physical Architecture.}
-	\label{fig:s5-architecture}
-\end{minipage}
-
 \subsection{Class Diagram}
 
 \begin{figure}[H]
@@ -461,6 +439,7 @@ Python agent's response through unchanged. A \texttt{GET /api/ai/health}
 endpoint aggregates the Node process uptime with the Python agent's own health
 status for monitoring purposes.
 
+
 \subsubsection{Configuration}
 
 Table~\ref{tab:s5-middleware-config} lists the environment variables consumed by
@@ -488,12 +467,11 @@ the middleware.
 	\texttt{PROXY\_PORT}    & 3000      & Listening port \\ \midrule
 	\texttt{ALLOWED\_ORIGINS} & ""      & Comma-separated CORS origins \\ \midrule
 	\texttt{BC\_TIMEOUT\_MS} & 30\,000 & BC request timeout in milliseconds \\ \midrule
-	\texttt{AI\_AGENT\_URL} & \texttt{http://localhost:8000} & Python agent base URL \\ \midrule
+	\texttt{AI\_AGENT\_URL} & port 3000 & Python agent base URL \\ \midrule
 	\texttt{AI\_TIMEOUT\_MS} & 60\,000 & AI request abort timeout in milliseconds \\
 \end{longtable}
 
-\subsection{Python AI Agent}
-The agent makes exactly two \domainterm{LLM} calls per user message .
+\subsection{Python AI Agent}	The agent makes exactly two \domainterm{LLM} calls per user message .
 \textbf{Call 1 --- Intent classification.} The \modulename{LLMIntentIdentifier}
 sends the user message, role, and work centres to the LLM with a structured
 system prompt listing all 17 available tools and their required arguments. The
@@ -507,30 +485,42 @@ The entire classification reasoning is stored in a \modulename{ThinkingBlock} an
 returned in \texttt{ChatResponse.thinking} for debugging; it is never shown to the
 user.
 
-\textbf{Call 2 --- Synthesis.} After all tool steps have been executed and their
-results enriched, the \texttt{Orchestrator.\_synthesise()} method builds a context
-block containing the enriched data in markdown format (truncated at
-\texttt{LLM\_MAX\_CONTEXT\_CHARS} characters) and calls the LLM with the
-\texttt{SYNTHESIS\_SYSTEM} and \texttt{SYNTHESIS\_USER\_TEMPLATE} prompts. The
-system prompt instructs the model to answer only from the pre-fetched data, to
-highlight anomalies prominently, to respond in the same language as the user, and
-to optionally append a \texttt{actions} JSON block containing up to 4
-\modulename{RedirectAction} objects.
+\noindent
+\begin{minipage}[t]{0.6\textwidth}
+	\vspace{0pt}
 
-\subsubsection{Intent Classification}
 
-\textbf{LLM classifier.} The \modulename{LLMIntentIdentifier} constructs a
-system prompt containing the full \texttt{TOOL\_CATALOGUE}
- and the list of valid intent labels. The user
-message is injected via \texttt{\_IDENTIFIER\_USER\_TEMPLATE} along with the
-user's role and work centres. The raw LLM response is stripped of JSON fences,
-parsed, validated against \texttt{\_VALID\_TOOLS} and \texttt{\_INTENT\_MAP}, and
-converted to a \modulename{ToolChain} via \texttt{\_plan\_to\_tool\_chain()}.
+	\textbf{Call 2 --- Synthesis.} After all tool steps have been executed and their
+	results enriched, the \texttt{Orchestrator.\_synthesise()} method builds a context
+	block containing the enriched data in markdown format (truncated at
+	\texttt{LLM\_MAX\_CONTEXT\_CHARS} characters) and calls the LLM with the
+	\texttt{SYNTHESIS\_SYSTEM} and \texttt{SYNTHESIS\_USER\_TEMPLATE} prompts. The
+	system prompt instructs the model to answer only from the pre-fetched data, to
+	highlight anomalies prominently, to respond in the same language as the user, and
+	to optionally append a \texttt{actions} JSON block containing up to 4
+	\modulename{RedirectAction} objects.
 
-\textbf{Regex classifier (fallback).} The \texttt{classify()} function in
-\texttt{agent/intent.py} evaluates the user message against 10 keyword pattern
-variables in strict priority order. Table~\ref{tab:s5-intents} lists the 12
-intent values and their associated tool chains.
+	\subsubsection{Intent Classification}
+
+		\textbf{LLM classifier.} The \modulename{LLMIntentIdentifier} constructs a
+		system prompt containing the full \texttt{TOOL\_CATALOGUE}
+		and the list of valid intent labels. The user
+		message is injected via \texttt{\_IDENTIFIER\_USER\_TEMPLATE} along with the
+		user's role and work centres. The raw LLM response is stripped of JSON fences,
+		parsed, validated against \texttt{\_VALID\_TOOLS} and \texttt{\_INTENT\_MAP}, and
+		converted to a \modulename{ToolChain} via \texttt{\_plan\_to\_tool\_chain()}.
+
+		Figure~\ref{fig:s5-architecture} shows the file architecture of the AI
+		assistant layer.
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.38\textwidth}
+	\vspace{0pt}
+	\centering
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/screenshots/aiArchitecture.png}
+  	\captionof{figure}{AI Assistant Layer - Physical Architecture.}
+	\label{fig:s5-architecture}
+\end{minipage}
 
 \begin{longtable}{@{} P{0.28\linewidth} P{0.32\linewidth} P{0.36\linewidth} @{}}
 	\caption{Intent Values and Associated Tool Chains}
