@@ -46,12 +46,12 @@ will interact with our system:
 	Supervisor     &
 	This is an intermediate user. They can monitor the progress of production operations
 	on their work centre, view machine status and track the progress of production
-	orders. Mark operation as finished or cancel/interupt uneeded operations, And they also have access to all of the operator's permissions. \\[6pt]
+	orders. Mark operation as finished or cancel/interupt uneeded operations. \\[6pt]
 
 	Operator       &
 	This is the end user of the MES application. Assigned to a work centre
 	(\textit{Work Center}), they can view the production orders assigned to their machine,
-	start, pause or resume an operation, declare produced quantities, defective materials, and scan material barcodes to declare their use. \\
+	start, pause or resume an operation, and declare produced quantities. \\
 
 \end{longtable}
 
@@ -87,7 +87,7 @@ solution meets these functional requirements.
 	      \begin{itemize}
 	      	\item View the complete list of MES users.
 	      	\item Create a new user account by linking it to a Business
-	      	      Central employee and assigning them a role and work centre(s) if needed.
+	      	      Central employee and assigning them a work centre.
 	      	\item Generate and assign a temporary password.
 	      	\item Activate or deactivate an account (automatic revocation of active tokens).
 	      	\item Change a user's role (Operator, Supervisor, Administrator) and work centre assignment.
@@ -106,7 +106,7 @@ solution meets these functional requirements.
 	      	\item View the production order currently running on each machine.
 	      \end{itemize}
 
-	\item \textbf{Production Order Management}: This feature allows the operator and the supervisor to:
+	\item \textbf{Production Order Management}: This feature allows the operator to:
 	      \begin{itemize}
 	      	\item View production orders (Planned, Firm, Released) assigned to their machine.
 	      	\item Filter and sort orders by status or date.
@@ -120,8 +120,8 @@ solution meets these functional requirements.
 	      	\item Start an operation (validation of prerequisites: released order, free machine, previous operation completed if applicable).
 	      	\item Pause or resume an ongoing operation.
 		 	\item Declare produced quantities (validation: quantity $> 0$, no excess of the ordered quantity).
-	      	\item View progress in real time (produced quantity, completion percentage, operation status, scrap).
-			\item View the Bill of Materials for the current operation with component consumption
+	      	\item View progress in real time (produced quantity, completion percentage, operation status).
+			\item View the Bill of Materials for the current operation with component
 	      	\item Report scrapped units with a reason code.
 	      	\item scan components into the operation to record consumption against the BOM.
 	      \end{itemize}

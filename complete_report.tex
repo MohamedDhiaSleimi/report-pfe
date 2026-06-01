@@ -86,6 +86,9 @@
 \usepackage{etoolbox}
 \usepackage{ragged2e}
 
+% --- page de guarde injection ----
+\usepackage{pdfpages}
+
 % P column: ragged-right + relaxed hyphenation
 \newcolumntype{P}[1]{>{\RaggedRight\arraybackslash\hyphenpenalty=200\exhyphenpenalty=200}p{#1}}
 
@@ -205,53 +208,54 @@
 % TITLE PAGE
 % ---------------------------------------------------------------------------
 \thispagestyle{empty}
-\begin{titlepage}
-  \begin{center}
+% \begin{titlepage}
+%   \begin{center}
 
-    \fontsize{20pt}{20pt}\selectfont
-    \includegraphics[width=2cm]{./media/iset_rads_logo.jpg}\\[6pt]
-    \begin{tabular}{c}
-      Tunisian Republic            \\
-      Ministry of Higher Education \\
-      \InstituteName{}             \\
-    \end{tabular}
+%     \fontsize{20pt}{20pt}\selectfont
+%     \includegraphics[width=2cm]{./media/iset_rads_logo.jpg}\\[6pt]
+%     \begin{tabular}{c}
+%       Tunisian Republic            \\
+%       Ministry of Higher Education \\
+%       \InstituteName{}             \\
+%     \end{tabular}
 
-    \vspace{10pt}
-    \rule{\textwidth}{2pt}\\
-    \vspace{10pt}
-    {\normalsize\textit{End-of-Studies Project Report}}\\
-    \vspace{10pt}
-    {\bf\large \InstituteName{}}\\
-    \vspace{10pt}
-    {\normalsize\textit{by}}\\
-    \vspace{10pt}
-    {\fontsize{18pt}{22pt}\selectfont
-      \textbf{%
-        \StudentOne{}\\
-        \StudentTwo{}%
-      }\\
-    }
+%     \vspace{10pt}
+%     \rule{\textwidth}{2pt}\\
+%     \vspace{10pt}
+%     {\normalsize\textit{End-of-Studies Project Report}}\\
+%     \vspace{10pt}
+%     {\bf\large \InstituteName{}}\\
+%     \vspace{10pt}
+%     {\normalsize\textit{by}}\\
+%     \vspace{10pt}
+%     {\fontsize{18pt}{22pt}\selectfont
+%       \textbf{%
+%         \StudentOne{}\\
+%         \StudentTwo{}%
+%       }\\
+%     }
 
-    \vspace{30pt}
-    {\fontsize{27pt}{32pt}\selectfont
-      \rule{0.5\textwidth}{.4pt}\\
-      \vspace{10pt}
-      \textbf{\ProjectName{}}\\
-      \vspace{6pt}
-      \fontsize{16pt}{18pt}\selectfont
-      Complete Project Report\\
-      \vspace{10pt}
-      \rule{0.5\textwidth}{.4pt}
-    }
+%     \vspace{30pt}
+%     {\fontsize{27pt}{32pt}\selectfont
+%       \rule{0.5\textwidth}{.4pt}\\
+%       \vspace{10pt}
+%       \textbf{\ProjectName{}}\\
+%       \vspace{6pt}
+%       \fontsize{16pt}{18pt}\selectfont
+%       Complete Project Report\\
+%       \vspace{10pt}
+%       \rule{0.5\textwidth}{.4pt}
+%     }
 
-    \vspace{30pt}
-    \normalsize\textbf{\textit{made at}}\\
-    \vspace{10pt}
-    \CompanyName{}
+%     \vspace{30pt}
+%     \normalsize\textbf{\textit{made at}}\\
+%     \vspace{10pt}
+%     \CompanyName{}
 
-  \end{center}
-\end{titlepage}
+%   \end{center}
+% \end{titlepage}
 
+\includepdf[pages=1]{./media/Page-de-garde_DSI-english.pdf}
 
 \cleardoublepage
 \thispagestyle{empty}
