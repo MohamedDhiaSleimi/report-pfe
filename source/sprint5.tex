@@ -98,30 +98,8 @@ This sprint covers \textbf{Domain 5:}
 	\end{itemize}\\
 	\midrule
 
-	\textbf{US-5.2}
-	& As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant
-	to resolve ambiguous machine references so that I do not need to know exact
-	machine codes.
-	& \noindent\textit{Python AI Agent}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item Implement \texttt{agent/resolver.py}: \modulename{MachineEntry},
-		      \modulename{ResolveResult}, \texttt{build\_machine\_index()},
-		      and \texttt{resolve\_machine()} with five-tier cascade (exact ID,
-		      normalised exact, digit suffix, token overlap, edit distance).
-		\item Implement text normalisation helpers \texttt{\_norm()},
-		      \texttt{\_digits\_only()}, \texttt{\_tokenise()},
-		      \texttt{\_edit\_distance()}, \texttt{\_token\_overlap()}.
-		\item Implement \texttt{format\_candidates\_for\_llm()} disambiguation
-		      message builder.
-		\item Implement \texttt{\_substitute\_machine\_no()} in
-		      \texttt{agent/orchestrator.py} to replace \texttt{\_\_RESOLVE\_\_}
-		      slot placeholders after resolution.
-		\item Integrate resolution into \texttt{Orchestrator.run()} when
-		      \texttt{chain.unresolved\_machine\_ref} is set.
-	\end{itemize}\\
-	\midrule
 
-	\textbf{US-5.3}
+	\textbf{US-5.2}
 	& As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant
 	to answer fleet-wide questions so that I get a consolidated view without
 	visiting each machine individually.
@@ -139,7 +117,7 @@ This sprint covers \textbf{Domain 5:}
 	\end{itemize}\\
 	\midrule
 
-	\textbf{US-5.4}
+	\textbf{US-5.3}
 	& As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant
 	to provide contextual navigation shortcuts so that I can open a machine,
 	operation, or dashboard directly from the chat response.
@@ -163,7 +141,7 @@ This sprint covers \textbf{Domain 5:}
 	\end{itemize}\\
 	\midrule
 
-	\textbf{US-5.5}
+	\textbf{US-5.4}
 	& As a \userrole{Supervisor}, I need the assistant to proactively highlight
 	anomalies so that I can act before problems escalate.
 	& \noindent\textit{Python AI Agent}

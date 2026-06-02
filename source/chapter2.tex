@@ -547,9 +547,10 @@ these non-functional requirements:
 	& Medium \\ \midrule
 
 	\textbf{US-3.7} &
-	As an \userrole{Operator} or \userrole{Supervisor}, I need to see the Bill
-	of Materials for an operation to know which components are required, so that I can review each declaration's quantity, operator, and timestamp.
-	&
+	As an \userrole{Operator} or \userrole{Supervisor}, I need to see the
+	Bill of Materials for a production operation so that I know which
+	components are required, how much has already been consumed, and the amount 
+	available in the inventory.&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Components are colour-coded by remaining amount (the needed amount (green) / less then necessary to make a single item (red) otherwise (yellow)).
 	\item BOM data refreshes after every consumption event.
@@ -597,7 +598,7 @@ these non-functional requirements:
 
 	\textbf{US-3.11} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to print a label
-	for a production order so that produced parts are correctly identified.
+	for the finished production operations (100\% progress) so that produced parts are correctly identified.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Label includes DataMatrix barcode encoding order, machine, item data.
@@ -725,21 +726,7 @@ these non-functional requirements:
 
 	\textbf{US-5.2} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant to
-	resolve ambiguous machine references (e.g.\ ``Fraiseuse~3'') so that I do not
-	need to know exact machine codes.
-	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item Machine names, partial codes, and digit-only references are matched to
-	the correct machine using a five-tier fuzzy resolution strategy.
-	\item High-confidence matches ($\geq$ 85\%) are resolved silently.
-	\item Low-confidence matches present up to 3 candidates for disambiguation.
-	\item Machine access control is enforced after resolution.
-	\end{itemize}
-	& High \\ \midrule
-
-	\textbf{US-5.3} &
-	As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant to
-	answer fleet-wide questions (e.g.\ ``which machines are running?'') so that I
+	answer fleet-wide questions so that I
 	get a consolidated view without visiting each machine individually.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
@@ -750,7 +737,7 @@ these non-functional requirements:
 	\end{itemize}
 	& High \\ \midrule
 
-	\textbf{US-5.4} &
+	\textbf{US-5.3} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant to
 	provide contextual navigation shortcuts so that I can open a machine, operation,
 	or dashboard directly from the chat response.
@@ -762,9 +749,9 @@ these non-functional requirements:
 	\end{itemize}
 	& Medium \\ \midrule
 
-	\textbf{US-5.5} &
+	\textbf{US-5.4} &
 	As a \userrole{Supervisor}, I need the assistant to proactively highlight
-	anomalies (overdue orders, scrap spikes, idle operators) so that I can act
+	anomalies so that I can act
 	before problems escalate.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
