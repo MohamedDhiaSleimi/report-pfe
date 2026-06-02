@@ -93,7 +93,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	& As an \userrole{Administrator}, I need to search users.
 	& \noindent\textit{Flutter}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implement user search in \techname{AddUserPage}.
+		\item Implement user search in \techname{AddUserPage} using either the name or the email of the user.
 		\item Implement role filtering in \techname{AddUserPage}.
 		
 	\end{itemize} \\
@@ -245,15 +245,14 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 \section{Design}
 \subsection{Use Case Diagram}
 
-The UML Use Case Diagram (Figure~\ref{fig:s1-use-case-diagram}) shows the three
+The UML Use Case Diagrams (Figure~\ref{fig:s1-uc-authentication} to~\ref{fig:s1-uc-manage-users}) shows the three
 primary actors (\userrole{Operator}, \userrole{Supervisor},
 \userrole{Administrator}) and their interactions with the \domainterm{MES}
 authentication and user management system. In addition to the core login,
 logout, change password, and user creation flows, the diagram includes the
 \uilabel{Change Role / Work Centre} and \uilabel{Activate / Deactivate Account}
-use cases available exclusively to the \userrole{Administrator}, as well as the
-\uilabel{Badge QR Scan} two-factor verification step and the
-\uilabel{Paring / Host Configuration} first-launch flow.
+use cases available exclusively to the \userrole{Administrator}, as well as the settings management
+\uilabel{Badge QR Scan} two-factor verification step and the automatique password change. 
 
 \begin{figure}[H]
 	\centering

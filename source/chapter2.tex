@@ -199,7 +199,7 @@ these non-functional requirements:
 	\endlastfoot
 
 	\textbf{US-1.1} &
-	As an \userrole{Administrator}, I need to assign access to each user so
+	As an \userrole{Administrator}, I need to assign a user account for each employee  so
 	that users only access features appropriate to their role.
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Ability to assign a user as \userrole{Operator} or \userrole{Supervisor} or \userrole{Administrator}.
@@ -226,14 +226,14 @@ these non-functional requirements:
 	As an \userrole{Administrator}, I need to search users.
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Ability to filter users based on their role.
-	\item Ability to search users based on name or email.
+	\item Ability to search for a specific user.
 	\end{itemize} &
 	High \\
 	\midrule
 
 	\textbf{US-1.4} &
-	As an \userrole{Administrator}, I need to see a list of all \techname{MES}
-	users with their details so that I can manage accounts.
+	As an \userrole{Administrator}, I need to see a list of all
+	users with their details so that I can manage their accounts.
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item The user list displays each account's full name, email, role, and work centre.
 	\item Clicking on the action button shows a dropdown menu with available actions(change role, generate password, view badge, and toggle activation).
@@ -241,8 +241,8 @@ these non-functional requirements:
 	\end{itemize} & High \\ \midrule
 
 	\textbf{US-1.5} &
-	As an \userrole{Administrator}, I need to generate and assign a temporary
-	password to a user so that they can log in for the first time.
+	As an \userrole{Administrator}, I need to generate and assign temporary
+	passwords to users so that they can log in for the first time.
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Admin can generate a random secure password for any user.
 	\item The generated password is sent to the \techname{ERP} via \texttt{AdminSetPassword}.
