@@ -235,7 +235,7 @@ these non-functional requirements:
 	As an \userrole{Administrator}, I need to see a list of all
 	users with their details so that I can manage their accounts.
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item The user list displays each account's full name, email, role, and work centre.
+	\item The user list displays each account's full name, email, role, when he was active, and work centre.
 	\item Clicking on the action button shows a dropdown menu with available actions(change role, generate password, view badge, and toggle activation).
 	\item The list refreshes automatically after a new user is created.
 	\end{itemize} & High \\ \midrule
@@ -255,7 +255,7 @@ these non-functional requirements:
 	assignment of an existing user so that access rights stay current.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item Admin can select a new role for any user.
+	\item Admin can select a new role for any other user.
 	\item Work-centre list updates based on the selected role.
 	\item All active tokens for the target user are revoked on save.
 	\item The user list refreshes after a successful change.
@@ -268,9 +268,8 @@ these non-functional requirements:
 	account so that access can be revoked without deleting the account.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item Admin can toggle the active status of any user.
+	\item Admin can toggle the active status of any other user.
 	\item Deactivation immediately revokes all active tokens.
-	\item An admin cannot deactivate their own account.
 	\item The user row updates its visual status indicator immediately.
 	\end{itemize}
 	&
@@ -283,7 +282,7 @@ these non-functional requirements:
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item \domainterm{2FA} prompt appears only when \domainterm{TwoFA Enabled} is active in \techname{MES Settings}.
-	\item Camera opens and reads a QR badge code automatically.
+	\item Camera opens and scans a QR badge code.
 	\item Manual entry field available as a fallback.
 	\item Session token is persisted only after successful badge verification.
 	\item Failed scan shows an error; scanner reactivates.
@@ -299,10 +298,9 @@ these non-functional requirements:
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Badge QR rendered from the user's \domainterm{Badge Secret} via a barcode widget.
-	\item Print button generates a PDF with landscape/portrait toggle.
+	\item Print button generates a PDF.
 	\item Regenerate action shows a confirmation dialog before replacing the secret.
 	\item New QR is displayed immediately after regeneration.
-	\item Actions are available only for active users and to the \userrole{Admin} role.
 	\end{itemize}
 	&
 	High \\ \midrule
@@ -313,9 +311,9 @@ these non-functional requirements:
 	organisation's authentication security level.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item \domainterm{2FA} toggle and password period field available on the \uilabel{Settings} page.
+	\item \domainterm{2FA} toggle and password rotation period field available on a \uilabel{Settings} page.
 	\item Changes take effect on the next login attempt.
-	\item Settings are persisted in the \techname{MES Settings} table in \techname{Business Central}.
+	\item Settings are persisted.
 	\item A scheduled job (every 24~h) flags users whose password age exceeds the configured period.
 	\item Unsaved changes display a persistent banner with \uilabel{Discard} and \uilabel{Save} actions.
 	\end{itemize}
@@ -335,6 +333,16 @@ these non-functional requirements:
 	\end{itemize}
 	&
 	High \\
+	\midrule
+
+	\textbf{US-1.12} &
+	As an \userrole{Administrator}, I need to export the list of users so that
+	I can use the information in other applications or processes.
+	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\item The ability to export all user info.
+	\item The information is structured in the form of an excel file.
+	\end{itemize} &
+	Medium \\
 	\bottomrule
 \end{longtable}
 
@@ -368,7 +376,7 @@ these non-functional requirements:
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Machine list is scoped to the authenticated user's work centre.
 	\item Each card shows machine name, current status (\domainterm{Idle},
-	\domainterm{Working}), active production order number, operation No, and
+	\domainterm{Working}), active production order number, operation No, item No, and
 	the item name.
 	\item The list refreshes automatically every 20 seconds.
 	\end{itemize} &
@@ -376,7 +384,7 @@ these non-functional requirements:
 	\midrule
 
 	\textbf{US-2.2} &
-	As an \userrole{Operator} or \userrole{Supervisor}, I need to view the
+	As an \userrole{Operator} or \userrole{Supervisor}, I need to view the operations of the
 	production orders assigned to a machine so that I know what work needs
 	to be done.
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
@@ -395,10 +403,10 @@ these non-functional requirements:
 	\item Only \domainterm{operation} from \domainterm{Released} orders may be started.
 	\item An operation cannot be started if it is already running.
 	\item A machine cannot run two operations simultaneously.
-	\item A new MES Operation State record is created with status.
-	\item An operation cannot be started if the previous operation in 
-	the same order is not either finished, interupted after the its start, or running but produced enough for the send ahead quantity.
-	\domainterm{Running}.
+	\item A new MES Operation State record is created with status change so it can be tracked.
+	\item The previous operation in the same production order (if any) must be
+	\domainterm{Finished}, \domainterm{Interrupted}, or currently \domainterm{Running}
+	with enough send-ahead quantity.
 	\end{itemize} & High \\ \midrule
 
 	\textbf{US-2.4} &
@@ -408,8 +416,8 @@ these non-functional requirements:
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item The Operations Progress tab shows all operations whose latest status
 	record is \domainterm{Running} or \domainterm{Paused}.
-	\item Each card shows order number, operation number, current status, operation description, and
-	last updated timestamp.
+	\item Each card shows order number, operation number, current status, operation description,
+	last updated timestamp, and progress.
 	\item Data refreshes automatically every 5 seconds.
 	\end{itemize} & High \\ \midrule
 
@@ -419,7 +427,7 @@ these non-functional requirements:
 	operation progress without leaving the machine context.
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Selecting a machine from the list opens a dedicated machine page.
-	\item The page provides at least two tabs: \domainterm{Orders},
+	\item The page provides three tabs: \domainterm{Orders},
 	\domainterm{Progress}, and \domainterm{History}.
 	\item The active tab is visually highlighted in the navigation bar.
 	\end{itemize} & High \\ \midrule
@@ -443,7 +451,7 @@ these non-functional requirements:
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item The History tab shows all operations with status
 	\domainterm{Finished},\domainterm{Interrupted}, or \domainterm{Cancelled}.
-	\item Each card shows order number, status badge, product name, produced
+	\item Each card shows order number, status, product name, produced
 	quantity, start time, and end time.
 	\item The list supports free-text search and sort by start date.
 	\item Tapping a card navigates to the full operation detail page.
@@ -495,12 +503,12 @@ these non-functional requirements:
 	& High \\ \midrule
 
 	\textbf{US-3.3} &
-	As a \userrole{Supervisor}, I need to finish or cancel an operation so that
-	the machine is released and the order is closed.
+	As a \userrole{Supervisor}, I need to finish, interrupt or cancel an operation so that
+	the machine is released and the order is closed in the system.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Finishing a complete order (100\%) shows a green confirmation dialog.
-	\item Cancelling either an incomplete or unstarted order shows a red warning dialog.
+	\item Interrupting or Cancelling an operation shows a red warning dialog.
 	\item If the operation is started then it is marked as interrupted otherwise as cancelled
 	\item Closing sets the execution end time and inserts an Idle machine status.
 	\end{itemize}
@@ -508,11 +516,11 @@ these non-functional requirements:
 
 	\textbf{US-3.4} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need a dedicated
-	operation detail page with live data in one place.
+	operation detail page with up-to-date data in one place.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Shows status, order number, product, required and produced quantities.
-	\item Live data streams without a manual refresh.
+	\item The information updates automatically without a manual refresh.
 	\end{itemize}
 	& High \\ \midrule
 
@@ -523,7 +531,7 @@ these non-functional requirements:
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Cycle table lists operator, quantity, cumulative total, and timestamp.
 	\item Records ordered newest-first with pagination.
-	\item Refreshes after each new declaration.
+	\item Updates after each new declaration.
 	\end{itemize}
 	& High \\ \midrule
 
@@ -543,7 +551,7 @@ these non-functional requirements:
 	of Materials for an operation to know which components are required.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item Components are colour-coded by scanned amount (the needed amount (green) / less then necessary to make a single item (red) otherwise (yellow)).
+	\item Components are colour-coded by remaining amount (the needed amount (green) / less then necessary to make a single item (red) otherwise (yellow)).
 	\item BOM data refreshes after every consumption event.
 	\item can be expanded to a dialog for a better view on larger screens.
 	\item search by name and filter by state
@@ -560,7 +568,7 @@ these non-functional requirements:
 	\item Need to select either input material or output scrap.
 	\item the quantity of scrapped units cannot exceed the quantity 
 	that can be produced with the available components scanned remaining.
-	\item Each declaration records quantity, code, and operator.
+	\item Each declaration's quantity, code, and operator is stored for tracibility.
 	\end{itemize}
 	& High \\ \midrule
 
@@ -580,7 +588,7 @@ these non-functional requirements:
 	components into an operation so that consumption is recorded against the BOM.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item any scanner connected to the device reads  barcodes.
+	\item any camera connected to the device reads  barcodes.
 	\item Duplicate scan increments quantity on the existing row.
 	\item Confirming scans inserts consumption records and refreshes the BOM.
 	\item After confirmation, the inventory in the ERP is updated to reflect the consumed quantity.
@@ -637,7 +645,7 @@ these non-functional requirements:
 	machines so that I can monitor production health across the facility.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item Dashboard shows uptime \%, operation cancelled or finished count, total produced, and scrap
+	\item Dashboard shows uptime, operation cancelled or finished count, total produced, and scrap
 	per machine.
 	\item Configurable time-range (hours back) filter.
 	\end{itemize}
@@ -653,18 +661,8 @@ these non-functional requirements:
 	\end{itemize}
 	& High \\ \midrule
 
-	\textbf{US-4.3} &
-	As an \userrole{Administrator}, I need a persistent sidebar navigation so
-	that I can move between admin sections without losing context.
-	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item Sidebar has sections for Users \& Roles,
-	Activity Logs, system barcodes and Settings.
-	\item Active section is visually highlighted.
-	\end{itemize}
-	& High \\ \midrule
 
-	\textbf{US-4.4} &
+	\textbf{US-4.3} &
 	As any user, I need the application available in English, French, and Arabic
 	so that I can use it in my preferred language.
 	&
@@ -676,7 +674,7 @@ these non-functional requirements:
 	\end{itemize}
 	& High \\ \midrule
 
-	\textbf{US-4.5} &
+	\textbf{US-4.4} &
 	As a first-time user, I need guided coach-mark tutorials so that I can learn
 	the interface without external documentation.
 	&
@@ -747,7 +745,7 @@ these non-functional requirements:
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Queries about all machines trigger a parallel fan-out across work centres.
 	\item Results are filtered by running / idle / overdue / scrap status as requested.
-	\item Fan-out is capped at 12 machines to control response time.
+	\item Fan-out is capped to control response time.
 	\item Fleet summary includes machine count, utilisation percentage, and active orders.
 	\end{itemize}
 	& High \\ \midrule
@@ -759,8 +757,6 @@ these non-functional requirements:
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Chat responses include up to 4 action buttons when a redirect is relevant.
-	\item Supported targets: machine detail, operation detail, machine list,
-	dashboard, and operation history.
 	\item Tapping an action navigates to the corresponding screen.
 	\item Action buttons appear only on the last assistant message.
 	\end{itemize}
@@ -821,7 +817,7 @@ functional increment verified by a sprint review with the professional superviso
 
 	Sprint~3        & Production Execution \& Traceability              &
 	Production cycle declarations, pause/resume/finish/cancel/interupt operations,
-	operation detail page with live data, production chart, Bill of Materials
+	operation detail page with up-to-date data, production chart, Bill of Materials
 	visibility, component barcode scanning, scrap declaration,
 	supervisor proxy declaration, and label printing. \\ \midrule
 
