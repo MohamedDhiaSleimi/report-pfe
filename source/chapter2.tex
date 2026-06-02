@@ -210,7 +210,7 @@ these non-functional requirements:
 
 	\textbf{US-1.2} &
 	As a User (\userrole{Operator} / \userrole{Supervisor} / \userrole{Administrator}),
-	I need to log into the system with my credentials so that I can access
+	I need to log into and out of the system with my credentials so that I can access
 	features appropriate to my role.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
@@ -423,8 +423,8 @@ these non-functional requirements:
 
 	\textbf{US-2.5} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need a tabbed view
-	for a machine so that I can navigate between pending orders and active
-	operation progress without leaving the machine context.
+	for a machine so that I can navigate between pending orders, active
+	operation progress and the operation history of the machine without leaving the machine context.
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Selecting a machine from the list opens a dedicated machine page.
 	\item The page provides three tabs: \domainterm{Orders},
@@ -482,7 +482,7 @@ these non-functional requirements:
 
 	\textbf{US-3.1} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to declare the
-	quantity produced in a cycle so that the system records production progress.
+	produced quantity in a cycle so that the system records my progress.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Declared quantity must be positive and not exceed remaining quantity that need to be produced.
@@ -526,7 +526,7 @@ these non-functional requirements:
 
 	\textbf{US-3.5} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to see all
-	production cycles declared for an operation.
+	production cycles declared for an operation so that I can review each declaration's information.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Cycle table lists operator, quantity, cumulative total, and timestamp.
@@ -548,7 +548,7 @@ these non-functional requirements:
 
 	\textbf{US-3.7} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to see the Bill
-	of Materials for an operation to know which components are required.
+	of Materials for an operation to know which components are required, so that I can review each declaration's quantity, operator, and timestamp.
 	&
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Components are colour-coded by remaining amount (the needed amount (green) / less then necessary to make a single item (red) otherwise (yellow)).

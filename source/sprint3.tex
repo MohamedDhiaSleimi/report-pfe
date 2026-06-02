@@ -18,12 +18,9 @@ and printed part identification.
 
 This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \& Traceability}}.
 
-% ----------------------------------------------------------
-% US-3.1
-% ----------------------------------------------------------
 \begin{longtable}{@{} P{0.09\linewidth} P{0.38\linewidth} P{0.49\linewidth} @{}}
-	\caption{US-3.1 --- Declare Production}
-	\label{tab:s3-US-3.1} \\
+	\caption{Sprint Backlog}
+	\label{tab:s3-sprint-backlog} \\
 	\toprule
 	\textbf{ID} & \textbf{User Story} & \textbf{Tasks} \\
 	\midrule
@@ -137,7 +134,7 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	\textbf{US-3.5}
 	& As an \userrole{Operator} or \userrole{Supervisor}, I need to see all
 	production cycles declared for an operation so that I can review each
-	declaration's quantity, operator, and timestamp.
+	declaration's information.
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Create function \texttt{fetchProductionCycles()} in codeunit \techname{MESMachineFetch}.
@@ -243,7 +240,7 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	\midrule
 	\textbf{US-3.11}
 	& As an \userrole{Operator} or \userrole{Supervisor}, I need to print a label
-	for the finished production operations (100\% progress) so that produced parts are correctly identified.
+	so that produced parts are correctly identified.
 	& \noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Create page \techname{PrintLabelPage}.
