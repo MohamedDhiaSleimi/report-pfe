@@ -16,7 +16,7 @@ completed,interrupted and cancelled operations per machine.
 \section{Sprint Backlog}
 
 This sprint covers \textbf{Domain 2:}
-\textbf{\domainterm{Machine Monitoring, Production Order Management \& History}}.
+\textbf{\domainterm{Machine \& Production Management}}.
 
 % ----------------------------------------------------------
 %  US-2.1
@@ -55,7 +55,7 @@ This sprint covers \textbf{Domain 2:}
   \noindent\textit{Flutter:}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
   \item Create model \techname{MachineModel}.
-  \item Create service \techname{MESMachineListService} to consume the \texttt{FetchMachines()} API.
+  \item Create service \techname{MESMachineListService} to consume the \texttt{FetchMachines()} endpoint.
   \item Create provider \techname{MesMachinesProvider}.
   \item Create page \techname{MachineListPage}.
   \item Create widget \techname{MachineCard}.
@@ -113,7 +113,7 @@ This sprint covers \textbf{Domain 2:}
 \\ & &
   \noindent\textit{Flutter:}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-    \item Update \techname{ErpMachineOrdersService} to Consume the \texttt{fetchMachineOperationStatus}.
+    \item Update \techname{ErpMachineOrdersService} to Consume the \texttt{fetchOngoingOperationsState()}.
     \item Create model \techname{OperationStatusStyle}.
     \item Create page \techname{OrdersProgressionPage}.
     \item Create the widgets \techname{OperationCard}, \techname{OperationStatusBadge}, widget \techname{OperationInfoGrid}, and \techname{OperationProgressBar}.
@@ -155,7 +155,7 @@ This sprint covers \textbf{Domain 2:}
   \noindent\textit{Flutter:}
   \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
     \item Update \techname{ErpMachineOrdersService} to consume the 
-    \texttt{fetchMachineOperationStatusAndProgress} endpoint.
+    \texttt{fetchOperationsHistory} endpoint.
     \item Update \techname{MachineordersProvider} to manage its state.
     \item Create page \techname{MachineHistoryPage}.
     \item Create the widgets \techname{HistoryCard}, \techname{HistoryInfoGrid}, and \techname{HistoryBadgeAndId}.
@@ -216,7 +216,6 @@ textual description of the \textit{Start Operation} use case.
   \item The \userrole{Operator} is authenticated and has a valid session token.
   \item The target routing line has status \domainterm{Released}.
   \item No other operation is currently \domainterm{Running} on the same machine.
-  \item The operation has not already been started (no existing \domainterm{Running} record for this order/operation pair).
   \item The previous operation in the same production order (if any) is marked as \domainterm{Finished} or produced enough for the send ahead quantity.
   \end{itemize} \\
   \midrule
@@ -769,9 +768,9 @@ across both desktop and mobile platforms.
   \centering
   \setlength{\fboxsep}{5pt}
   \colorbox{black}{%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineList/wide.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineList/wide.png}%
     \hspace{\fboxsep}%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineList/small.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineList/small.png}%
   }
   \caption{\uilabel{Machine List Page} --- desktop and mobile views.}
   \label{fig:s2-ui-machine-list}
@@ -794,9 +793,9 @@ Figure~\ref{fig:s2-ui-machine-orders} illustrates both the desktop and mobile vi
   \centering
   \setlength{\fboxsep}{5pt}
   \colorbox{black}{%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineOrders/wide.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineOrders/wide.png}%
     \hspace{\fboxsep}%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineOrders/small.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineOrders/small.png}%
   }
   \caption{\uilabel{Machine Orders Page} --- desktop and mobile views.}
   \label{fig:s2-ui-machine-orders}
@@ -815,9 +814,9 @@ Figure~\ref{fig:s2-ui-operations-progress}.
   \centering
   \setlength{\fboxsep}{5pt}
   \colorbox{black}{%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineOrderProgress/wide.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineOrderProgress/wide.png}%
     \hspace{\fboxsep}%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineOrderProgress/small.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/UI/machineOrderProgress/small.png}%
   }
   \caption{\uilabel{Orders Progression Page} --- desktop and mobile views.}
   \label{fig:s2-ui-operations-progress}
@@ -835,9 +834,9 @@ shows the desktop and mobile views.
   \centering
   \setlength{\fboxsep}{5pt}
   \colorbox{black}{%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/placeholder-image.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/placeholder-image.png}%
     \hspace{\fboxsep}%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/placeholder-image.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-2-Repport/placeholder-image.png}%
   }
   \caption{\uilabel{Machine History Page} --- desktop and mobile views.}
   \label{fig:s2-ui-hist-page}
@@ -845,7 +844,7 @@ shows the desktop and mobile views.
 
 \section{Testing and Validation}
 \subsection{Integrations tests}
-For integration testing, we chose Postman, a powerful and user-friendly tool for API evaluation.
+For integration testing, we chose Postman, a powerful and user-friendly tool for endpoint evaluation.
 Figure~\ref{fig:s2-test-postman-fetchMachines} shows a test case for the \apiendpoint{/fetchmachines} endpoint.
 
 \begin{figure}[H]
