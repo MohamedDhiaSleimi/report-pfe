@@ -53,7 +53,7 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	\\ & &
 	\noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Updated \techname{ErpMachineOrdersService} to consume the \texttt{declareProduction} API and \techname{MachineordersProvider} to manage it.
+		\item Updated \techname{ErpMachineOrdersService} to consume the \texttt{declareProduction} endpoint and \techname{MachineordersProvider} to manage it.
 	\end{itemize}
 	\\ & &
 	\noindent\textit{Flutter(continuation):}
@@ -174,7 +174,7 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 \\ & &
 	\noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Create \techname{MesComponentConsumptionService} to consume the \texttt{fetchBom()} API.
+		\item Create \techname{MesComponentConsumptionService} to consume the \texttt{fetchBom()} endpoint.
 		\item Create \techname{MesComponentConsumptionProvider} to manage BOM stream and refresh state.
 		\item Create widget \techname{RequiredComponent}.
 		\item Implement BOM streaming and refresh flow in \techname{MesComponentConsumptionService} and \techname{MesComponentConsumptionProvider}.
@@ -195,7 +195,7 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	\noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Create model \techname{MesScrapCode}.
-		\item Create \techname{MesScrapService} to consume the scrap code fetch and \texttt{declareScrap()} APIs.
+		\item Create \techname{MesScrapService} to consume the scrap code fetch and \texttt{declareScrap()} endpoints.
 		\item Create \techname{MesScrapProvider} to manage scrap code and scrap declaration state.
 		\item Create dialog \techname{DeclareScrapDialog}.
 	\end{itemize}\\
@@ -206,12 +206,14 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Add field \texttt{Declared By} to the tables \techname{MES Operation Progression} and \techname{MES Operation Scan}.
+		\item Created the function \techname{fetchMesUsersByWC} to retrieve users with the \userrole{Operator} role assigned in the current user's work center.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter:}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Create widget \techname{OperatorSelector}.
-		\item Update \techname{DeclareProductionDialog} to support supervisor declaration on behalf of an operator.
+		\item Update \techname{DeclareProductionDialog} and \techname{DeclareScrapDialog} to support supervisor declaration on behalf of an operator.
+		\item Updated the \techname{MesUserService} and provider to consume the new endpoints.
 		\item Connect \techname{OperatorSelector} to \techname{MesUserProvider} and pass \texttt{onBehalfOfUserId} to \techname{MachineOrdersProvider.declareProduction()}.
 	\end{itemize} \\
 	\midrule
@@ -231,7 +233,7 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Create model \techname{ItemBarcodeModel}.
 		\item Create \techname{MesBarcodeService} to consume the endpoints \texttt{insertScans()}, and \texttt{resolveBarcode()}.
-		\item Create \techname{MesBarcodeProvider} to manage barcode state and API calls.
+		\item Create \techname{MesBarcodeProvider} to manage barcode state and endpoint calls.
 		\item Create widget \techname{ScannerWidget}.
 		\item Update widget \techname{RequiredComponent} to integrate item scanning, search, filtering, and BOM refresh after scan submission.
 		\item Implement on\-device camera scanning via \techname{mobile\_scanner} in \techname{ScannerWidget}
@@ -271,9 +273,7 @@ View Operation Detail, View declaration History.
 
 The \userrole{Supervisor} role is a superset of \userrole{Operator}: both roles can declare production,
 pause, resume, and view detail; only the Supervisor may close (Finish, Interrupt or Cancel) a production order
-in the intended business flow, although the current implementation enforces this at the UI layer 
-through the \texttt{canCloseProductionOrder} flag rather than at the API level. The resulting use 
-case diagram is shown in Figures~\ref{fig:s3-uc-part1} and~\ref{fig:s3-uc-part2}.
+in the intended business flow. The resulting use case diagram is shown in Figures~\ref{fig:s3-uc-part1} and~\ref{fig:s3-uc-part2}.
 
 \begin{figure}[H]
   \centering
@@ -313,7 +313,7 @@ case diagram is shown in Figures~\ref{fig:s3-uc-part1} and~\ref{fig:s3-uc-part2}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item The user is authenticated and navigated to an Operation Detail page.
 	\item The operation status is \domainterm{Running}.
-	\item The produced quantity is below the order quantity.
+	\item The produced quantity is below the remaining scanned quantity.
 	\end{itemize} \\
 	\midrule
 	\textbf{Postconditions} & 
@@ -328,7 +328,7 @@ case diagram is shown in Figures~\ref{fig:s3-uc-part1} and~\ref{fig:s3-uc-part2}
 	\item The user taps \uilabel{Declare Production} in the Quick Actions panel.
 	\item The \techname{DeclareProductionDialog} opens showing the remaining quantity.
 	\item The user (if Supervisor) optionally selects an operator from the dropdown to declare on behalf of.
-	\item The user enters a positive integer not exceeding the remaining quantity.
+	\item The user enters a positive integer not exceeding the remaining scanned quantity.
 	\item The user taps \uilabel{Submit}.
 	\item The ERP validates the quantity and inserts the progression record.
 	\item The user is redirected to the declaration lable print page
@@ -377,7 +377,7 @@ case diagram is shown in Figures~\ref{fig:s3-uc-part1} and~\ref{fig:s3-uc-part2}
 	\midrule
 	\textbf{Main Scenario} & 
 	\begin{enumerate}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item The user clickes in the (Interrupt, Finish, Cancel) button based on the operation state.
+	\item The user clickes in the (Interrupt, Finish, Close) button based on the operation state.
 	\item A confirmation dialog is displayed; the user confirms.
 	\item The system POSTs to \apiendpoint{/MESWebService\_finishOperation} or \apiendpoint{cancelOperation}.
 	\item The ERP validates, inserts the status record, stamps the end time, and inserts an Idle machine status.
@@ -413,7 +413,7 @@ case diagram is shown in Figures~\ref{fig:s3-uc-part1} and~\ref{fig:s3-uc-part2}
     \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
         \item One \techname{MES Operation Scan} record is inserted per scanned item line.
         \item One \techname{Item Journal Line} (consumption) is posted to BC inventory per scanned item line.
-        \item The \techname{Required Component} widget refreshes to reflect the updated consumed quantities.
+        \item The \techname{Required Component} widget refreshes to reflect the updated consumed quantities and inventory.
     \end{itemize} \\
     \midrule
     \textbf{Main Scenario} &
@@ -936,7 +936,7 @@ simultaneously: one polling the current operation status and quantities from
 \techname{Business Central} (SD-18), one consuming the production-cycle stream
 (SD-22), and one consuming the BOM stream (SD-21). The \techname{Flutter}
 client merges all three data sources and renders the full detail view. If the
-operation is finished, cancelled, or not yet started, the live-data stream
+operation is finished, cancelled, or interrupted, the live-data stream
 returns an empty response and the client falls back to the history view.
 
 \begin{figure}[H]
@@ -991,8 +991,7 @@ returns an empty response and the client falls back to the history view.
 The UML Class Diagram (Figure~\ref{fig:s3-class-diagram-s3}) extends the Sprint~2
 domain model with three new tables. \modulename{MES Operation Execution} (50110)
 is the central anchor record linking a machine, production order, and operation
-to its full lifecycle; it holds item description, order quantity, and start/end
-timestamps. \modulename{MES Operation Progression} (50109) is an append-only
+to its full lifecycle. \modulename{MES Operation Progression} (50109) is an append-only
 table of production cycle declarations, each referencing an execution and
 accumulating \texttt{TotalProducedQuantity} from the previous cycle.
 \modulename{MES Component Consumption} (50111) records scrap and barcode scan
@@ -1207,7 +1206,7 @@ coordinated, push-driven UI updates without polling.
 
 \subsubsection{User Interface}
 Figures~\ref{fig:s3-ui-op-detail-running} through~\ref{fig:s3-ui-op-detail-cancelled} illustrate the \uilabel{Operation Detail Page}
-across its five possible states: Running, Paused, Finished, Interrupted, and Cancelled. Each view adapts its action buttons and status badge
+across its possible states. Each view adapts its action buttons and status badge
 to the current state, while the production chart, cycle table, and BOM list remain consistently visible. On desktop, the page 
 uses a two-column layout with order information and production data on the left, and the \uilabel{Quick Actions} panel on the
 right; on mobile, these sections stack vertically. Action button availability is state-dependent: \uilabel{Declare Production} 
@@ -1219,9 +1218,9 @@ and \uilabel{Print Label} is enabled only once the operation is finished.
     \centering
     \setlength{\fboxsep}{5pt}
     \colorbox{black}{%
-        \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/opDetailRunning/wide.png}%
+        \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/opDetailRunning/wide.png}%
         \hspace{\fboxsep}%
-        \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/opDetailRunning/small.png}%
+        \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/UI/opDetailRunning/small.png}%
     }
     \caption{\uilabel{Operation Detail Page} (Running state) --- desktop and mobile views.}
     \label{fig:s3-ui-op-detail-running}
@@ -1232,9 +1231,9 @@ and \uilabel{Print Label} is enabled only once the operation is finished.
 	\centering
 	\setlength{\fboxsep}{5pt}
 	\colorbox{black}{%
-		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/placeholder-image.png}%
+		\includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/placeholder-image.png}%
 		\hspace{\fboxsep}%
-		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/placeholder-image.png}%
+		\includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/placeholder-image.png}%
 	}
 	\caption{\uilabel{Operation Detail Page} (Cancelled state) --- desktop and mobile views.}
 	\label{fig:s3-ui-op-detail-cancelled}
@@ -1262,7 +1261,7 @@ production output cycle by cycle, track cumulative progress through real-time
 charts and paginated tables, inspect the Bill of Materials, scan physical components
 via barcodes, declare scrapped units with reason codes, and print
 traceable labels for both production orders and individual declared units.
-Supervisors gain the ability to declare production on behalf of a specific operator,
+Supervisors gain the ability to declare production and scrap on behalf of a specific operator,
 with a full attribution audit trail. The reactive stream architecture ensures that
 all UI panels update in concert after every write action, providing a consistent
 and accurate view of the production floor without manual refreshes.
