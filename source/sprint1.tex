@@ -49,7 +49,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	that users only access features appropriate to their role.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implement the functions \texttt{AdminCreateUser()} and \texttt{AdminSetActive()} in codeunit \techname{MES Unbound Actions}.
+		\item Implement the functions \texttt{AdminCreateUser()} and \texttt{AdminSetActive()} in codeunit \techname{MES Authentification Actions}.
 		\item Expose \texttt{AdminCreateUser()} and \texttt{AdminSetActive()} through codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
@@ -143,7 +143,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	\noindent\textit{Flutter}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Update \techname{MesUserService} to consume \texttt{changeUserRole()}.
-		\item Update \techname{MesUserProvider} to account for\texttt{changeUserRole()}.
+		\item Update \techname{MesUserProvider} to account for \texttt{changeUserRole()}.
 		\item Create widget \techname{ChangeRoleDialog}.
 	\end{itemize}\\
 	\midrule
@@ -165,7 +165,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Add field \texttt{Badge Secret} (Text[64]) to table \techname{MES User}.
-		\item Implement \texttt{GenerateBadgeSecret()} in \techname{MES User.OnInsert}.
+		\item Implement \texttt{GenerateBadgeSecret()} in \techname{MES User OnInsert}.
 		\item Implement \texttt{VerifyBadge()}, \texttt{GetBadgeSecret()}, and \texttt{RegenerateBadgeSecret()} in codeunit \techname{MESAuthMgt}.
 		\item Expose the three procedures through codeunit \techname{MES Web Service}.
 		\item Add field \texttt{TwoFA Enabled} (Boolean) to table \techname{MES Settings}.
@@ -250,7 +250,7 @@ primary actors (\userrole{Operator}, \userrole{Supervisor},
 \userrole{Administrator}) and their interactions with the \domainterm{MES}
 authentication and user management system. In addition to the core login,
 logout, change password, and user creation flows, the diagram includes the
-\uilabel{Change Role / Work Centre} and \uilabel{Activate / Deactivate Account}
+\uilabel{Change Role and Work Centre}, \uilabel{Activate / Deactivate Account}, and export users
 use cases available exclusively to the \userrole{Administrator}, as well as the settings management
 \uilabel{Badge QR Scan} two-factor verification step and the automatique password change. 
 
@@ -1151,9 +1151,9 @@ the service class to propagate structured exceptions to the
 \textbf{\modulename{mes\_user\_service.dart}}
 
 The class declaration and \uilabel{fetch users} method send a request to 
-the \apiendpoint{/mesUsers} endpoint and parses the response into a list
+the \apiendpoint{/fetchAllMesUsers} endpoint and parses the response into a list
 of \modulename{MesUser} model objects. The \uilabel{create user} method 
-sends a request to the \apiendpoint{/createMesUser} endpoint with the 
+sends a request to the \apiendpoint{/AdminCreateMesUser} endpoint with the 
 new user's role and employee reference in the request body. The 
 \uilabel{generate password} method handle the password generation endpoint
 and map the result into the \modulename{GeneratedPassword} model.
@@ -1182,9 +1182,9 @@ the URL is validated and persisted via \texttt{AppConstants.changeHost()}.
   \centering
   \setlength{\fboxsep}{5pt}
   \colorbox{black}{%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/pairingPage/wide.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/pairingPage/wide.png}%
     \hspace{\fboxsep}%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/pairingPage/small.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/pairingPage/small.png}%
   }
   \caption{\uilabel{Paring Page} --- desktop and mobile views.}
   \label{fig:s1-ui-paring-page}
@@ -1207,9 +1207,9 @@ authentication redirects the user to the role-appropriate dashboard, or to the
   \centering
   \setlength{\fboxsep}{5pt}
   \colorbox{black}{%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/loginPage/wide.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/loginPage/wide.png}%
     \hspace{\fboxsep}%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/loginPage/small.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/loginPage/small.png}%
   }
   \caption{\uilabel{Login Page} --- desktop and mobile views.}
   \label{fig:s1-ui-login}
@@ -1233,9 +1233,9 @@ the pending session state and returns to the login page.
   \centering
   \setlength{\fboxsep}{5pt}
   \colorbox{black}{%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/badgeScanDialog/wide.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/badgeScanDialog/wide.png}%
     \hspace{\fboxsep}%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/badgeScanDialog/small.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/badgeScanDialog/small.png}%
   }
   \caption{\uilabel{Badge Scan Dialog} --- desktop and mobile views.}
   \label{fig:s1-ui-badge-scan}
@@ -1301,9 +1301,9 @@ password before accessing the main application.
   \centering
   \setlength{\fboxsep}{5pt}
   \colorbox{black}{%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/changePassword/wide.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/changePassword/wide.png}%
     \hspace{\fboxsep}%
-    \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/changePassword/small.png}%
+    \includegraphics[height=0.25\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/changePassword/small.png}%
   }
   \caption{\uilabel{Change Password Page} --- desktop and mobile views.}
   \label{fig:s1-ui-change-password}
@@ -1379,7 +1379,7 @@ secure credential validation, \domainterm{SHA-256} password hashing,
 session token management with automatic expiry, optional two-factor authentication
 via badge QR~code scanning, a configurable password expiry policy enforced by a
 scheduled background job, and a full set of
-\domainterm{RESTful} API endpoints exposed through \techname{MES Web Service}
+\domainterm{RESTful} API endpoints exposed through the Node middleware that forwards them to the \techname{MES Web Service}
 (codeunit 50126). The \techname{Flutter} frontend provides a clean, role-aware
 user experience covering first-launch host pairing, login, badge QR verification,
 logout, forced password change, administrator-level user creation, badge
