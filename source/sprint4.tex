@@ -50,7 +50,7 @@ This sprint covers \textbf{Domain 4:}
       \noindent\textit{Flutter:}
       \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
             \item Create model \techname{MachineDashboardModel}.
-            \item Create \techname{LogService} to consume the \texttt{fetchMachineDashboard} API and \techname{LogProvider} to manage its state.
+            \item Create \techname{LogService} to consume the \texttt{fetchMachineDashboard} endpoint and \techname{LogProvider} to manage its state.
             \item Create page \techname{MachineDashboardPage}.
             \item Implement machine dashboard search and time-range filtering in \techname{MachineDashboardPage}.
       \end{itemize} \\  
@@ -67,7 +67,7 @@ This sprint covers \textbf{Domain 4:}
       \noindent\textit{Flutter:}
       \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
             \item Create model \techname{ActivityLogModel}.
-            \item Create \techname{LogService} to consume the \texttt{fetchActivityLog()} API and \techname{LogProvider} to manage its state.
+            \item Create \techname{LogService} to consume the \texttt{fetchActivityLog()} endpoint and \techname{LogProvider} to manage its state.
             \item Create page \techname{ActivityLogPage}.
             \item Implement activity log search, type filtering, time-range filtering, and pagination in \techname{ActivityLogPage}.
       \end{itemize} \\
@@ -95,6 +95,21 @@ This sprint covers \textbf{Domain 4:}
             \item Create \techname{MachineListTutorial}, \techname{MachineDetailTabsTutorial}, \techname{OperationDetailTutorial}, and \techname{AdminDashboardTutorial}.
             \item Implement tutorial target styling and localisation.
       \end{itemize} \\
+      \midrule
+      \textbf{US-4.4}
+      & As an \userrole{Administrator}, I need a searchable barcode page
+	so that I have a source of the mes barcodes labels.
+      & \noindent\textit{Business Central (AL):}
+      \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+            \item Create function \texttt{fetchAllItemBarcodes()} in codeunit \techname{MES Machine Fetch}.
+            \item Add the wrapper of the function to \techname{MES Web Service}.
+      \end{itemize}
+	\\ & & \noindent\textit{Flutter:}
+      \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+            \item created the page \techname{BarcodeListPage.dart}.
+            \item updated the povider mes\_barcode\_provider.dart and mes\_barcode\_service.dart to consume the new endpoints.
+            \item created the widget dataMatrix\_card.dart.
+      \end{itemize} \\
 \end{longtable}
 % ---------------------------------------------------------------------------
 % 2. BUSINESS RULES
@@ -105,7 +120,7 @@ This sprint covers \textbf{Domain 4:}
 
 The UML Use Case Diagram (Figure~\ref{fig:s4-use-case-s4}) covers the actors and
 interactions introduced in this sprint. The \userrole{Administrator} gains the
-interaction \uilabel{View Activity Log}.The \userrole{Supervisor} gains the interaction
+interaction \uilabel{View Activity Log} and \uilabel{view item barcodes}.The \userrole{Supervisor} gains the interaction
 \uilabel{View Machine Dashboard}. All three actors (\userrole{Operator},
 \userrole{Supervisor}, \userrole{Administrator}) share the
 \uilabel{Select Language} and \uilabel{View Tutorial} use cases, which are
@@ -404,7 +419,7 @@ with a circular uptime indicator and four metric rows (finished operations,
 Cancelled and Interrupted operations, produced, scrap, uptime), and
 an AppBar time-range dropdown that re-fetches on change. The \uilabel{Activity Log Page}
 presents a paginated, newest-first event list where each row shows a type icon, 
-operator, machine, and expandable action text; AppBar dropdowns filter by type and 
+operator, machine, time, order,operation number and action ; AppBar dropdowns filter by type and 
 time range.
 
 \begin{figure}[H]
@@ -442,11 +457,10 @@ Figure~\ref{fig:s4-test-postman-machineDashboard} shows a test case for the \api
 \addcontentsline{toc}{section}{Conclusion}
 
 This sprint completed the \domainterm{MES} solution by delivering the
-administration layer and cross-cutting quality-of-life features. Administrators
+administration layer and cross-cutting quality-of-life features. \userrole{Supervisor}
 can now monitor the production health of the entire facility through a
-configurable machine performance dashboard, audit all operator and machine
-actions through a paginated activity log, and manage users from a persistent
-navigation shell without losing context between sections. All users benefit from
+configurable machine performance dashboard, and the \userrole{Administrator} can audit all operator and machine
+actions through a paginated activity log, view the barcodes of all the items, and manage users. All users benefit from
 full internationalisation covering English, French, and Arabic with automatic
 right-to-left layout, and from guided coach-mark tutorials that ease onboarding
 for first-time users.
