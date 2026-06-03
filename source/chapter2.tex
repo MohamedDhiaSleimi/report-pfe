@@ -39,8 +39,8 @@ will interact with our system:
 	\endlastfoot
 
 	Administrator  &
-	This is the person responsible for the MES platform. They manage all users
-	(supervisors, operators), passwords and account statuses. They have access to all
+	This is the person responsible for the MES platform. They manage all users,
+	passwords and account statuses. They have access to all
 	administration application dashboards. \\[6pt]
 
 	Supervisor     &
@@ -235,7 +235,7 @@ these non-functional requirements:
 	As an \userrole{Administrator}, I need to see a list of all
 	users with their details so that I can manage their accounts.
 	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-	\item The user list displays each account's full name, email, role, when he was active, and work centre.
+	\item The user list displays each account's full information.
 	\item Clicking on the action button shows a dropdown menu with available actions(change role, generate password, view badge, and toggle activation).
 	\item The list refreshes automatically after a new user is created.
 	\end{itemize} & High \\ \midrule
@@ -650,7 +650,7 @@ these non-functional requirements:
 	per machine.
 	\item Configurable time-range (hours back) filter.
 	\end{itemize}
-	& High \\ \midrule
+	& Medium \\ \midrule
 
 	\textbf{US-4.2} &
 	As an \userrole{Administrator}, I need a filterable activity log
@@ -659,6 +659,7 @@ these non-functional requirements:
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 	\item Log entries includes all the relevant fields with timestamps.
 	\item Filterable by action type and time range.
+	\item Searchable by user name.
 	\end{itemize}
 	& High \\ \midrule
 
@@ -673,7 +674,7 @@ these non-functional requirements:
 	\item Arabic locale activates RTL layout automatically.
 	\item Language preference persisted across sessions in the same device.
 	\end{itemize}
-	& High \\ \midrule
+	& Medium \\ \midrule
 
 	\textbf{US-4.4} &
 	As a first-time user, I need guided coach-mark tutorials so that I can learn
@@ -722,7 +723,7 @@ these non-functional requirements:
 	\item Multi-turn conversation history is maintained within the session.
 	\item Conversation can be cleared by the user.
 	\end{itemize}
-	& High \\ \midrule
+	& Medium \\ \midrule
 
 	\textbf{US-5.2} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant to
@@ -735,7 +736,7 @@ these non-functional requirements:
 	\item Fan-out is capped to control response time.
 	\item Fleet summary includes machine count, utilisation percentage, and active orders.
 	\end{itemize}
-	& High \\ \midrule
+	& Medium \\ \midrule
 
 	\textbf{US-5.3} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant to
@@ -747,7 +748,7 @@ these non-functional requirements:
 	\item Tapping an action navigates to the corresponding screen.
 	\item Action buttons appear only on the last assistant message.
 	\end{itemize}
-	& Medium \\ \midrule
+	& Low \\ \midrule
 
 	\textbf{US-5.4} &
 	As a \userrole{Supervisor}, I need the assistant to proactively highlight
@@ -761,7 +762,7 @@ these non-functional requirements:
 	are highlighted.
 	\item Paused operations exceeding the configured threshold are surfaced.
 	\end{itemize}
-	& High \\
+	& Medium \\
 	\bottomrule
 \end{longtable}
 
@@ -822,6 +823,15 @@ functional increment verified by a sprint review with the professional superviso
 \end{longtable}
 
 \section{Global Application Architecture}
+\subsection{Global Use case diagral}
+the following Figure~\ref{fig:mescha-global-uc} dipects the global use case diagram of the MES system, illustrating the interactions between the various user roles and the system's functionalities.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_chapter-2-repport/global-useCase.png}
+	\caption{MES System Global Use Case Diagram}
+	\label{fig:mescha-global-uc}
+\end{figure}
 
 \subsection{Physical Architecture}
 

@@ -735,19 +735,19 @@ marking the machine as \domainterm{Working}.
 %       end
 %====================================================================
 
-Figure~\ref{fig:s3-seq-finish_cancel_interupt-operation} covers the finish and cancel
-flows, which share a single endpoint family. The \techname{AL} layer rejects
-the request if the operation is already in a terminal state; otherwise it
-inserts the appropriate closed-state record, stamps the execution end time,
-and resets the machine status to \domainterm{Idle}. The closed operation then
-appears in the history view rather than the active operations list.	
+% Figure~\ref{fig:s3-seq-finish_cancel_interupt-operation} covers the finish and cancel
+% flows, which share a single endpoint family. The \techname{AL} layer rejects
+% the request if the operation is already in a terminal state; otherwise it
+% inserts the appropriate closed-state record, stamps the execution end time,
+% and resets the machine status to \domainterm{Idle}. The closed operation then
+% appears in the history view rather than the active operations list.	
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/finish_cancel_interrupt-operation.png}
-  \caption{SD-15: Finish/Cancel/Interrupt Operation.}
-  \label{fig:s3-seq-finish_cancel_interupt-operation}
-\end{figure}
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/finish_cancel_interrupt-operation.png}
+%   \caption{SD-15: Finish/Cancel/Interrupt Operation.}
+%   \label{fig:s3-seq-finish_cancel_interupt-operation}
+% \end{figure}
 
 %=====SD-15==========================================================
 % sequenceDiagram
@@ -789,20 +789,20 @@ appears in the history view rather than the active operations list.
 %     end
 %====================================================================
 
-% Figure~\ref{fig:s3-seq-declare-scrap} describes the scrap declaration flow.
-% Before inserting the scrap record, the \techname{AL} layer verifies that
-% the operation has not already been finished, cancelled, or paused, and that
-% the referenced scrap code exists in \techname{Business Central}. On success,
-% it inserts a \domainterm{MES Operation Scrap} entry, records user interaction,
-% and appends a new \domainterm{MES Operation Progression} row so that the
-% scrap quantity is reflected in the live data stream.
+Figure~\ref{fig:s3-seq-declare-scrap} describes the scrap declaration flow.
+Before inserting the scrap record, the \techname{AL} layer verifies that
+the operation has not already been finished, cancelled, or paused, and that
+the referenced scrap code exists in \techname{Business Central}. On success,
+it inserts a \domainterm{MES Operation Scrap} entry, records user interaction,
+and appends a new \domainterm{MES Operation Progression} row so that the
+scrap quantity is reflected in the live data stream.
 
-% \begin{figure}[H]
-%   \centering
-%   \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/declare-scrap.png}
-%   \caption{SD-16: declare scrap.}
-%   \label{fig:s3-seq-declare-scrap}
-% \end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/declare-scrap.png}
+  \caption{SD-16: declare scrap.}
+  \label{fig:s3-seq-declare-scrap}
+\end{figure}
 
 %=====SD-16==========================================================
 % sequenceDiagram

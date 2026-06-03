@@ -49,23 +49,7 @@ This sprint covers \textbf{Domain 5:}
 	& As an \userrole{Operator} or \userrole{Supervisor}, I need a
 	natural-language chat assistant so that I can query machine status,
 	production progress, and operational data without navigating the full UI.
-	& \noindent\textit{Node.js Middleware}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implement \techname{Express} application (\texttt{index.js}) with global
-		      middleware stack (JSON body parser, CORS, request logger).
-		\item Implement \texttt{src/config.js} loading all environment variables and
-		      computing BC URL constants (\texttt{odataBase}, \texttt{webServiceBase},
-		      \texttt{companyParam}).
-		\item Implement \texttt{src/proxy.js}: \texttt{buildTargetUrl()},
-		      \texttt{buildPsScript()}, \texttt{runPowerShell()}, and
-		      \texttt{forwardRequest()} to proxy Flutter requests to BC via PowerShell
-		      \domainterm{SSPI}.
-		\item Register all 44 AL web service endpoints in the
-		      \texttt{webServiceEndpoints} set.
-		\item Implement \texttt{src/cors.js} CORS options.
-	\end{itemize}
-\\ & &
-	\noindent\textit{Python AI Agent}
+	& \noindent\textit{Python AI Agent}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Implement \techname{FastAPI} application (\texttt{main.py}) with
 		      \texttt{/health} and \texttt{POST /chat} endpoints and lifespan context
@@ -76,6 +60,9 @@ This sprint covers \textbf{Domain 5:}
 		      \modulename{RedirectAction}, \modulename{ActionType}.
 		\item Implement \texttt{agent/config.py} with all environment variable
 		      constants (LLM provider, model, timeouts, middleware URL).
+	\end{itemize}
+	\\ & &
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
 		\item Implement \texttt{agent/llm\_client.py}: \modulename{LLMClient}
 		      abstraction and \texttt{build\_llm\_client()} factory supporting
 		      Ollama, OpenAI, HuggingFace, OpenAI-compatible, and Anthropic providers.
@@ -83,6 +70,11 @@ This sprint covers \textbf{Domain 5:}
 		      classes, \texttt{TOOL\_MAP} registry, \texttt{MACHINE\_SCOPED\_TOOLS}
 		      set, \texttt{\_post()} HTTP helper, and \texttt{\_extract\_value()}
 		      response normaliser.
+		\item Implement \texttt{agent/llm\_intent.py}:
+          \modulename{LLMIntentIdentifier} with \texttt{\_llm\_classify()},
+          \texttt{\_llm\_classify\_retry()} (error-context retry on first
+          failure), \texttt{\_validate\_plan()}, \texttt{\_plan\_to\_tool\_chain()},
+          and \modulename{ThinkingBlock} reasoning trace.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
@@ -109,7 +101,10 @@ This sprint covers \textbf{Domain 5:}
 		      detection, \modulename{CompositeResult} dataclass,
 		      \texttt{run\_composite()} with status filters (running/idle/overdue/scrap),
 		      fan-out capped at 12 machines in batches of 4.
-		\item Implement \texttt{build\_composite\_context()} context builder.
+		\end{itemize}
+	\\ & &
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+		 \item Implement \texttt{build\_composite\_context()} context builder.
 		\item Integrate composite path in \texttt{Orchestrator.run()} and
 		      \texttt{Orchestrator.\_run\_composite()}.
 		\item Add \texttt{is\_composite} flag detection to both LLM and regex
@@ -146,32 +141,33 @@ This sprint covers \textbf{Domain 5:}
 	anomalies so that I can act before problems escalate.
 	& \noindent\textit{Python AI Agent}
 	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
-		\item Implement \texttt{agent/data\_analysis.py}:
-		      \texttt{enrich\_deadlines()} (hours until deadline, overdue flag,
-		      risk level), \texttt{analyse\_scrap()} (scrap rate, severity,
-		      spike detection at $2.5\times$ baseline), \texttt{analyse\_velocity()}
-		      (units per hour, projected end, velocity status),
-		      \texttt{summarise\_machines()}, and \texttt{summarise\_dashboard()}.
 		\item Integrate enrichment into \texttt{Orchestrator.\_enrich()} for all
 		      result key types (machines, orders, live\_data, cycles, activity,
 		      dashboard, history, bom, etc.).
-		\item Implement \texttt{agent/intent.py} deterministic regex classifier:
-		      \modulename{Intent} enum, \modulename{ToolStep}, \modulename{ToolChain}
-		      dataclasses, extraction helpers
-		      (\texttt{\_extract\_machine\_no}, \texttt{\_extract\_order\_no},
-		      \texttt{\_extract\_hours}), and \texttt{classify()} priority chain.
-		\item Implement \texttt{agent/llm\_intent.py}:
-		      \modulename{LLMIntentIdentifier} with \texttt{\_llm\_classify()},
-		      validation helpers, \texttt{\_plan\_to\_tool\_chain()},
-		      and \modulename{ThinkingBlock} reasoning trace.
-		\item Implement \texttt{agent/orchestrator.py}: full 7-stage pipeline
-		      (\texttt{run()}, \texttt{\_execute\_step()},
-		      \texttt{\_fetch\_all\_machines()}, \texttt{\_enrich()},
-		      \texttt{\_build\_context()}, \texttt{\_synthesise()},
-		      \texttt{\_parse\_actions()}).
 		\item Implement \texttt{prompts/system\_prompts.py}:
 		      \texttt{SYNTHESIS\_SYSTEM} and \texttt{SYNTHESIS\_USER\_TEMPLATE}
 		      with anomaly alert rules and action block instructions.
+	\end{itemize}
+	\\ & &
+	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+		\item Implement \texttt{agent/data\_analysis.py}:
+              \texttt{enrich\_deadlines()} (hours until deadline, overdue flag,
+              risk level), \texttt{analyse\_scrap()} (scrap rate, severity,
+              spike detection at $\times 2.5$ baseline), \texttt{analyse\_velocity()}
+              (units per hour, projected end, velocity status),
+              \texttt{summarise\_machines()}, \texttt{summarise\_dashboard()},
+              \texttt{analyse\_work\_center\_summary()} (fleet utilisation
+              across work centres), \texttt{analyse\_operator\_summary()}
+              (active vs idle operator counts, top producers),
+              \texttt{analyse\_scrap\_summary()} (top machines/orders/reason
+              codes by scrap quantity), and \texttt{analyse\_delay\_report()}
+              (overdue count, abnormal-pause count, worst offenders by delay
+              minutes).
+		\item Implement \texttt{agent/orchestrator.py}: full 7-stage pipeline
+				(\texttt{Orchestrator.run()}, \texttt{\_resolve\_machine\_ref()},
+				\texttt{\_execute\_step()}, \texttt{\_fetch\_all\_machines()},
+				\texttt{\_enrich()}, \texttt{\_build\_context()},
+				\texttt{\_synthesise()}, \texttt{\_parse\_actions()}).
 		\item Wire all 17 tools to the \texttt{fetchSupervisorOverview} and
 		      \texttt{fetchDelayReport} BC endpoints used in anomaly detection.
 	\end{itemize}\\
@@ -243,7 +239,7 @@ the central interaction delivered in this sprint.
 	      conversation history.
 	\item The middleware forwards the request to the \techname{Python} AI agent.
 	\item The AI agent classifies intent via the \domainterm{LLM} classifier
-	      (with regex fallback) and builds a \modulename{ToolChain}.
+	      and builds a \modulename{ToolChain}.
 	\item If the machine reference is ambiguous, the agent resolves it using the
 	      five-tier fuzzy resolver.
 	\item The agent executes each \modulename{ToolStep} in sequence, calling the
@@ -263,9 +259,7 @@ the central interaction delivered in this sprint.
 	      message listing up to 3 candidates; the user clarifies in the next turn.
 	\item \textit{Fleet-wide query:} the agent triggers the composite fan-out
 	      path, querying up to 12 machines in parallel batches of 4.
-	\item \textit{LLM classifier failure:} the deterministic regex classifier
-	      is used as a fallback; the \modulename{ThinkingBlock} records
-	      \texttt{fallback\_used = true}.
+	
 	\item \textit{General question:} no tool calls are made; the \domainterm{LLM}
 	      answers from general manufacturing knowledge.
  	\end{itemize} \\
@@ -274,84 +268,12 @@ the central interaction delivered in this sprint.
 
 \subsection{Sequence Diagrams}
 
-The following sequence diagram illustrate the communication flow between the
-\techname{Flutter} frontend, the \techname{Node.js} middleware, the
-\techname{Python} AI agent, and the \techname{Business Central} OData layer.
- 
-% Figure~\ref{fig:s5-seq-single-machine} depicts the standard single-machine query
-% flow (e.g., ``What is MC-001 producing?''). The \techname{Flutter} client posts the
-% message and user context to the middleware; the middleware forwards to the AI
-% agent; the agent classifies intent, builds a \modulename{ToolChain} with two steps
-% (\texttt{get\_ongoing\_operations} then \texttt{get\_operation\_live\_data} via slot
-% reference), executes each step sequentially against BC, enriches the results, and
-% synthesises a final reply.
-
-% \begin{figure}[H]
-%   \centering
-%   \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/diagrams/sequence/AIChat-MainFlow.png}
-%   \caption{SD-30: AI Chat --- Main Flow.}
-%   \label{fig:s5-seq-ai-chat}
-% \end{figure}
-%=====SD-30==========================================================
-% sequenceDiagram
-%       actor User
-%       participant Flutter
-%       participant Node as Node.js Middleware
-%       participant Agent as Python AI Agent
-%       participant BC as AL
-
-%       rect rgb(220,235,255)
-%           Note over User,BC: ref SD-01 — user is logged in
-%       end
-
-%       User->>Flutter: Type message and send it
-%       Flutter->>Node: POST /api/ai/chat 
-%       Node->>Agent: Forward to AI_AGENT_URL/chat
-
-%       Agent->>Agent: classify the intent of the message
-   
-%       alt chain.is_composite = false scenario
-%           loop For each ToolStep in chain.steps
-%               Agent->>Agent: resolve $slot references from prior results
-%               opt allowed_machines empty and step.tool in MACHINE_SCOPED_TOOLS
-%                   Agent->>Node: POST /api/FetchMachines 
-%                   Node->>BC: MESWebService_FetchMachines 
-%                   BC-->>Node: Machine list JSON 
-%                   Node-->>Agent: decoded machine list
-%                   Agent->>Agent: Populate allowed_machines map 
-%               end
-%               alt step.tool in MACHINE_SCOPED_TOOLS and machineNo not in allowed_machines
-%                   Agent->>Agent: Log ACCESS DENIED — return error ToolResult, skip step
-%               else Access permitted or tool not machine-scoped
-%                   Agent->>Node: POST /api/{toolEndpoint} 
-%                   Node->>BC: MESWebService_{Endpoint} 
-%                   BC-->>Node: Tool result JSON
-%                   Node-->>Agent: decoded tool result
-%                   Agent->>Agent: Store result under step.result_key
-%               end
-%           end
-
-%           Agent->>Agent: _enrich using pure-Python analytics 
-%           Agent->>Agent: build context serializing to markdown
-%           Agent->>Agent:  LLM call N°2 with SYNTHESIS_SYSTEM + last 6 history turns + context block
-%           Agent->>Agent:  extract actions JSON block 
-%       end
-
-%       Agent-->>Node: ChatResponse 
-%       Note over Agent,Node: thinking{} is internal trace
-%       Node-->>Flutter: ChatResponse JSON 
-
-%       Flutter->>Flutter: AiChatProvider appends assistant turn to _history
-%       Flutter->>Flutter: Render reply text + RedirectAction buttons (last assistant message only)
-%       Flutter-->>User: Display reply and action buttons
-%====================================================================
-
 Figure~\ref{fig:s5-seq-intent-classification} illustrates the two-tier intent classification flow, showing the LLM-based primary classifier, the JSON plan validation step, and the fallback path to the regex classifier. The \domainterm{ThinkingBlock} capturing the classification trace is also shown.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/diagrams/sequence/Intent-Classiﬁcation.png}
-  \caption{SD-31: Intent Classification --- LLM with Regex Fallback.}
+  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}
+  \caption{SD-31: Intent Classification ---  LLM with Two-Attempt Retry.}
   \label{fig:s5-seq-intent-classification}
 \end{figure}
 
@@ -449,24 +371,27 @@ the middleware.
 	\texttt{AI\_TIMEOUT\_MS} & 60\,000 & AI request abort timeout in milliseconds \\
 \end{longtable}
 
-\subsection{Python AI Agent}	The agent makes exactly two \domainterm{LLM} calls per user message .
-\textbf{Call 1 --- Intent classification.} The \modulename{LLMIntentIdentifier}
-sends the user message, role, and work centres to the LLM with a structured
-system prompt listing all 17 available tools and their required arguments. The
-LLM responds with a JSON plan containing the intent label, a list of
-\modulename{ToolStep} objects (each with a tool name, arguments — which may be
-slot references to previous steps — and a result key), and a reasoning string.
-The plan is validated against the tool catalogue before being converted to a
-\modulename{ToolChain} dataclass. If the LLM call fails for any reason, the
-deterministic regex classifier in \texttt{agent/intent.py} is used as a fallback.
-The entire classification reasoning is stored in a \modulename{ThinkingBlock} and
-returned in \texttt{ChatResponse.thinking} for debugging; it is never shown to the
-user.
+\subsection{Python AI Agent}	The agent makes up to three \domainterm{LLM} calls per user message;
+one or two calls for intent classification (a second call is triggered
+automatically if the first response is malformed), and one call for synthesis.
+
 
 \noindent
 \begin{minipage}[t]{0.6\textwidth}
 	\vspace{0pt}
 
+
+	\textbf{Call 1 --- Intent classification.} The \modulename{LLMIntentIdentifier}
+	sends the user message, role, and work centres to the LLM with a structured
+	system prompt listing all 17 available tools and their required arguments. The
+	LLM responds with a JSON plan containing the intent label, a list of
+	\modulename{ToolStep} objects (each with a tool name, arguments — which may be
+	slot references to previous steps — and a result key), and a reasoning string.
+	The plan is validated against the tool catalogue before being converted to a
+	\modulename{ToolChain} dataclass.
+	The entire classification reasoning is stored in a \modulename{ThinkingBlock} and
+	returned in \texttt{ChatResponse.thinking} for debugging; it is never shown to the
+	user.
 
 	\textbf{Call 2 --- Synthesis.} After all tool steps have been executed and their
 	results enriched, the \texttt{Orchestrator.\_synthesise()} method builds a context
@@ -480,25 +405,65 @@ user.
 
 	\subsubsection{Intent Classification}
 
-		\textbf{LLM classifier.} The \modulename{LLMIntentIdentifier} constructs a
-		system prompt containing the full \texttt{TOOL\_CATALOGUE}
-		and the list of valid intent labels. The user
-		message is injected via \texttt{\_IDENTIFIER\_USER\_TEMPLATE} along with the
-		user's role and work centres. The raw LLM response is stripped of JSON fences,
-		parsed, validated against \texttt{\_VALID\_TOOLS} and \texttt{\_INTENT\_MAP}, and
-		converted to a \modulename{ToolChain} via \texttt{\_plan\_to\_tool\_chain()}.
-
-		Figure~\ref{fig:s5-architecture} shows the file architecture of the AI
-		assistant layer.
+	\textbf{LLM classifier.} The \modulename{LLMIntentIdentifier} constructs a
+	system prompt containing the full \texttt{TOOL\_CATALOGUE}
+	and the list of valid intent labels. The user message is injected
+	
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.38\textwidth}
 	\vspace{0pt}
 	\centering
 	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/screenshots/aiArchitecture.png}
-  	\captionof{figure}{AI Assistant Layer - Physical Architecture.}
+  	\captionof{figure}{AI Assistant Layer}
 	\label{fig:s5-architecture}
 \end{minipage}
+
+via \texttt{\_IDENTIFIER\_USER\_TEMPLATE} along with the
+user's role and work centres. The raw LLM response is stripped of JSON fences,
+parsed, validated against \texttt{\_VALID\_TOOLS} and \texttt{\_INTENT\_MAP}, and
+converted to a \modulename{ToolChain} via \texttt{\_plan\_to\_tool\_chain()}. 
+If the first attempt fails (timeout, malformed JSON, or invalid tool names),
+the identifier automatically retries with a second \domainterm{LLM} call
+that injects the original error reason into the conversation so the model
+can self-correct. Only after both attempts fail does the identifier return
+a \texttt{general} intent with an empty tool chain.
+
+Figure~\ref{fig:s5-architecture} shows the file architecture of the AI
+assistant layer.
+
+\subsubsection{Machine Name Resolution}
+When a user references a machine by a non-canonical name or a fuzzy
+identifier (e.g.\ Fraiseuse 3'', milling machine'', ``mc 1''),
+the orchestrator invokes the \texttt{agent/resolver.py} module before
+executing the tool chain. The resolver applies a five-tier cascade
+against the full machine catalogue fetched from
+\techname{Business Central}:
+\begin{enumerate}[noitemsep, topsep=4pt, leftmargin=*]
+\item \textbf{Exact canonical match} --- the query matches a
+\texttt{machineNo} character-for-character (confidence 1.0).
+\item \textbf{Normalised exact match} --- accents stripped,
+case-folded, and punctuation normalised before comparison
+(confidence 0.97).
+\item \textbf{Digit-suffix match} --- the numeric suffix of the query
+matches the machine's numeric suffix after stripping leading zeros
+(confidence 0.88--0.90).
+\item \textbf{Token-overlap score} --- query tokens are matched against
+the machine name using a containment-biased formula; short
+queries that are fully contained in a longer name (e.g.
+Presse'' $\subset$ Presse hydraulique'') score  $\geq$ 0.80,
+  \item \textbf{Edit\-distance (Levenshtein)} --- normalised similarity
+        against the machine ID, used as a typo\-recovery fallback.
+\end{enumerate}
+A match at or above \texttt{HIGH\_CONFIDENCE} (0.850.85
+0.85) is accepted
+silently. A match between \texttt{MIN\_CONFIDENCE} (0.450.45
+0.45) and
+\texttt{HIGH\_CONFIDENCE} is accepted but the assumption is surfaced
+in the \domainterm{LLM} context block. A match below
+\texttt{MIN\_CONFIDENCE} is treated as ambiguous: the agent returns
+a clarification message listing up to three candidates with their
+work-centre and status, without making any tool calls.
 
 \begin{longtable}{@{} P{0.28\linewidth} P{0.32\linewidth} P{0.36\linewidth} @{}}
 	\caption{Intent Values and Associated Tool Chains}
@@ -516,18 +481,63 @@ user.
 	\bottomrule
 	\endlastfoot
 
-	\texttt{machine\_status}      & get\_ongoing\_operations                                  & machine, mc-N, status       \\ \midrule
-	\texttt{machine\_orders}      & get\_machine\_orders                                      & order, queue, po-N          \\ \midrule
-	\texttt{machine\_live}        & get\_ongoing\_operations + get\_operation\_live\_data     & live, real-time, progress   \\ \midrule
-	\texttt{machine\_history}     & get\_operations\_history                                  & history, finished, past     \\ \midrule
-	\texttt{machine\_dashboard}   & get\_ongoing\_operations + get\_machine\_dashboard        & dashboard, kpi, uptime      \\ \midrule
-	\texttt{department\_overview} & list\_machines (fan-out)                                  & department, all machines    \\ \midrule
-	\texttt{activity\_log}        & get\_activity\_log                                        & activity, log, happened     \\ \midrule
-	\texttt{scrap\_analysis}      & get\_activity\_log                                        & scrap, reject, defect       \\ \midrule
-	\texttt{operation\_bom}       & get\_bom                                                  & bom, component, material    \\ \midrule
-	\texttt{production\_cycles}   & get\_production\_cycles                                   & cycle, declaration, shift   \\ \midrule
-	\texttt{operation\_live}      & get\_operation\_live\_data                                & live + order number         \\ \midrule
-	\texttt{general}              & (none)                                                    & No tool trigger matched     \\
+	\texttt{machine\_status}       &
+	get\_ongoing\_operations       & 
+	machine, mc-N, status       \\ \midrule
+	\texttt{machine\_orders}       &
+	get\_machine\_orders           & 
+	order, queue, po-N          \\ \midrule
+	\texttt{machine\_live}         &
+	get\_ongoing\_operations + get\_operation\_live\_data     & 
+	live, real-time, progress   \\ \midrule
+	\texttt{machine\_history}      &
+	get\_operations\_history       & 
+	history, finished, past     \\ \midrule
+	\texttt{machine\_dashboard}    &
+	get\_ongoing\_operations + get\_machine\_dashboard        & 
+	dashboard, kpi, uptime      \\ \midrule
+	\texttt{department\_overview}  &
+	list\_machines (fan-out)       & 
+	department, all machines    \\ \midrule
+	\texttt{activity\_log}         &
+	get\_activity\_log             & 
+	activity, log, happened     \\ \midrule
+	\texttt{scrap\_analysis}       &
+	get\_scrap\_summary             & 
+	scrap, reject, defect       \\ \midrule
+	\texttt{operation\_bom}        &
+	get\_bom                       & 
+	bom, component, material    \\ \midrule
+	\texttt{production\_cycles}    &
+	get\_production\_cycles        & 
+	cycle, declaration, shift   \\ \midrule
+	\texttt{operation\_live}       &
+	get\_operation\_live\_data     & 
+	live + order number         \\ \midrule
+	\texttt{work\_center\_summary} &
+	get\_work\_center\_summary     & 
+	work center, wc summary          \\ \midrule
+	\texttt{operator\_summary}     &
+	get\_operator\_summary         & 
+	operator, staff, who is working  \\ \midrule
+	\texttt{supervisor\_overview}  &
+	get\_supervisor\_overview      & 
+	overview, shift briefing, floor  \\ \midrule
+	\texttt{my\_data}              &
+	get\_my\_data                  & 
+	my production, what did I do     \\ \midrule
+	\texttt{production\_orders}    &
+	get\_production\_orders       & 
+	list orders, released orders     \\ \midrule
+	\texttt{delay\_report}         &
+	get\_delay\_report             & 
+	overdue, delayed, blocked, late  \\ \midrule
+	\texttt{consumption\_summary}  &
+	get\_consumption\_summary      & 
+	material usage, BOM variance     \\
+	\texttt{general}               &
+	(none)                         & 
+	No tool trigger matched     \\
 \end{longtable}
 
 \subsubsection{Tool Catalogue}
@@ -566,7 +576,7 @@ all tools, their AL endpoint mappings, and access scope.
 	\texttt{get\_operator\_summary}     & fetchOperatorSummary             & Work-centre scoped \\ \midrule
 	\texttt{get\_my\_data}              & fetchMyData                      & User scoped        \\ \midrule
 	\texttt{get\_scrap\_summary}        & fetchScrapSummary                & Machine scoped     \\ \midrule
-	\texttt{get\_bom}                   & fetchBom                         & Machine scoped     \\ \midrule
+	\texttt{get\_bom}                   & fetchBom                         & Operation scoped     \\ \midrule
 	\texttt{get\_delay\_report}         & fetchDelayReport                 & Work-centre scoped \\ \midrule
 	\texttt{get\_consumption\_summary}  & fetchConsumptionSummary          & Machine scoped     \\ \midrule
 	\texttt{get\_supervisor\_overview}  & fetchSupervisorOverview          & Work-centre scoped \\
@@ -606,6 +616,15 @@ summarises the enrichment applied to each result key.
 	\texttt{activity}   & \texttt{analyse\_scrap(activity=data)} — recent scrap event count \\ \midrule
 	\texttt{dashboard}  & \texttt{summarise\_dashboard()} — fleet totals, overall scrap severity \\ \midrule
 	\texttt{bom}        & Missing components list (items with zero scanned quantity) \\
+	\texttt{ongoing}              & Operation list with count; raw \texttt{operations} array from \texttt{get\_ongoing\_operations} \\ \midrule
+	\texttt{production\_orders}   & Status counts per status value, running operation count, plain-English summary string \\ \midrule
+	\texttt{work\_center\_summary}& \texttt{analyse\_work\_center\_summary()} — fleet utilisation across work centres, working/idle machine counts \\ \midrule
+	\texttt{operator\_summary}    & \texttt{analyse\_operator\_summary()} — active vs logged-in-idle counts, top-3 producers by quantity \\ \midrule
+	\texttt{my\_data}             & Plain-English interpretation of personal completed ops, produced qty, scrap qty, running ops count \\ \midrule
+	\texttt{scrap\_summary}       & \texttt{analyse\_scrap\_summary()} — top machines, top orders, top scrap reason codes by quantity \\ \midrule
+	\texttt{delay\_report}        & \texttt{analyse\_delay\_report()} — overdue count, abnormal-pause count, worst 3 offenders by delay minutes \\ \midrule
+	\texttt{consumption\_summary} & Over-consumed and missing-consumption execution counts \\ \midrule
+	\texttt{supervisor\_overview} & Plain-English summary: stopped machines, idle operators, abnormal pauses, high-scrap ops, delayed ops \\
 \end{longtable}
 
 \textbf{Scrap spike detection.} The \texttt{analyse\_scrap()} function computes
@@ -619,6 +638,79 @@ the actual production rate (units per hour) from the last 6 declared cycles and
 compares it to the required rate (remaining quantity divided by time until the
 planned end). The result is one of \textit{ahead}, \textit{on\_pace}, or
 \textit{behind}, along with a projected completion timestamp.
+
+\subsubsection{Context Serialisation and Budget Management}
+Before the synthesis \domainterm{LLM} call, \texttt{Orchestrator._build_context()}
+converts the enriched result dictionary into a single markdown string that
+fits within the \texttt{LLM_MAX_CONTEXT_CHARS} character budget
+(configurable via environment variable, default 20,000 characters).
+Each result key is rendered by \texttt{_compress_section()}, which
+dispatches to one of 18 type-specific format helpers. Instead of passing
+raw JSON to the \domainterm{LLM}, every helper produces the most
+token-efficient representation for its data type:
+\begin{itemize}[noitemsep, topsep=4pt, leftmargin=*]
+  \item \textbf{Tabular data} (machines, orders, history, cycles, BOM,
+        dashboard, operators, work centres, delays, production orders,
+        activity log, consumption) →\to
+→ compact markdown tables via
+        \texttt{\_md\_table()}, with cell content capped at 38 characters
+        and row counts capped per key (e.g.\ 20 rows for orders, 30 for
+        cycles).
+  \item \textbf{Scalar / KPI data} (live operation data, scrap summary,
+        supervisor overview, personal data) →\to
+→ key-value bullet lists
+        with pre-computed analysis interpretations inline.
+  \item \textbf{Pre-computed interpretation strings} (produced by the
+        enrichment functions in \texttt{data\_analysis.py}) are always
+        rendered first in each section in bold, so the \domainterm{LLM}
+        receives the conclusion before the supporting data.
+\end{itemize}
+Sections are added in order until the character budget is reached.
+If a section would overflow the budget, \texttt{_emergency_compress()}
+is called first: it emits only the pre-computed interpretation string
+for that key, appending \textit{(detail omitted --- budget)}. If even
+the interpretation string does not fit, the section is silently skipped.
+This guarantees the \domainterm{LLM} always receives a coherent, complete
+context rather than a truncated JSON fragment.
+Table~\ref{tab:s5-fmt-helpers} lists the 18 format helpers and the
+markdown form they produce.
+\Needspace{6\baselineskip}
+\begin{longtable}{@{} P{0.38\linewidth} P{0.20\linewidth} P{0.38\linewidth} @{}}
+\caption{Context Serialisation --- Format Helpers}
+\label{tab:s5-fmt-helpers}\
+\toprule
+\textbf{Helper} & \textbf{Result key} & \textbf{Output form} \
+\midrule
+\endfirsthead
+\toprule
+\textbf{Helper} & \textbf{Result key} & \textbf{Output form} \
+\midrule
+\endhead
+\multicolumn{3}{r}{\small Continued on next page} \
+\endfoot
+\bottomrule
+\endlastfoot
+
+	\texttt{\_fmt\_machine\_table}           & \texttt{machines}              & Table: MachineNo, Name, Status, WC, CurrentOrder \\ \midrule
+	\texttt{\_fmt\_orders\_table}            & \texttt{orders}                & Table: OrderNo, Risk, HoursLeft, Item, Qty, Status \\ \midrule
+	\texttt{\_fmt\_dashboard\_table}         & \texttt{dashboard}             & Table: Machine, Uptime\%, Produced, Scrap, OpsFinished \\ \midrule
+	\texttt{\_fmt\_ongoing\_table}           & \texttt{ongoing}               & Table: OrderNo, OpNo, Status, Progress, Produced, OrderQty \\ \midrule
+	\texttt{\_fmt\_history\_table}           & \texttt{history}               & Table: OrderNo, OpNo, Status, Start, End (capped 20 rows) \\ \midrule
+	\texttt{\_fmt\_cycles\_table}            & \texttt{cycles}                & Table: Time, Operator, CycleQty, TotalProduced (capped 30) \\ \midrule
+	\texttt{\_fmt\_bom\_table}               & \texttt{bom}                   & Table: Item, Description, Required, Scanned, Status \\ \midrule
+	\texttt{\_fmt\_live\_kv}                 & \texttt{live\_data}            & Key-value list: status, progress, scrap, velocity \\ \midrule
+	\texttt{\_fmt\_wc\_table}                & \texttt{work\_center\_summary} & Table: WC, Name, Working/Total, RunningOps, Produced, Scrap \\ \midrule
+	\texttt{\_fmt\_operator\_table}          & \texttt{operator\_summary}     & Table: UserId, Name, LoggedIn, Machine, Produced, Scrap \\ \midrule
+	\texttt{\_fmt\_scrap\_summary\_kv}       & \texttt{scrap\_summary}        & Key-value list: total, top machines, top reason codes \\ \midrule
+	\texttt{\_fmt\_delay\_table}             & \texttt{delay\_report}         & Table: OrderNo, OpNo, Machine, Overdue, LongPause, Delay \\ \midrule
+	\texttt{\_fmt\_consumption\_table}       & \texttt{consumption\_summary}  & Table: OrderNo, Item, Planned, Consumed, Status (capped 25) \\ \midrule
+	\texttt{\_fmt\_supervisor\_kv}           & \texttt{supervisor\_overview}  & Key-value list: counts + stopped machines + abnormal pauses \\ \midrule
+	\texttt{\_fmt\_production\_orders\_table}& \texttt{production\_orders}    & Table: OrderNo, Status, Item, Qty, Progress, DueDate, Running \\ \midrule
+	\texttt{\_fmt\_activity\_table}          & \texttt{activity}              & Table: Time, Type, Machine, Operator, Action (capped 30) \\ \midrule
+	\texttt{\_fmt\_my\_data\_kv}             & \texttt{my\_data}              & Key-value list: user stats + last 5 operations \\ \midrule
+	\texttt{(fallback)}                      & unknown keys                   & Raw JSON capped at 600 characters \\
+
+\end{longtable}
 
 \subsection{Flutter Frontend}
 
