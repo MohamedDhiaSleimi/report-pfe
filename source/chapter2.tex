@@ -63,7 +63,7 @@ At this stage, we will define the specific requirements of our
 application, clearly distinguishing functional requirements from non-functional
 requirements.
 
-\subsubsection{Functional Requirements}
+\subsubsection*{Functional Requirements}
 
 Each actor of the platform has specific expectations referred to as functional
 requirements. To define the functional scope, it is necessary that the conceptual
@@ -142,7 +142,7 @@ solution meets these functional requirements.
 	      operational anomalies, and provides contextual navigation shortcuts.
 \end{itemize}
 
-\subsubsection{Non-Functional Requirements}
+\subsubsection*{Non-Functional Requirements}
 
 To define the non-functional scope, it is necessary that the conceptual solution meets
 these non-functional requirements:
@@ -177,7 +177,7 @@ these non-functional requirements:
 \subsection{Backlog Features}
 
 % ===================== DOMAIN 1: AUTHENTICATION & USER MANAGEMENT =====================
-\subsubsection{Domain 1: Authentication \& User Management}
+\subsubsection*{Domain 1: Authentication \& User Management}
 \label{domain1}
 
 \vspace{0.3cm}
@@ -348,7 +348,7 @@ these non-functional requirements:
 
 
 % ===================== DOMAIN 2: MACHINE MONITORING =====================
-\subsubsection{Domain 2: Machine \& Production Management}
+\subsubsection*{Domain 2: Machine \& Production Management}
 \label{domain2}
 
 \vspace{0.3cm}
@@ -462,7 +462,7 @@ these non-functional requirements:
 \end{longtable}
 
 
-\subsubsection{Domain 3: Production Execution \& Traceability}
+\subsubsection*{Domain 3: Production Execution \& Traceability}
 \label{domain3}
 
 \vspace{0.3cm}
@@ -623,7 +623,7 @@ these non-functional requirements:
 
 
 % ===================== DOMAIN 4: ADMINISTRATION =====================
-\subsubsection{Domain 4: Administration \& Monitoring}
+\subsubsection*{Domain 4: Administration \& Monitoring}
 \label{domain4}
 
 \vspace{0.3cm}
@@ -703,7 +703,7 @@ these non-functional requirements:
 
 
 % ===================== DOMAIN 5: AI ASSISTANT =====================
-\subsubsection{Domain 5: AI Chat Assistant \& Analytical Intelligence}
+\subsubsection*{Domain 5: AI Chat Assistant \& Analytical Intelligence}
 \label{domain5}
 
 \vspace{0.3cm}
@@ -882,7 +882,7 @@ The physical architecture of the MES system rests on three main nodes:
 
 The software architecture of the system is organised around four distinct layers.
 
-\subsubsection{AL Back-end (Business Central)}
+\subsubsection*{AL Back-end (Business Central)}
 
 The back-end is structured in five layers:
 
@@ -907,14 +907,14 @@ The back-end is structured in five layers:
 	in the BC client (lists, cards, API debug page, etc...).
 \end{itemize}
 
-\subsubsection{Node.js Middleware}
+\subsubsection*{Node.js Middleware}
 
 	The Node.js middleware is the network bridge between the Flutter client and
 	Business Central. It handles SSPI/Windows authentication for BC OData V4
 	requests, exposes a unified REST API to the Flutter application, and routes
 	AI chat requests (\texttt{POST /api/ai/chat}) to the Python AI agent.
 
-\subsubsection{Python AI Agent}
+\subsubsection*{Python AI Agent}
 
 The Python AI agent (FastAPI) provides the conversational intelligence layer.
 It classifies user intent, executes tool chains against Business Central via
@@ -922,7 +922,7 @@ the Node.js middleware, enriches results with data-analysis helpers, and
 synthesises natural-language replies using a configurable multi-provider LLM client.
 
 
-\subsubsection{Flutter Front-end}
+\subsubsection*{Flutter Front-end}
 
 The Flutter front-end follows a three-layer architecture:
 
