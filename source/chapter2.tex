@@ -237,9 +237,11 @@ these non-functional requirements:
 	users with their details so that I can manage their accounts.
 	& \begin{itemize}[nosep, leftmargin=*]
 	\item The user list displays each account's full information.
-	\item Clicking on the action button shows a dropdown menu with available actions(change role, generate password, view badge, and toggle activation).
 	\item The list refreshes automatically after a new user is created.
-	\end{itemize} & High \\ \midrule
+	\end{itemize} & High \\ & &
+	\begin{itemize}[nosep, leftmargin=*]
+	\item Clicking on the action button shows a dropdown menu with available actions(change role, generate password, view badge, and toggle activation).
+	\end{itemize} & \\ \midrule
 
 	\textbf{US-1.5} &
 	As an \userrole{Administrator}, I need to generate and assign temporary
@@ -277,20 +279,21 @@ these non-functional requirements:
 	High \\ \midrule
 
 	\textbf{US-1.8} &
-	As a User (\userrole{Operator} / \userrole{Supervisor} / \userrole{Administrator}),
+	As a User,
 	I need to complete a badge QR code scan after entering my credentials so
-	that my identity is verified by a second factor.
+	that my identity is verified.
 	&
 	\begin{itemize}[nosep, leftmargin=*]
 	\item \domainterm{2FA} prompt appears only when \domainterm{TwoFA Enabled} is active in \techname{MES Settings}.
 	\item Camera opens and scans a QR badge code.
+	\end{itemize} & High \\ & &
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Manual entry field available as a fallback.
 	\item Session token is persisted only after successful badge verification.
 	\item Failed scan shows an error; scanner reactivates.
 	\item User can cancel and return to the login page.
 	\end{itemize}
-	&
-	High \\ \midrule
+	& \\ \midrule
 
 	\textbf{US-1.9} &
 	As an \userrole{Administrator}, I need to view, print, and regenerate a
@@ -322,18 +325,19 @@ these non-functional requirements:
 	High \\ \midrule
 
 	\textbf{US-1.11} &
-	As a first-time user, I need to configure the middleware host URL (or scan
-	a QR~code) so that the application connects to the correct server instance.
+	As a user, I need to configure a host URL
+	so that the application connects to my company's server.
 	&
 	\begin{itemize}[nosep, leftmargin=*]
-	\item \uilabel{Paring} page shown on first launch when no host is saved.
-	\item URL can be entered manually or obtained by scanning a QR~code.
-	\item URL is validated (no spaces, no illegal characters).
-	\item Saved host persists across app restarts.
-	\item \uilabel{Change Host} link on the login page allows re-entering the pairing screen.
+		\item \uilabel{Paring} page shown on first launch when no host is saved.
+		\item URL can be entered manually or obtained by scanning a QR~code.
+		\item URL is validated (no spaces, no illegal characters).
+	\end{itemize} & High \\ & &
+	\begin{itemize}[nosep, leftmargin=*]
+		\item Saved host persists across app restarts.
+		\item \uilabel{Change Host} link on the login page allows re-entering the pairing screen.
 	\end{itemize}
-	&
-	High \\
+	& \\
 	\midrule
 
 	\textbf{US-1.12} &
@@ -379,9 +383,6 @@ these non-functional requirements:
 	\item Each card shows machine name, current status (\domainterm{Idle},
 	\domainterm{Working}), active production order number, operation No, item No, and
 	the item name.
-	\end{itemize} & High \\ 
-    & &
-	\begin{itemize}[nosep,leftmargin=*,topsep=-\baselineskip]
 	\item The list refreshes automatically every 20 seconds.
 	\end{itemize} & \\
 	\midrule
@@ -401,16 +402,18 @@ these non-functional requirements:
 
 	\textbf{US-2.3} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to start a
-	production operation so that the system records that the order has begun.
+	production operation so that the system reflects the change.
 	& \begin{itemize}[nosep, leftmargin=*]
 	\item Only \domainterm{operation} from \domainterm{Released} orders may be started.
 	\item An operation cannot be started if it is already running.
+	\end{itemize} & High \\ & &
+	\begin{itemize}[nosep, leftmargin=*]
 	\item A machine cannot run two operations simultaneously.
 	\item A new MES Operation State record is created with status change so it can be tracked.
 	\item The previous operation in the same production order (if any) must be
 	\domainterm{Finished}, \domainterm{Interrupted}, or currently \domainterm{Running}
 	with enough send-ahead quantity.
-	\end{itemize} & High \\ \midrule
+	\end{itemize} & \\ \midrule
 
 	\textbf{US-2.4} &
 	As a \userrole{Supervisor} or \userrole{Operator}, I need to monitor the
@@ -437,14 +440,16 @@ these non-functional requirements:
 
 	\textbf{US-2.6} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to filter and
-	sort production orders so that I can quickly find the most relevant work.
+	sort production orders so that I can quickly find the relevant work.
 	& \begin{itemize}[nosep, leftmargin=*]
 	\item Orders can be searched by order number, item description, or date.
 	\item Orders can be filtered by status (\domainterm{All}, \domainterm{Planned},
 	\domainterm{Firm Planned}, \domainterm{Released}).
-	\item Orders can be sorted by planned start date ascending or descending.
+	\end{itemize} & High \\ & &
+	\begin{itemize}[nosep, leftmargin=*]
+		\item Orders can be sorted by planned start date ascending or descending.
 	\item On mobile, the status filter is accessible via a compact popup menu.
-	\end{itemize} & High \\ \midrule
+	\end{itemize} &  \\ \midrule
 
 	\textbf{US-2.7} &
 	As a \userrole{Supervisor} or \userrole{Operator}, I need to view the
@@ -981,7 +986,7 @@ this project.
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/VSCode-logo.png}&
 	Visual Studio Code&
-	Primary development environment (AL and Flutter) \\[6pt]
+	Primary development environment (AL) \\[6pt]
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/github-logo.png}&
 	Git / GitHub&
@@ -1005,14 +1010,32 @@ this project.
 	lucid chart&
 	UML and system architecture diagramming \\[6pt]
 	\midrule
+	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/android-studio-icon.png}&
+	Android Studio&
+	Primary development environment (Flutter)  \\[6pt]
+	\midrule
 \end{longtable}
 
 \subsection{Development Environment}
 
-% TODO: describe the machines used, OS, tool versions
-\textit{[To be completed: include workstation specifications (OS, RAM, CPU), tool versions
-(Flutter SDK, Dart SDK, Business Central version, VS Code extensions), and any specific
-configuration details such as Docker setup or BC on-premises instance parameters.]}
+The project was developed on two workstations: the first machine equipped with an
+11\textsuperscript{th} Gen Intel
+i5 processor, and the second machine with a
+13\textsuperscript{th} Gen Intel
+i7 processor. Both had  16\,GB RAM and  ran a 64-bit
+\techname{Windows} operating system.
+
+The software toolchain consisted of \techname{Flutter 3.41.0} and \techname{Dart 3.11.0}
+for the mobile frontend, \techname{Node.js v24} for the middleware layer,
+\techname{Python 3.14} with \techname{FastAPI} for the AI agent, and
+\techname{Microsoft Dynamics 365 Business Central NAV 22} as the ERP backend.
+The extensions \techname{AL Language}, \techname{Flutter}, and \techname{Dart} 
+were installed in \techname{Visual Studio Code}.
+
+The on-premises \techname{Business Central} instance was configured to expose both
+the \domainterm{OData V4} and \domainterm{API Services} endpoints, which are consumed
+by the middleware and the mobile frontend.
+
 
 \phantomsection
 \section*{Conclusion}
