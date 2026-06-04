@@ -859,7 +859,7 @@ reflecting the 2FA and password expiry extensions introduced in this sprint.
 
 \subsection{Backend Implementation}
 
-\subsubsection{Backend Structure Overview}
+\subsubsection*{Backend Structure Overview}
 
 The backend project structure is illustrated in Figure~\ref{fig:s1-backend-structure}.
 
@@ -870,7 +870,7 @@ The backend project structure is illustrated in Figure~\ref{fig:s1-backend-struc
 	\label{fig:s1-backend-structure}
 \end{figure}
 
-\subsubsection{MES User Table Implementation}
+\subsubsection*{MES User Table Implementation}
 
 The \modulename{MES User} table is implemented to store user information,
 as described in Table~\ref{tab:s1-mes_user_fields}.
@@ -941,7 +941,7 @@ as described in Table~\ref{tab:s1-mes_user_fields}.
 	
 \end{longtable}
 
-\subsubsection{Authentication Token Table}
+\subsubsection*{Authentication Token Table}
 
 The \modulename{MES Auth Token} table stores session information as described
 in Table~\ref{tab:s1-mes_auth_token_fields}.
@@ -999,7 +999,7 @@ in Table~\ref{tab:s1-mes_auth_token_fields}.
 Key points of the token design include a unique \domainterm{GUID} token,
 auto-expiry after 12 hours, last activity tracking, and soft revocation.
 
-\subsubsection{MES Settings Table}
+\subsubsection*{MES Settings Table}
 
 The \modulename{MES Settings} singleton table (Table 50100) stores the two global
 security parameters configurable from the \uilabel{Settings} page.
@@ -1035,7 +1035,7 @@ security parameters configurable from the \uilabel{Settings} page.
 \end{longtable}
 
 
-\subsubsection{Password Management and Encryption}
+\subsubsection*{Password Management and Encryption}
 
 The password management codeunit ensures that plaintext is never persisted. A
 unique random \domainterm{salt} (64-character SHA-256 hex string) is generated per
@@ -1047,7 +1047,7 @@ Key points include: passwords are never stored in plaintext; a unique salt per u
 (64 characters) is generated; \domainterm{SHA-256} hashing is applied; and data is
 classified as \emph{Customer Content} or \emph{System Metadata}.
 
-\subsubsection{Authentication Logic --- Login, Logout, and Change Password}
+\subsubsection*{Authentication Logic --- Login, Logout, and Change Password}
 
 \textbf{Login}
 
@@ -1072,7 +1072,7 @@ record matching the supplied session token is located in the
 Changing password requires a valid authentication token, a correct current
 password, and a new password that complies with security rules.
 
-\subsubsection{Password Expiry Worker}
+\subsubsection*{Password Expiry Worker}
 
 The \modulename{MES Password Expiry Worker} (Codeunit 50129) is a scheduled
 \techname{Business Central} Job Queue entry that runs every 24~hours. On each
@@ -1089,7 +1089,7 @@ To enable communication between \techname{Flutter} and
 \techname{Microsoft Dynamics Business Central}, a set of \domainterm{RESTful APIs}
 were implemented using AL.
 
-\subsubsection{OData Functions and Web Service Configuration}
+\subsubsection*{OData Functions and Web Service Configuration}
 
 Exposed these functions in the \techname{MES Web Service} codeunit (50126).
 Configured \techname{WebServices.xml} to publish \techname{MES Web Service} as an ODataV4 web service under the service name
@@ -1111,7 +1111,7 @@ and a \textbf{\domainterm{Model Layer}} for Data Models.
 	and \domainterm{Service Layer} to the \techname{Business Central} REST API backend,
 	as illustrated in Figure~\ref{fig:s1-flutter-architecture-s1}.
 	
-	\subsubsection{Service Layer (API Communication)}
+	\subsubsection*{Service Layer (API Communication)}
 
 	The \domainterm{Service Layer} is responsible for handling all \domainterm{HTTP}
 	communication between \techname{Flutter} and the \techname{Business Central} backend.
@@ -1158,7 +1158,7 @@ new user's role and employee reference in the request body. The
 \uilabel{generate password} method handle the password generation endpoint
 and map the result into the \modulename{GeneratedPassword} model.
 
-\subsubsection{State Management Layer using Provider}
+\subsubsection*{State Management Layer using Provider}
 
 The \domainterm{Provider} pattern is implemented to ensure reactive UI updates
 and centralised data handling. Three providers were implemented:
@@ -1355,7 +1355,7 @@ page whenever the values differ from the last saved state, offering
 \end{figure}
 
 \section{Testing and Validation}
-\subsection{Integration testing}
+\subsection*{Integration testing}
 For integration testing, we chose Postman, a powerful and user-friendly tool for API evaluation. Figure~\ref{fig:s1-test-postman-fetchAllMesUsers} shows a test case for the \apiendpoint{/mesUsers} endpoint.
 
 \begin{figure}[H]
