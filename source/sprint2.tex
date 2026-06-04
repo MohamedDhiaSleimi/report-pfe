@@ -44,7 +44,7 @@ This sprint covers \textbf{Domain 2:}
   of machines in my work centre with their current status so that I can see
   which machines are currently active.
   & \noindent\textit{Business Central (AL):}
-  \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{itemize}[nosep, leftmargin=*]
   \item Create table \techname{MES Machine Status}.
   \item Create enum \techname{MES Machine Status}.
   \item Create function \texttt{FetchMachines()} in codeunit \techname{MES Machine Fetch}.
@@ -53,7 +53,7 @@ This sprint covers \textbf{Domain 2:}
   \end{itemize}
   \\ & &
   \noindent\textit{Flutter:}
-  \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{itemize}[nosep, leftmargin=*]
   \item Create model \techname{MachineModel}.
   \item Create service \techname{MESMachineListService} to consume the \texttt{FetchMachines()} endpoint.
   \item Create provider \techname{MesMachinesProvider}.
@@ -67,13 +67,13 @@ This sprint covers \textbf{Domain 2:}
  assigned to a machine so that I know what work needs
   to be done.
   & \noindent\textit{Business Central (AL):}
-  \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{itemize}[nosep, leftmargin=*]
     \item Create function \texttt{getMachineOrders()} in codeunit \techname{MES Machine Fetch}.
     \item Expose  \texttt{getMachineOrders()} in codeunit \techname{MES Web Service}.
   \end{itemize}
 \\ & &
   \noindent\textit{Flutter:}
-  \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{itemize}[nosep, leftmargin=*]
     \item Create model \techname{MachineOrderModel}.
     \item Create service \techname{ErpMachineOrdersService} to consume the \texttt{getMachineOrders()} endpoint.
     \item Create provider \techname{MachineOrdersProvider}.
@@ -84,7 +84,7 @@ This sprint covers \textbf{Domain 2:}
   & As an \userrole{Operator} or \userrole{Supervisor}, I need to start a
   production operation so that the system records that the order has begun.
   & \noindent\textit{Business Central (AL):}
-  \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{itemize}[nosep, leftmargin=*]
     \item Create table \techname{MES Operation State}.
     \item Create enum \techname{MES Operation Status}.
     \item Create function \texttt{TryStartOperation()} in codeunit \techname{MES Machine Validation}.
@@ -94,7 +94,7 @@ This sprint covers \textbf{Domain 2:}
   \end{itemize}
 \\ & &
   \noindent\textit{Flutter:}
-  \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{itemize}[nosep, leftmargin=*]
     \item Implement \techname{ErpMachineOrdersService} that Consumes the \texttt{startOperation} endpoint.
     \item Implement \techname{MachineOrdersProvider} to manage its state.
     \item Implement start operation action handling in \techname{ActionButtons}.
@@ -106,13 +106,13 @@ This sprint covers \textbf{Domain 2:}
   active operations on a machine so that I can follow the progress of each
   order.
   & \noindent\textit{Business Central (AL):}
-  \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{itemize}[nosep, leftmargin=*]
     \item Create function \texttt{fetchOperationsStatusAndProgress()} in codeunit \techname{MES Machine Fetch}.
     \item Expose \texttt{fetchOngoingOperationsState()} through codeunit \techname{MES Web Service}.
   \end{itemize}
 \\ & &
   \noindent\textit{Flutter:}
-  \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{itemize}[nosep, leftmargin=*]
     \item Update \techname{ErpMachineOrdersService} to Consume the \texttt{fetchOngoingOperationsState()}.
     \item Create model \techname{OperationStatusStyle}.
     \item Create page \techname{OrdersProgressionPage}.
@@ -126,7 +126,7 @@ This sprint covers \textbf{Domain 2:}
   progress, and the operation history of the machine without leaving the 
   machine context.
   & \noindent\textit{Flutter:}
-  \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{itemize}[nosep, leftmargin=*]
     \item Create page \techname{MachineMainPage}.
     \item Create the widgets \techname{TopNavigationBar} and \techname{NavButton}.
     \item Implement tab navigation in \techname{MachineMainPage}.
@@ -137,7 +137,7 @@ This sprint covers \textbf{Domain 2:}
   & As an \userrole{Operator} or \userrole{Supervisor}, I need to filter and
   sort production orders so that I can quickly find the most relevant work.
   & \noindent\textit{Flutter:}
-  \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{itemize}[nosep, leftmargin=*]
     \item Create widget \techname{GlobalSearchBar}.
     \item Implement order search, filtering, and sorting in \techname{MachineOrderPage}.
   \end{itemize} \\
@@ -147,13 +147,13 @@ This sprint covers \textbf{Domain 2:}
   history of completed operations for a machine so that I can audit past
   production.
   & \noindent\textit{Business Central (AL):}
-  \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{itemize}[nosep, leftmargin=*]
     \item Exposed the function \techname{fetchOperationsHistory} that 
     calls the function \techname{fetchOperationsStatusAndProgress} in
     codeunit \techname{MES Web Service}.
   \end{itemize}
   \noindent\textit{Flutter:}
-  \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{itemize}[nosep, leftmargin=*]
     \item Update \techname{ErpMachineOrdersService} to consume the 
     \texttt{fetchOperationsHistory} endpoint.
     \item Update \techname{MachineordersProvider} to manage its state.
@@ -212,7 +212,7 @@ textual description of the \textit{Start Operation} use case.
   \textbf{Primary Actor}  & \userrole{Operator} \\
   \midrule
   \textbf{Preconditions}  &                     
-  \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{itemize}[nosep, leftmargin=*]
   \item The \userrole{Operator} is authenticated and has a valid session token.
   \item The target routing line has status \domainterm{Released}.
   \item No other operation is currently \domainterm{Running} on the same machine.
@@ -221,7 +221,7 @@ textual description of the \textit{Start Operation} use case.
   \midrule
   
   \textbf{Postconditions} &                     
-  \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{itemize}[nosep, leftmargin=*]
   \item A new \modulename{MES Operation State} record is inserted with status
   \domainterm{Running} and the current \domainterm{UTC} timestamp.
   \item The \uilabel{Operations Progress} tab reflects the new running operation
@@ -232,7 +232,7 @@ textual description of the \textit{Start Operation} use case.
   \midrule
   
   \textbf{Main Scenario}  &                     
-  \begin{enumerate}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+  \begin{enumerate}[nosep, leftmargin=*]
   \item The \userrole{Operator} navigates to the \uilabel{Machine List Page} and
   selects a machine.
   \item The system displays the \uilabel{Machine Orders Page} listing all

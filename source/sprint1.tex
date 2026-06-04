@@ -48,19 +48,19 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	& As an \userrole{Administrator}, I need to assign a user account for each employee  so
 	that users only access features appropriate to their role.
 	& \noindent\textit{Business Central (AL)}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Implement the functions \texttt{AdminCreateUser()} and \texttt{AdminSetActive()} in codeunit \techname{MES Authentification Actions}.
 		\item Expose \texttt{AdminCreateUser()} and \texttt{AdminSetActive()} through codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Implement \techname{ApiService} to consume the new endpoints.
 		\item Implement  \techname{MesUserService} to consume \texttt{fetchMesUsers()} and \texttt{AdminCreateUser()} endpoints.
 		\item Create provider \techname{MesUserProvider} to manage its state.
 	\end{itemize}
 \\ & &
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		
 		\item Create widget \techname{AddUserDialog}.
 		\item Implement role-based navigation in \techname{\_AuthGate}.
@@ -71,7 +71,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	I need to log into and out of the system with my credentials so that I can access
 	features appropriate to my role.
 	& \noindent\textit{Business Central (AL)}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Create the tables \techname{MES User} and \techname{MES AuthToken}.
 		\item Create enum \techname{MES User Role}.
 		\item Implement functions \texttt{MakeSalt()}, \texttt{HashPassword()}, and \texttt{VerifyPassword()} in codeunit \techname{MES Password Mgt}.
@@ -81,7 +81,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Implement \techname{ApiService} to consume the new endpoints.
 		\item Create provider \techname{AuthProvider} to manage its state.
 		\item Implement authentication routing in \techname{\_AuthGate}.
@@ -92,7 +92,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	\textbf{US-1.3}
 	& As an \userrole{Administrator}, I need to search users.
 	& \noindent\textit{Flutter}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Implement user search in \techname{AddUserPage} using either the name or the email of the user.
 		\item Implement role filtering in \techname{AddUserPage}.
 		
@@ -102,13 +102,13 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	& As an \userrole{Administrator}, I need to see a list of all \techname{MES}
 	users with their details so that I can manage accounts.
 	& \noindent\textit{Business Central (AL)}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Create the function \texttt{fetchAllMESUsers} in codeunit \techname{MES Unbound Actions}.
 		\item Expose \texttt{fetchAllMESUsers} through codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Create model \techname{MesUser}.
 		\item Implement \texttt{MesUserService} to consume the new endpoint.
 		\item Implement \texttt{MesUserProvider} to manage its state and its streams.
@@ -119,13 +119,13 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	& As an \userrole{Administrator}, I need to generate and assign a temporary
 	password to a user so that they can log in for the first time.
 	& \noindent\textit{Business Central (AL)}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Implement function \texttt{AdminSetPassword()} in codeunit \techname{MES Unbound Actions}.
 		\item Expose \texttt{AdminSetPassword()} through codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Create the widgets \techname{GeneratePasswordDialog} and \techname{EmployeeAvatar}.
 		\item Update \techname{ApiService} to consume \texttt{adminSetPassword()}.
 		\item Update \techname{AuthProvider} to account for the new functions in the service.
@@ -135,13 +135,13 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	& As an \userrole{Administrator}, I need to change the role and work-centre
 	assignment of an existing user so that access rights stay current.
 	& \noindent\textit{Business Central (AL)}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Implement function \texttt{AdminChangeUserRole()} in codeunit \techname{MES Unbound Actions}.
 		\item Expose \texttt{AdminChangeUserRole()} through codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Update \techname{MesUserService} to consume \texttt{changeUserRole()}.
 		\item Update \techname{MesUserProvider} to account for \texttt{changeUserRole()}.
 		\item Create widget \techname{ChangeRoleDialog}.
@@ -151,7 +151,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	& As an \userrole{Administrator}, I need to activate or deactivate a user
 	account so that access can be revoked without deleting the account.
 	& \noindent\textit{Flutter}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Update \techname{ApiService} to account for \texttt{toggleUserActiveStatus()}.
 		\item Update \techname{AuthProvider} to account for \texttt{toggleUserActiveStatus()}.
 		\item Integrate activate and deactivate actions in \techname{AddUserPage}.
@@ -163,7 +163,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	I need to complete a badge QR~code scan after entering my credentials so that
 	my identity is verified by a second factor.
 	& \noindent\textit{Business Central (AL)}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Add field \texttt{Badge Secret} (Text[64]) to table \techname{MES User}.
 		\item Implement \texttt{GenerateBadgeSecret()} in \techname{MES User OnInsert}.
 		\item Implement \texttt{VerifyBadge()}, \texttt{GetBadgeSecret()}, and \texttt{RegenerateBadgeSecret()} in codeunit \techname{MESAuthMgt}.
@@ -173,7 +173,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Update \techname{AuthProvider.login()} to detect \texttt{twoFAEnabled} flag and hold pending session state.
 		\item Create page/dialog \techname{BadgeScanDialog} with live camera feed (\techname{mobile\_scanner}) and manual entry fallback.
 		\item Implement \texttt{verifyBadge()}, \texttt{cancelBadgeScan()} in \techname{AuthProvider}.
@@ -185,7 +185,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	& As an \userrole{Administrator}, I need to view, print, and regenerate a
 	user's badge QR~code so that I can distribute it and invalidate a compromised badge.
 	& \noindent\textit{Flutter}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Create dialog \techname{UserBadgeDialog} rendering badge QR via \techname{barcode\_widget} package.
 		\item Implement \texttt{getBadgeSecret()} and \texttt{regenerateBadge()} in \techname{AuthProvider}.
 		\item Implement PDF export in \techname{UserBadgeDialog.\_exportPdf()}.
@@ -198,7 +198,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	\domainterm{2FA} and configure a password rotation period so that I can
 	control the organisation's authentication security level.
 	& \noindent\textit{Business Central (AL)}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Add field \texttt{PW change period} (Duration) to table \techname{MES Settings}.
 		\item Implement \texttt{GetMESSettings()} and \texttt{UpdateMESSettings()} in codeunit \techname{MES Settings Functions}.
 		\item Expose both procedures through codeunit \techname{MES Web Service}.
@@ -207,7 +207,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Create model \techname{SettingModel} with \texttt{pwChangePeriod} and \texttt{twoFAEnabled} fields.
 		\item Create \techname{SettingService} consuming \texttt{fetchSettings} and \texttt{updateSettings} endpoints.
 		\item Create \techname{MesSettingsProvider} managing fetch, dirty-state detection, and save.
@@ -220,7 +220,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	& As a first-time user, I need to configure the middleware host URL (or scan
 	a QR~code) so that the application connects to the correct server instance.
 	& \noindent\textit{Flutter}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Create page \techname{ParingPage} shown on first launch when \texttt{AppConstants.host} is empty.
 		\item Implement URL validation (no spaces, no backslash, no illegal characters).
 		\item Implement QR scanning via \techname{QrScannerDialog} to populate the host field.
@@ -233,7 +233,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	& As an \userrole{Administrator}, I need to be able to export the list of users so that I can
 	use the info in other applications or processes.
 	& \noindent\textit{Flutter}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item implemented export user service so when clicking the export button and excel file is created with all user info
 		\item Updated the \techname{Add User Page} to contain the button export users
 	\end{itemize}\\
@@ -296,7 +296,7 @@ use cases available exclusively to the \userrole{Administrator}, as well as the 
 	\textbf{Primary Actors} & \userrole{Operator}, \userrole{Supervisor}, \userrole{Administrator} \\
 	\midrule
 	\textbf{Preconditions}  &                                                                      
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item The employee account exists in the \techname{ERP} system.
 	\item The user has an assigned role and department.
 	\item The account must have a password.
@@ -305,7 +305,7 @@ use cases available exclusively to the \userrole{Administrator}, as well as the 
 	\midrule
 	
 	\textbf{Postconditions} &                                                                      
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item If the credentials are valid, the user is successfully authenticated.
 	\item If \domainterm{2FA} is enabled, the badge QR scan step is completed before a session token is issued.
  	\item A session token is generated and stored securely.
@@ -313,7 +313,7 @@ use cases available exclusively to the \userrole{Administrator}, as well as the 
 	role (\userrole{Admin} or MES interface).
 	\end{itemize} \\
 	& 
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item If the \domainterm{need change password} flag is set to true, they
 	are redirected to the \uilabel{Change Password} page.
 	\item If the credentials are invalid, access is denied and an error
@@ -322,7 +322,7 @@ use cases available exclusively to the \userrole{Administrator}, as well as the 
 	\midrule
 	
 	\textbf{Main Scenario}  &                                                                      
-	\begin{enumerate}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{enumerate}[nosep, leftmargin=*]
 	\item The user launches the application.
 	\item If no host URL is configured, the system displays the \uilabel{Paring} page, the user enters or scans the middleware URL.
  	\item The system displays the \uilabel{login screen}.

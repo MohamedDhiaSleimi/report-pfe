@@ -42,13 +42,13 @@ This sprint covers \textbf{Domain 4:}
       & As an \userrole{Supervisor}, I need a performance dashboard for all
       machines so that I can monitor production health across the facility.
       & \noindent\textit{Business Central (AL):}
-      \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+      \begin{itemize}[nosep, leftmargin=*]
             \item Create function \texttt{fetchMachineDashboard()} in codeunit \techname{MES Machine Fetch}.
             \item Expose the function through the codeunit \techname{MES Web Service}.
       \end{itemize}
       \\ & &
       \noindent\textit{Flutter:}
-      \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+      \begin{itemize}[nosep, leftmargin=*]
             \item Create model \techname{MachineDashboardModel}.
             \item Create \techname{LogService} to consume the \texttt{fetchMachineDashboard} endpoint and \techname{LogProvider} to manage its state.
             \item Create page \techname{MachineDashboardPage}.
@@ -59,13 +59,13 @@ This sprint covers \textbf{Domain 4:}
       & As an \userrole{Administrator}, I need a filterable log of all
       system actions so that I can audit operator and machine activity.
       & \noindent\textit{Business Central (AL):}
-      \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+      \begin{itemize}[nosep, leftmargin=*]
             \item Create function \texttt{fetchActivityLog()} in codeunit \techname{MES Machine Fetch}.
             \item Add the wrapper of the function to \techname{MES Web Service}.
       \end{itemize}
       \\ & &
       \noindent\textit{Flutter:}
-      \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+      \begin{itemize}[nosep, leftmargin=*]
             \item Create model \techname{ActivityLogModel}.
             \item Create \techname{LogService} to consume the \texttt{fetchActivityLog()} endpoint and \techname{LogProvider} to manage its state.
             \item Create page \techname{ActivityLogPage}.
@@ -76,7 +76,7 @@ This sprint covers \textbf{Domain 4:}
       & As any user, I need the application available in English, French, and
       Arabic so that I can use it in my preferred language.
       & \noindent\textit{Flutter:}
-      \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+      \begin{itemize}[nosep, leftmargin=*]
             \item Integrate the \texttt{easy\_localization} package.
             \item Create translation JSON files for \texttt{en}, \texttt{fr}, and \texttt{ar}.
             \item Create widget \techname{LanguageSelector}.
@@ -89,7 +89,7 @@ This sprint covers \textbf{Domain 4:}
       & As a first-time user, I need guided coach-mark tutorials so that I can
       learn the interface without external documentation.
       & \noindent\textit{Flutter:}
-      \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+      \begin{itemize}[nosep, leftmargin=*]
             \item Integrate the \texttt{tutorial\_coach\_mark} package.
             \item Implement tutorial persistence using \techname{SharedPreferences}.
             \item Create \techname{MachineListTutorial}, \techname{MachineDetailTabsTutorial}, \techname{OperationDetailTutorial}, and \techname{AdminDashboardTutorial}.
@@ -100,12 +100,12 @@ This sprint covers \textbf{Domain 4:}
       & As an \userrole{Administrator}, I need a searchable barcode page
 	so that I have a source of the mes barcodes labels.
       & \noindent\textit{Business Central (AL):}
-      \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+      \begin{itemize}[nosep, leftmargin=*]
             \item Create function \texttt{fetchAllItemBarcodes()} in codeunit \techname{MES Machine Fetch}.
             \item Add the wrapper of the function to \techname{MES Web Service}.
       \end{itemize}
 	\\ & & \noindent\textit{Flutter:}
-      \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+      \begin{itemize}[nosep, leftmargin=*]
             \item created the page \techname{BarcodeListPage.dart}.
             \item updated the povider mes\_barcode\_provider.dart and mes\_barcode\_service.dart to consume the new endpoints.
             \item created the widget dataMatrix\_card.dart.
@@ -158,19 +158,19 @@ represents the most significant new administrator workflow in this sprint.
       \textbf{Primary Actor}  & \userrole{Supervisor} \\
       \midrule
       \textbf{Preconditions}  &                          
-      \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+      \begin{itemize}[nosep, leftmargin=*]
       \item The user is authenticated with the \domainterm{Supervisor} role.
       \end{itemize} \\
       \midrule
       \textbf{Postconditions} &                          
-      \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+      \begin{itemize}[nosep, leftmargin=*]
       \item A grid of machine cards is displayed, each showing uptime, production
       totals, and scrap for the selected time window.
       \item Changing the time-range selector refreshes all card metrics.
       \end{itemize} \\
       \midrule
       \textbf{Main Scenario}  &                          
-      \begin{enumerate}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+      \begin{enumerate}[nosep, leftmargin=*]
       \item The Supervisor logs in and is routed to \techname{machineList}.
       \item The Supervisor selects \uilabel{Machine Dashboard} in the topBar.
       \item The system POSTs to \apiendpoint{/MESWebService\_fetchMachineDashboard}

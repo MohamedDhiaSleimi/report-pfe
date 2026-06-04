@@ -75,11 +75,7 @@ solution meets these functional requirements.
 	      to change their temporary password. A secure session token (GUID, 12~h validity) is
 	      issued upon each successful login.
 
-	\item \textbf{Two-Factor Authentication (2FA)}: When enabled globally by the
-	      administrator, users must complete a second authentication step by scanning their
-	      personal badge QR~code after entering their credentials. Administrators can view,
-	      print, and regenerate badge secrets for any user.
-
+	
 	\item \textbf{Application Setup}: On first launch, the user must configure the
 	      middleware host URL (entered manually or obtained by scanning a QR~code) so that
 	      the application connects to the correct server instance. The host is persisted
@@ -96,11 +92,7 @@ solution meets these functional requirements.
 	      	\item View, print, and regenerate a user's badge QR~code for 2FA purposes.
 	      \end{itemize}
 
-	\item \textbf{Security Policy}: The administrator can configure a password rotation
-	      period (in days). A scheduled background job runs every 24~hours and flags users
-	      whose password age exceeds the configured period, forcing them to change their
-	      password on next login.
-
+	
 	\item \textbf{Machine Management}: This feature allows users to:
 	      \begin{itemize}
 	      	\item View the list of machines in a work centre with their current status
@@ -148,14 +140,23 @@ To define the non-functional scope, it is necessary that the conceptual solution
 these non-functional requirements:
 
 \begin{itemize}
+
 	\item \textbf{Performance}: The platform performs efficiently in terms of handling
 	      routine operations (login, order consultation, production declaration).
 
 	\item \textbf{Security}: Implementation of a token-based authentication system
 	      (signed GUID, 12~h expiry) and role management (Admin, Supervisor, Operator) to
 	      control access to features. Passwords are stored as SHA-256 hashes with a salt.
-	      Optional two-factor authentication enforces badge QR verification as a second
-	      factor. A configurable password expiry policy forces periodic credential rotation.
+
+	\item \textbf{Security Policy}: The administrator can configure a password rotation
+	      period (in days). A scheduled background job runs every 24~hours and flags users
+	      whose password age exceeds the configured period, forcing them to change their
+	      password on next login.
+
+	\item \textbf{Two-Factor Authentication (2FA)}: When enabled globally by the
+	      administrator, users must complete a second authentication step by scanning their
+	      personal badge QR~code after entering their credentials. Administrators can view,
+	      print, and regenerate badge secrets for any user.
 
 	\item \textbf{Maintainability}: The AL back-end code is organised in layers
 	      (Tables, Enums, Codeunits, API Pages) and the Flutter code follows a layered
@@ -201,7 +202,7 @@ these non-functional requirements:
 	\textbf{US-1.1} &
 	As an \userrole{Administrator}, I need to assign a user account for each employee  so
 	that users only access features appropriate to their role.
-	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	& \begin{itemize}[nosep, leftmargin=*]
 	\item Ability to assign a user as \userrole{Operator} or \userrole{Supervisor} or \userrole{Administrator}.
 	\item Unauthorized actions are blocked with clear error messages.
 	\end{itemize} &
@@ -213,7 +214,7 @@ these non-functional requirements:
 	I need to log into and out of the system with my credentials so that I can access
 	features appropriate to my role.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item User can enter username and password.
 	\item System validates credentials against the \techname{MES}.
 	\item Session token is created upon successful authentication.
@@ -224,7 +225,7 @@ these non-functional requirements:
 
 	\textbf{US-1.3} &
 	As an \userrole{Administrator}, I need to search users.
-	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	& \begin{itemize}[nosep, leftmargin=*]
 	\item Ability to filter users based on their role.
 	\item Ability to search for a specific user.
 	\end{itemize} &
@@ -234,7 +235,7 @@ these non-functional requirements:
 	\textbf{US-1.4} &
 	As an \userrole{Administrator}, I need to see a list of all
 	users with their details so that I can manage their accounts.
-	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	& \begin{itemize}[nosep, leftmargin=*]
 	\item The user list displays each account's full information.
 	\item Clicking on the action button shows a dropdown menu with available actions(change role, generate password, view badge, and toggle activation).
 	\item The list refreshes automatically after a new user is created.
@@ -243,7 +244,7 @@ these non-functional requirements:
 	\textbf{US-1.5} &
 	As an \userrole{Administrator}, I need to generate and assign temporary
 	passwords to users so that they can log in for the first time.
-	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	& \begin{itemize}[nosep, leftmargin=*]
 	\item Admin can generate a random secure password for any user.
 	\item The generated password is sent to the \techname{ERP} via \texttt{AdminSetPassword}.
 	\item The target account is flagged \domainterm{Need To Change Password} after the password is set.
@@ -254,7 +255,7 @@ these non-functional requirements:
 	As an \userrole{Administrator}, I need to change the role and work-centre
 	assignment of an existing user so that access rights stay current.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Admin can select a new role for any other user.
 	\item Work-centre list updates based on the selected role.
 	\item All active tokens for the target user are revoked on save.
@@ -267,7 +268,7 @@ these non-functional requirements:
 	As an \userrole{Administrator}, I need to activate or deactivate a user
 	account so that access can be revoked without deleting the account.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Admin can toggle the active status of any other user.
 	\item Deactivation immediately revokes all active tokens.
 	\item The user row updates its visual status indicator immediately.
@@ -280,7 +281,7 @@ these non-functional requirements:
 	I need to complete a badge QR code scan after entering my credentials so
 	that my identity is verified by a second factor.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item \domainterm{2FA} prompt appears only when \domainterm{TwoFA Enabled} is active in \techname{MES Settings}.
 	\item Camera opens and scans a QR badge code.
 	\item Manual entry field available as a fallback.
@@ -296,7 +297,7 @@ these non-functional requirements:
 	user's badge QR~code so that I can distribute it and invalidate a lost or
 	compromised badge.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Badge QR rendered from the user's \domainterm{Badge Secret} via a barcode widget.
 	\item Print button generates a PDF.
 	\item Regenerate action shows a confirmation dialog before replacing the secret.
@@ -310,7 +311,7 @@ these non-functional requirements:
 	and configure a password rotation period so that I can control the
 	organisation's authentication security level.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item \domainterm{2FA} toggle and password rotation period field available on a \uilabel{Settings} page.
 	\item Changes take effect on the next login attempt.
 	\item Settings are persisted.
@@ -324,7 +325,7 @@ these non-functional requirements:
 	As a first-time user, I need to configure the middleware host URL (or scan
 	a QR~code) so that the application connects to the correct server instance.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item \uilabel{Paring} page shown on first launch when no host is saved.
 	\item URL can be entered manually or obtained by scanning a QR~code.
 	\item URL is validated (no spaces, no illegal characters).
@@ -338,7 +339,7 @@ these non-functional requirements:
 	\textbf{US-1.12} &
 	As an \userrole{Administrator}, I need to export the list of users so that
 	I can use the information in other applications or processes.
-	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	& \begin{itemize}[nosep, leftmargin=*]
 	\item The ability to export all user info.
 	\item The information is structured in the form of an excel file.
 	\end{itemize} &
@@ -373,21 +374,23 @@ these non-functional requirements:
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to see the list
 	of machines in my work center with their current status so that I can see
 	which machines are currently active.
-	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	& \begin{itemize}[nosep, leftmargin=*]
 	\item Machine list is scoped to the authenticated user's work centre.
 	\item Each card shows machine name, current status (\domainterm{Idle},
 	\domainterm{Working}), active production order number, operation No, item No, and
 	the item name.
+	\end{itemize} & High \\ 
+    & &
+	\begin{itemize}[nosep,leftmargin=*,topsep=-\baselineskip]
 	\item The list refreshes automatically every 20 seconds.
-	\end{itemize} &
-	High \\
+	\end{itemize} & \\
 	\midrule
 
 	\textbf{US-2.2} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to view the operations of the
 	production orders assigned to a machine so that I know what work needs
 	to be done.
-	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	& \begin{itemize}[nosep, leftmargin=*]
 	\item Only \domainterm{Planned}, \domainterm{Firm Planned}, or
 	\domainterm{Released} orders are shown.
 	\item Each card displays order number, item description, planned quantity,
@@ -399,7 +402,7 @@ these non-functional requirements:
 	\textbf{US-2.3} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to start a
 	production operation so that the system records that the order has begun.
-	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	& \begin{itemize}[nosep, leftmargin=*]
 	\item Only \domainterm{operation} from \domainterm{Released} orders may be started.
 	\item An operation cannot be started if it is already running.
 	\item A machine cannot run two operations simultaneously.
@@ -413,7 +416,7 @@ these non-functional requirements:
 	As a \userrole{Supervisor} or \userrole{Operator}, I need to monitor the
 	current status of all active operations on a machine so that I can follow
 	the progress of each order.
-	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	& \begin{itemize}[nosep, leftmargin=*]
 	\item The Operations Progress tab shows all operations whose latest status
 	record is \domainterm{Running} or \domainterm{Paused}.
 	\item Each card shows order number, operation number, current status, operation description,
@@ -425,7 +428,7 @@ these non-functional requirements:
 	As an \userrole{Operator} or \userrole{Supervisor}, I need a tabbed view
 	for a machine so that I can navigate between pending orders, active
 	operation progress and the operation history of the machine without leaving the machine context.
-	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	& \begin{itemize}[nosep, leftmargin=*]
 	\item Selecting a machine from the list opens a dedicated machine page.
 	\item The page provides three tabs: \domainterm{Orders},
 	\domainterm{Progress}, and \domainterm{History}.
@@ -435,7 +438,7 @@ these non-functional requirements:
 	\textbf{US-2.6} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to filter and
 	sort production orders so that I can quickly find the most relevant work.
-	& \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	& \begin{itemize}[nosep, leftmargin=*]
 	\item Orders can be searched by order number, item description, or date.
 	\item Orders can be filtered by status (\domainterm{All}, \domainterm{Planned},
 	\domainterm{Firm Planned}, \domainterm{Released}).
@@ -448,7 +451,7 @@ these non-functional requirements:
 	history of completed operations for a machine so that I can audit past
 	production.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item The History tab shows all operations with status
 	\domainterm{Finished},\domainterm{Interrupted}, or \domainterm{Cancelled}.
 	\item Each card shows order number, status, product name, produced
@@ -484,7 +487,7 @@ these non-functional requirements:
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to declare the
 	produced quantity in a cycle so that the system records my progress.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Declared quantity must be positive and not exceed remaining quantity that need to be produced.
 	\item Declared quantity must be less than the amount that can be produced with the available components scanned remaining.
 	\item Each declaration creates a new progression cycle record.
@@ -496,7 +499,7 @@ these non-functional requirements:
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to pause and
 	resume an active operation so that interruptions are tracked accurately.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item A Running operation can be paused; a Paused one can be resumed.
 	\item A machine cannot resume if another operation is already running.
 	\end{itemize}
@@ -506,7 +509,7 @@ these non-functional requirements:
 	As a \userrole{Supervisor}, I need to finish, interrupt or cancel an operation so that
 	the machine is released and the order is closed in the system.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Finishing a complete order (100\%) shows a green confirmation dialog.
 	\item Interrupting or Cancelling an operation shows a red warning dialog.
 	\item If the operation is started then it is marked as interrupted otherwise as cancelled
@@ -518,7 +521,7 @@ these non-functional requirements:
 	As an \userrole{Operator} or \userrole{Supervisor}, I need a dedicated
 	operation detail page with up-to-date data in one place.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Shows status, order number, product, required and produced quantities.
 	\item The information updates automatically without a manual refresh.
 	\end{itemize}
@@ -528,7 +531,7 @@ these non-functional requirements:
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to see all
 	production cycles declared for an operation so that I can review each declaration's information.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Cycle table lists operator, quantity, cumulative total, and timestamp.
 	\item Records ordered newest-first with pagination.
 	\item Updates after each new declaration.
@@ -539,7 +542,7 @@ these non-functional requirements:
 	As an \userrole{Operator} or \userrole{Supervisor}, I need a visual chart
 	of declarations over time to identify performance trends.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Line chart plots cycle quantity vs.\ declaration time.
 	\item Touch tooltip shows operator, quantity, total production, timestamp.
 	\item Auto-scrolls to most recent data point on load and refresh.
@@ -551,7 +554,7 @@ these non-functional requirements:
 	Bill of Materials for a production operation so that I know which
 	components are required, how much has already been consumed, and the amount 
 	available in the inventory.&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Components are colour-coded by remaining amount (the needed amount (green) / less then necessary to make a single item (red) otherwise (yellow)).
 	\item BOM data refreshes after every consumption event.
 	\item can be expanded to a dialog for a better view on larger screens.
@@ -563,7 +566,7 @@ these non-functional requirements:
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to report
 	scrapped units with a reason code so that waste is accurately tracked.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Scrap can only be declared when the operation is Running.
 	\item A reason code must be selected before submission.
 	\item Need to select either input material or output scrap.
@@ -577,7 +580,7 @@ these non-functional requirements:
 	As a \userrole{Supervisor}, I need to declare production or scrap on behalf of an
 	operator so that output is attributed to the correct person.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Supervisor role sees an operator selector in the declare dialog.
 	\item Selected operator's ID is stored with the declaration record for tracibility.
 	\item If no operator is selected, it is declared as if the supervisor made the declaration.
@@ -588,7 +591,7 @@ these non-functional requirements:
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to scan
 	components into an operation so that consumption is recorded against the BOM.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item any camera connected to the device reads  barcodes.
 	\item Duplicate scan increments quantity on the existing row.
 	\item Confirming scans inserts consumption records and refreshes the BOM.
@@ -600,7 +603,7 @@ these non-functional requirements:
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to print a label
 	for the finished production operations (100\% progress) so that produced parts are correctly identified.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Label includes DataMatrix barcode encoding order, machine, item data.
 	\item PDF generation supports landscape/portrait toggle.
 	\item Print button available only when operation is Finished or progress
@@ -612,7 +615,7 @@ these non-functional requirements:
 	As an \userrole{Operator} or \userrole{Supervisor}, I need a label printed
 	for each declared unit so that individual pieces carry traceable information.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item One PDF page per declared unit with a label counter.
 	\item Same DataMatrix encoding as the production label.
 	\item Launched automatically after a successful production declaration.
@@ -645,7 +648,7 @@ these non-functional requirements:
 	As an \userrole{Supervisor}, I need a performance dashboard for all
 	machines so that I can monitor production health across the facility.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Dashboard shows uptime, operation cancelled or finished count, total produced, and scrap
 	per machine.
 	\item Configurable time-range (hours back) filter.
@@ -656,7 +659,7 @@ these non-functional requirements:
 	As an \userrole{Administrator}, I need a filterable activity log
 	of all system actions so that I can audit operator and machine activity.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Log entries includes all the relevant fields with timestamps.
 	\item Filterable by action type and time range.
 	\item Searchable by user name.
@@ -668,7 +671,7 @@ these non-functional requirements:
 	As any user, I need the application available in English, French, and Arabic
 	so that I can use it in my preferred language.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Language selector on login screen and in profile page.
 	\item All UI strings externalised; no hard-coded text.
 	\item Arabic locale activates RTL layout automatically.
@@ -680,7 +683,7 @@ these non-functional requirements:
 	As a first-time user, I need guided coach-mark tutorials so that I can learn
 	the interface without external documentation.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Tutorials shown exactly once per install per screen.
 	\item Coach marks cover: machine list, machine detail tabs, operation
 	detail, and admin dashboard.
@@ -692,7 +695,7 @@ these non-functional requirements:
 	As an \userrole{Administrator}, I need a searchable barcode page
 	so that I have a source of the mes barcodes labels.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item the barcode page is searchable.
 	\item Ability to print out the barcode labels.
 	\item the ability to reload the barcode list.
@@ -726,7 +729,7 @@ these non-functional requirements:
 	chat assistant so that I can query machine status, production progress, and
 	operational data without navigating the full UI.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Chat panel opens as a side overlay on wide screens and as a dialog on mobile.
 	\item Assistant answers questions about machines, orders, live operations, BOM,
 	history, and scrap.
@@ -741,7 +744,7 @@ these non-functional requirements:
 	answer fleet-wide questions so that I
 	get a consolidated view without visiting each machine individually.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Queries about all machines trigger a parallel fan-out across work centres.
 	\item Results are filtered by running / idle / overdue / scrap status as requested.
 	\item Fan-out is capped to control response time.
@@ -754,7 +757,7 @@ these non-functional requirements:
 	provide contextual navigation shortcuts so that I can open a machine, operation,
 	or dashboard directly from the chat response.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Chat responses include up to 4 action buttons when a redirect is relevant.
 	\item Tapping an action navigates to the corresponding screen.
 	\item Action buttons appear only on the last assistant message.
@@ -766,7 +769,7 @@ these non-functional requirements:
 	anomalies so that I can act
 	before problems escalate.
 	&
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Scrap rate above 5\% is flagged as a warning; above 15\% as critical.
 	\item Scrap spikes (recent rate $>$ 2.5$\times$ baseline) are explicitly mentioned.
 	\item Overdue orders (past planned end) and at-risk orders ($<$ 4~h remaining)

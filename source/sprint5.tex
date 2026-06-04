@@ -50,7 +50,7 @@ This sprint covers \textbf{Domain 5:}
 	natural-language chat assistant so that I can query machine status,
 	production progress, and operational data without navigating the full UI.
 	& \noindent\textit{Python AI Agent}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Implement \techname{FastAPI} application (\texttt{main.py}) with
 		      \texttt{/health} and \texttt{POST /chat} endpoints and lifespan context
 		      manager.
@@ -62,7 +62,7 @@ This sprint covers \textbf{Domain 5:}
 		      constants (LLM provider, model, timeouts, middleware URL).
 	\end{itemize}
 	\\ & &
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Implement \texttt{agent/llm\_client.py}: \modulename{LLMClient}
 		      abstraction and \texttt{build\_llm\_client()} factory supporting
 		      Ollama, OpenAI, HuggingFace, OpenAI-compatible, and Anthropic providers.
@@ -78,7 +78,7 @@ This sprint covers \textbf{Domain 5:}
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Create model \techname{AiChatResponse}, \techname{ConversationTurn},
 		      and \techname{AiRedirectAction}.
 		\item Create \techname{AiChatService} consuming \texttt{POST /api/ai/chat}.
@@ -96,14 +96,14 @@ This sprint covers \textbf{Domain 5:}
 	to answer fleet-wide questions so that I get a consolidated view without
 	visiting each machine individually.
 	& \noindent\textit{Python AI Agent}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item Implement \texttt{agent/composite.py}: \texttt{is\_composite()}
 		      detection, \modulename{CompositeResult} dataclass,
 		      \texttt{run\_composite()} with status filters (running/idle/overdue/scrap),
 		      fan-out capped at 12 machines in batches of 4.
 		\end{itemize}
 	\\ & &
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		 \item Implement \texttt{build\_composite\_context()} context builder.
 		\item Integrate composite path in \texttt{Orchestrator.run()} and
 		      \texttt{Orchestrator.\_run\_composite()}.
@@ -117,7 +117,7 @@ This sprint covers \textbf{Domain 5:}
 	to provide contextual navigation shortcuts so that I can open a machine,
 	operation, or dashboard directly from the chat response.
 	& \noindent\textit{Python AI Agent}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Define \texttt{ActionType} enum and \modulename{RedirectAction}
 		      schema in \texttt{agent/models.py}.
 		\item Implement \texttt{Orchestrator.\_parse\_actions()} to extract
@@ -127,7 +127,7 @@ This sprint covers \textbf{Domain 5:}
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 			\item Implement \texttt{AiChatPage.\_handleAction()} routing:
 		      \texttt{redirect\_machine} $\to$ \techname{MachineMainPage},
 		      \texttt{redirect\_machine\_list} $\to$ \texttt{popUntil},
@@ -140,7 +140,7 @@ This sprint covers \textbf{Domain 5:}
 	& As a \userrole{Supervisor}, I need the assistant to proactively highlight
 	anomalies so that I can act before problems escalate.
 	& \noindent\textit{Python AI Agent}
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Integrate enrichment into \texttt{Orchestrator.\_enrich()} for all
 		      result key types (machines, orders, live\_data, cycles, activity,
 		      dashboard, history, bom, etc.).
@@ -149,7 +149,7 @@ This sprint covers \textbf{Domain 5:}
 		      with anomaly alert rules and action block instructions.
 	\end{itemize}
 	\\ & &
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 		\item Implement \texttt{agent/data\_analysis.py}:
               \texttt{enrich\_deadlines()} (hours until deadline, overdue flag,
               risk level), \texttt{analyse\_scrap()} (scrap rate, severity,
@@ -216,7 +216,7 @@ the central interaction delivered in this sprint.
 	\textbf{Primary Actors} & \userrole{Operator}, \userrole{Supervisor} \\
  	\midrule
 	\textbf{Preconditions} &
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item The user is authenticated and holds a valid session token.
 	\item The \techname{Node.js} middleware and \techname{Python} AI agent are
 	      running and reachable.
@@ -224,14 +224,14 @@ the central interaction delivered in this sprint.
  	\end{itemize} \\
 	\midrule
 	\textbf{Postconditions} &
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item A natural-language answer is displayed in the chat panel.
 	\item Up to 4 contextual navigation action buttons may appear below the reply.
 	\item The conversation turn is appended to the session history for multi-turn context.
  	\end{itemize} \\
  	\midrule
 	\textbf{Main Scenario} &
-	\begin{enumerate}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{enumerate}[nosep, leftmargin=*]
 	\item The user opens the chat panel from the \uilabel{Machine List Page}.
 	\item The user types a question in natural language (e.g.,\ ``What is MC-001 producing?'').
 	\item The \techname{Flutter} client sends a \texttt{POST /api/ai/chat} request
@@ -254,7 +254,7 @@ the central interaction delivered in this sprint.
 	\end{enumerate} \\
 	\midrule
 	\textbf{Alternative Flows} &
-	\begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*]
+	\begin{itemize}[nosep, leftmargin=*]
 	\item \textit{Ambiguous machine name:} the agent returns a disambiguation
 	      message listing up to 3 candidates; the user clarifies in the next turn.
 	\item \textit{Fleet-wide query:} the agent triggers the composite fan-out
