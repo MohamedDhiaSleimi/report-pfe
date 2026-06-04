@@ -10,16 +10,6 @@ history without navigating the full interface. The assistant resolves ambiguous
 machine references, answers fleet-wide questions through parallel fan-out queries,
 proactively surfaces operational anomalies, and provides contextual navigation
 shortcuts directly within the chat reply.
-
-The implementation spans three new components: a \techname{Node.js} reverse-proxy
-middleware layer that handles \domainterm{SSPI/Windows} authentication toward
-\techname{Business Central} and routes AI chat traffic to a dedicated
-\techname{Python} agent; the \techname{Python FastAPI} AI agent itself, which
-classifies user intent, executes tool chains against the existing BC web services,
-enriches results with pure-Python analytics, and synthesises natural-language
-replies using a configurable multi-provider \domainterm{LLM} client; and the
-\techname{Flutter} chat UI, integrated directly into the machine list page as a
-side panel or dialog.
  
 % ---------------------------------------------------------------------------
 % 1. SPRINT BACKLOG
@@ -386,8 +376,8 @@ automatically if the first response is malformed), and one call for synthesis.
 	sends the user message, role, and work centres to the LLM with a structured
 	system prompt listing all 17 available tools and their required arguments. The
 	LLM responds with a JSON plan containing the intent label, a list of
-	\modulename{ToolStep} objects (each with a tool name, arguments — which may be
-	slot references to previous steps — and a result key), and a reasoning string.
+	\modulename{ToolStep} objects (each with a tool name, arguments which may be
+	slot references to previous steps and a result key), and a reasoning string.
 	The plan is validated against the tool catalogue before being converted to a
 	\modulename{ToolChain} dataclass.
 	The entire classification reasoning is stored in a \modulename{ThinkingBlock} and
@@ -608,20 +598,20 @@ summarises the enrichment applied to each result key.
 	\bottomrule
 	\endlastfoot
 
-	\texttt{machines}   & \texttt{summarise\_machines()} — utilisation percentage, working/idle counts, interpretation string \\ \midrule
-	\texttt{orders}     & \texttt{enrich\_deadlines()} — hours until deadline, overdue flag, risk level (\textit{at\_risk} threshold: $< 4$\,h) \\ \midrule
-	\texttt{live\_data} & \texttt{analyse\_scrap()} + \texttt{analyse\_velocity()} — scrap severity, spike detection, units per hour, projected end \\ \midrule
-	\texttt{cycles}     & \texttt{analyse\_scrap()} — scrap trend from cycle history \\ \midrule
-	\texttt{activity}   & \texttt{analyse\_scrap(activity=data)} — recent scrap event count \\ \midrule
-	\texttt{dashboard}  & \texttt{summarise\_dashboard()} — fleet totals, overall scrap severity \\ \midrule
+	\texttt{machines}   & \texttt{summarise\_machines()} ; utilisation percentage, working/idle counts, interpretation string \\ \midrule
+	\texttt{orders}     & \texttt{enrich\_deadlines()} ; hours until deadline, overdue flag, risk level (\textit{at\_risk} threshold: $< 4$\,h) \\ \midrule
+	\texttt{live\_data} & \texttt{analyse\_scrap()} + \texttt{analyse\_velocity()} ; scrap severity, spike detection, units per hour, projected end \\ \midrule
+	\texttt{cycles}     & \texttt{analyse\_scrap()} ; scrap trend from cycle history \\ \midrule
+	\texttt{activity}   & \texttt{analyse\_scrap(activity=data)} ; recent scrap event count \\ \midrule
+	\texttt{dashboard}  & \texttt{summarise\_dashboard()} ; fleet totals, overall scrap severity \\ \midrule
 	\texttt{bom}        & Missing components list (items with zero scanned quantity) \\ \midrule
 	\texttt{ongoing}              & Operation list with count; raw \texttt{operations} array from \texttt{get\_ongoing\_operations} \\ \midrule
 	\texttt{production\_orders}   & Status counts per status value, running operation count, plain-English summary string \\ \midrule
-	\texttt{work\_center\_summary}& \texttt{analyse\_work\_center\_summary()} — fleet utilisation across work centres, working/idle machine counts \\ \midrule
-	\texttt{operator\_summary}    & \texttt{analyse\_operator\_summary()} — active vs logged-in-idle counts, top-3 producers by quantity \\ \midrule
+	\texttt{work\_center\_summary}& \texttt{analyse\_work\_center\_summary()} ; fleet utilisation across work centres, working/idle machine counts \\ \midrule
+	\texttt{operator\_summary}    & \texttt{analyse\_operator\_summary()} ; active vs logged-in-idle counts, top-3 producers by quantity \\ \midrule
 	\texttt{my\_data}             & Plain-English interpretation of personal completed ops, produced qty, scrap qty, running ops count \\ \midrule
-	\texttt{scrap\_summary}       & \texttt{analyse\_scrap\_summary()} — top machines, top orders, top scrap reason codes by quantity \\ \midrule
-	\texttt{delay\_report}        & \texttt{analyse\_delay\_report()} — overdue count, abnormal-pause count, worst 3 offenders by delay minutes \\ \midrule
+	\texttt{scrap\_summary}       & \texttt{analyse\_scrap\_summary()} ; top machines, top orders, top scrap reason codes by quantity \\ \midrule
+	\texttt{delay\_report}        & \texttt{analyse\_delay\_report()} ; overdue count, abnormal-pause count, worst 3 offenders by delay minutes \\ \midrule
 	\texttt{consumption\_summary} & Over-consumed and missing-consumption execution counts \\ \midrule
 	\texttt{supervisor\_overview} & Plain-English summary: stopped machines, idle operators, abnormal pauses, high-scrap ops, delayed ops \\
 \end{longtable}
@@ -819,5 +809,5 @@ answers rather than raw numbers.
 Operators and supervisors can now ask questions in natural language, receive
 machine and production data scoped strictly to their work centres, navigate
 directly to relevant screens via action buttons embedded in the reply, and obtain
-proactive alerts for overdue orders, scrap anomalies, and paused operations —
+proactive alerts for overdue orders, scrap anomalies, and paused operations
 all without leaving the chat interface.

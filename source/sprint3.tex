@@ -263,31 +263,40 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 \section{Design}
 
 \subsection{Use Case Diagram}
-
 \noindent
-\vspace{0pt}
-This sprint adds production execution actors and interactions centred on the \userrole{Operator}
-and \userrole{Supervisor} roles. The primary use cases are: Declare Production, Pause Operation,
-Resume Operation, Finish Operation, Interrupt Operation, Cancel Operation, View BOM Components, 
-View Operation Detail, View declaration History.
-
-The \userrole{Supervisor} role is a superset of \userrole{Operator}: both roles can declare production,
+\begin{minipage}[t]{0.53\textwidth}
+	\vspace{0pt}
+	This sprint adds production execution actors and interactions centred on the \userrole{Operator}
+	and \userrole{Supervisor} roles. The primary use cases are: Declare Production, Pause Operation,
+	Resume Operation, Finish Operation, Interrupt Operation, Cancel Operation, View BOM Components, 
+	View Operation Detail, View declaration History. The \userrole{Supervisor} role is a superset of \userrole{Operator}:
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.45\textwidth}
+	\vspace{0pt}
+	\centering
+	\includegraphics[width=\linewidth]{./media/MES_Sprint-3-Repport/diagrams/useCase/sprint3-2.png}
+	\captionof{figure}{UML Use Case Diagram --- Sprint 3 (control operations)}
+	\label{fig:s3-uc-control-operations}
+\end{minipage}
+ both roles can declare production,
 pause, resume, and view detail; only the Supervisor may close (Finish, Interrupt or Cancel) a production order
-in the intended business flow. The resulting use case diagram is shown in Figures~\ref{fig:s3-uc-part1} and~\ref{fig:s3-uc-part2}.
+in the intended business flow. The resulting use case diagram is shown in Figures~\ref{fig:s3-uc-manage-production} and~\ref{fig:s3-uc-control-operations}.
+
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/useCase/sprint3-1.png}
   \caption{UML Use Case Diagram --- Sprint 3 (manage production)}
-  \label{fig:s3-uc-part1}
+  \label{fig:s3-uc-manage-production}
 \end{figure}
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[height=0.35\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/useCase/sprint3-2.png}
-  \caption{UML Use Case Diagram --- Sprint 3 (control operations)}
-  \label{fig:s3-uc-part2}
-\end{figure}
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[height=0.35\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/useCase/sprint3-2.png}
+%   \caption{UML Use Case Diagram --- Sprint 3 (control operations)}
+%   \label{fig:s3-uc-part2}
+% \end{figure}
 
 \subsection{Textual Use Case Description}
 
@@ -677,117 +686,6 @@ back to \domainterm{Idle}.
 %       end
 %====================================================================
 
-Figure~\ref{fig:s3-seq-resume-operation} presents the resume flow. In addition
-to confirming that the operation is in the \domainterm{Paused} state, the
-\techname{AL} layer verifies that no other operation is currently running on
-the same machine before inserting a \domainterm{Running} state record and
-marking the machine as \domainterm{Working}.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/resume-operation.png}
-  \caption{SD-14: Resume Operation.}
-  \label{fig:s3-seq-resume-operation}
-\end{figure}
-
-%=====SD-14==========================================================
-% sequenceDiagram
-%       actor User
-%       participant Flutter
-%       participant Node as Node.js Middleware
-%       participant AL
-%       participant BC
-
-%       rect rgb(220,235,255)
-%           Note over User,BC: ref SD-01 — user is logged in and holds a valid token
-%       end
-%       rect rgb(220,235,255)
-%           Note over User,BC: ref SD-13 — operation is in Paused state
-%       end
-
-%       User->>Flutter: Tap Resume on OperationCard
-%       Flutter->>Node: POST /api/resumeOperation 
-%       Node->>AL: MESWebService_resumeOperation 
-
-%       rect rgb(220,235,255)
-%           Note over AL,BC: ref SD-02 — ValidateToken called
-%       end
-
-%       AL->>BC: get the execution record of the operation
-%       BC-->>AL: execution record 
-%       AL->>BC: get the state of the operation
-%       BC-->>AL: latest state row
-%       AL->>AL: check if the operation is Paused
-%       AL->>BC: check if the machine is idle
-%       BC-->>AL: clear
-%       alt Another operation is Running on machine or Not Paused
-%           AL-->>Node: error response
-%           Node-->>Flutter: error response
-%           Flutter-->>User: Show error response
-%       else Valid
-%           AL->>BC: set the operation to running
-%           AL->>BC: set machine to working
-%           BC-->>AL: ok
-%           AL-->>Node: success response
-%           Node-->>Flutter: success response
-%           Flutter->>Flutter: trigger refresh
-%           Flutter-->>User: OperationCard badge updates
-%       end
-%====================================================================
-
-% Figure~\ref{fig:s3-seq-finish_cancel_interupt-operation} covers the finish and cancel
-% flows, which share a single endpoint family. The \techname{AL} layer rejects
-% the request if the operation is already in a terminal state; otherwise it
-% inserts the appropriate closed-state record, stamps the execution end time,
-% and resets the machine status to \domainterm{Idle}. The closed operation then
-% appears in the history view rather than the active operations list.	
-
-% \begin{figure}[H]
-%   \centering
-%   \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/finish_cancel_interrupt-operation.png}
-%   \caption{SD-15: Finish/Cancel/Interrupt Operation.}
-%   \label{fig:s3-seq-finish_cancel_interupt-operation}
-% \end{figure}
-
-%=====SD-15==========================================================
-% sequenceDiagram
-%     actor User
-%     participant Flutter
-%     participant AL
-%     participant BC
-
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-01 — user is logged in and holds a valid token
-%     end
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-11 — operation was started (Running or Paused)
-%     end
-
-%     User->>Flutter: Tap Finish (or Cancel)
-%     Flutter->>AL: finishOperation or cancelOperation request
-
-%     rect rgb(220,235,255)
-%         Note over User,BC: ref SD-02 — AL validates token and resolves mesUserId
-%     end
-
-%     AL->>BC: Get MES Operation Execution
-%     BC-->>AL: execution record
-%     AL->>BC: Get latest MES Operation State
-%     BC-->>AL: latest state
-%     AL->>AL: Check if Finished or Cancelled
-%     alt Already closed
-%         AL-->>Flutter: error message
-%         Flutter-->>User: Show error snackbar
-%     else Valid
-%         AL->>BC: Insert MES Operation State Status = Finished/Cancelled
-%         AL->>BC: Update MES Operation Execution — set EndTime = now
-%         AL->>BC: Insert MES Machine Status Status = Idle
-%         AL->>BC: Insert/skip MES User Execution Interaction
-%         BC-->>AL: ok
-%         AL-->>Flutter: success message
-%         Flutter-->>User: Operation appears as Finished/Cancelled in history
-%     end
-%====================================================================
 
 Figure~\ref{fig:s3-seq-declare-scrap} describes the scrap declaration flow.
 Before inserting the scrap record, the \techname{AL} layer verifies that

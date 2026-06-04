@@ -244,15 +244,29 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 % -----------------------------------------------------------------------
 \section{Design}
 \subsection{Detailed Use Case Diagram}
+\noindent
+\begin{minipage}[t]{0.33\textwidth}
+	\vspace{0pt}
+	The UML Use Case Diagrams (Figure~\ref{fig:s1-uc-manage-settings} to~\ref{fig:s1-uc-manage-users}) shows the three
+	primary actors (\userrole{Operator}, \userrole{Supervisor},
+	\userrole{Administrator}) and their interactions with the \domainterm{MES}
+	authentication and user management system.  In addition to the core login,
+	logout, change password, 
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.6\textwidth}
+	\vspace{0pt}
+	\centering
+	\includegraphics[width=\linewidth]{./media/MES_Sprint-1-Repport/diagrams/useCase/manageSettings.png}
+	\captionof{figure}{UML Use Case Diagram --- Manage Settings.}
+	\label{fig:s1-uc-manage-settings}
+\end{minipage}
 
-The UML Use Case Diagrams (Figure~\ref{fig:s1-uc-authentication} to~\ref{fig:s1-uc-manage-users}) shows the three
-primary actors (\userrole{Operator}, \userrole{Supervisor},
-\userrole{Administrator}) and their interactions with the \domainterm{MES}
-authentication and user management system. In addition to the core login,
-logout, change password, and user creation flows, the diagram includes the
+and user creation flows, the diagram includes the
 \uilabel{Change Role and Work Centre}, \uilabel{Activate / Deactivate Account}, and export users
 use cases available exclusively to the \userrole{Administrator}, as well as the settings management
 \uilabel{Badge QR Scan} two-factor verification step and the automatique password change. 
+
 
 \begin{figure}[H]
 	\centering
@@ -261,12 +275,12 @@ use cases available exclusively to the \userrole{Administrator}, as well as the 
 	\label{fig:s1-uc-authentication}
 \end{figure}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/useCase/manageSettings.png}
-	\caption{UML Use Case Diagram --- Manage Settings.}
-	\label{fig:s1-uc-manage-settings}
-\end{figure}
+% \begin{figure}[H]
+% 	\centering
+% 	\includegraphics[width=0.65\linewidth,keepaspectratio]{}
+% 	\caption{UML Use Case Diagram --- Manage Settings.}
+% 	\label{fig:s1-uc-manage-settings}
+% \end{figure}
 
 \begin{figure}[H]
 	\centering
@@ -275,7 +289,6 @@ use cases available exclusively to the \userrole{Administrator}, as well as the 
 	\label{fig:s1-uc-manage-users}
 \end{figure}
 
-\Needspace{10\baselineskip}
 \subsection{Textual Use Case Description}
 
 \begin{longtable}{@{} P{0.22\linewidth} P{0.78\linewidth} @{}}
@@ -311,9 +324,6 @@ use cases available exclusively to the \userrole{Administrator}, as well as the 
  	\item A session token is generated and stored securely.
 	\item The user is redirected to the appropriate dashboard based on their
 	role (\userrole{Admin} or MES interface).
-	\end{itemize} \\
-	& 
-	\begin{itemize}[nosep, leftmargin=*]
 	\item If the \domainterm{need change password} flag is set to true, they
 	are redirected to the \uilabel{Change Password} page.
 	\item If the credentials are invalid, access is denied and an error
@@ -527,12 +537,10 @@ navigating back to the login page.
 %====================================================================
 
 Figure~\ref{fig:s1-seq-ChangePw} describes the change-password flow. The
-\techname{Flutter} client first validates locally that the two password
-fields match and satisfy the strength rules, then forwards the request to
+\techname{Flutter} client first validates locally that the fields, then forwards the request to
 the \techname{AL} layer, which re-validates the token (SD-02), verifies
-the current password hash, checks the new password strength, and — on
-success — updates the credential record in \techname{Business Central}
-and revokes all existing tokens for the account.
+the current password hash, checks the new password strength, and on
+success updates the credential record in \techname{Business Central}.
 
 \begin{figure}[H]
 	\centering
@@ -586,20 +594,14 @@ and revokes all existing tokens for the account.
 % 	end
 %====================================================================
 
-Figures~\ref{fig:s1-seq-AdminCreateUser} through~\ref{fig:s1-seq-AdminToggleActive}
-cover the four administrator user-management operations. All four follow the
+Figures~\ref{fig:s1-seq-AdminCreateUser} through~\ref{fig:s1-seq-AdminRegenerateBadge}
+cover some of the administrator user-management operations. All follow the
 same pattern: the \techname{Flutter} client sends an admin-scoped request,
 the \techname{AL} layer validates the token and confirms that the caller
 holds the \userrole{Admin} role (SD-02), executes the requested
 \techname{Business Central} write operations, and triggers a reactive refresh
 so that the updated user list is reflected immediately in the UI.
  
-Figure~\ref{fig:s1-seq-AdminCreateUser} shows the user creation flow, in which
-the \techname{AL} layer inserts a new \domainterm{MES User} record with
-\texttt{IsActive} and \texttt{NeedToChangePw} set to \texttt{true}, then
-iterates over the supplied work-centre list to create the corresponding
-assignment records.
-
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/admin-create-user.png}%
@@ -639,54 +641,6 @@ assignment records.
 % 	Node-->>Flutter: success response
 % 	Flutter->>Flutter: triggers a call to refresh the user list
 % 	Flutter-->>Admin: New user appears in user list with isPendingSetup badge
-%====================================================================
-
-Figure~\ref{fig:s1-seq-AdminSetPw} depicts the admin set-password flow. The
-administrator generates a temporary credential, the \techname{AL} layer marks
-the target account as requiring a password change on next login, revokes all
-active tokens for that account, and returns the new credential to the
-\techname{Flutter} client as copyable text.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/admin-set-password.png}%
-	\caption{SD-06: Admin - Set Password.}%
-	\label{fig:s1-seq-AdminSetPw}%
-\end{figure}%
-
-
-%=====SD-06==========================================================
-% sequenceDiagram
-% 	actor Admin
-% 	participant Flutter
-% 	participant Node as Node.js Middleware
-% 	participant AL
-% 	participant BC
-
-% 	rect rgb(220,235,255)
-% 		Note over Admin,BC: ref SD-01 — user is logged in as Admin
-% 	end
-
-% 	Admin->>Flutter: Tap Generate Password in UserActionMenu
-% 	Flutter->>Flutter: generates 10-char password client-side
-% 	Admin->>Flutter: Tap Confirm in GeneratePasswordDialog
-% 	Flutter->>Node: POST /api/AdminSetPassword
-% 	Node->>AL: MESWebService_AdminSetPassword
-
-% 	rect rgb(220,235,255)
-% 		Note over Admin,BC: ref SD-02 — ValidateToken called
-% 	end
-
-% 	AL->>BC: get user 
-% 	BC-->>AL: MES User record
-% 	AL->>AL: check password strength
-% 	AL->>AL: Make new salt and hash
-% 	AL->>BC: write new info
-% 	AL->>BC: revoke all tokens
-% 	BC-->>AL: ok
-% 	AL-->>Node: success response
-% 	Node-->>Flutter: success response
-% 	Flutter-->>Admin: Show dialog with generated password a single time
 %====================================================================
 
 
@@ -742,52 +696,6 @@ active tokens for that account, and returns the new credential to the
 % Flutter-->>Admin: Updated role and work centers shown in user row
 %====================================================================
 
-Figure~\ref{fig:s1-seq-AdminToggleActive} presents the account activation and
-deactivation flow. When deactivating an account, the \techname{AL} layer
-additionally revokes all active session tokens for that user, ensuring that
-any currently authenticated sessions are immediately invalidated.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/admin-toggle-account-active-status.png}%
-	\caption{SD-08: Admin - Toggle Account Active Status.}%
-	\label{fig:s1-seq-AdminToggleActive}%
-\end{figure}
-
-%=====SD-08==========================================================
-% sequenceDiagram
-% 	actor Admin
-% 	participant Flutter
-% 	participant Node as Node.js Middleware
-% 	participant AL
-% 	participant BC
-%
-% 	rect rgb(220,235,255)
-% 		Note over Admin,BC: ref SD-01 — user is logged in as Admin
-% 	end
-%
-% 	Admin->>Flutter: activate or deactivate a user
-% 	Flutter->>Node: POST /api/AdminSetActive
-% 	Node->>AL: MESWebService_AdminSetActive
-%
-% 	rect rgb(220,235,255)
-% 		Note over Admin,BC: ref SD-02 — ValidateToken called
-% 	end
-%
-% 	AL->>BC: get user record
-% 	BC-->>AL: MES User record
-% 	AL->>BC: MES User.Modify — set Is Active = isActive
-% 	alt isActive = false (deactivating)
-% 		AL->>BC: revoke all tokens of the user
-% 	end
-% 	BC-->>AL: ok
-% 	AL-->>Node: {success: true, message}
-% 	Node-->>Flutter: success response
-% 	Flutter->>Flutter: triggers a call to refresh the user list
-% 	Flutter-->>Admin: User row shows updated active status
-%====================================================================
-
-
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/admin-regenerate-badge.png}%
@@ -834,7 +742,6 @@ any currently authenticated sessions are immediately invalidated.
 %           Flutter-->>Admin: re-render QR with new secret
 %       end
 %=============================================================================
-
 
 \subsection{Class Diagram}
 
