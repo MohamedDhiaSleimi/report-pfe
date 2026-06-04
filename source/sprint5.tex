@@ -319,7 +319,7 @@ Figure~\ref{fig:s5-seq-intent-classification} illustrates the two-tier intent cl
 \section{Implementation}
 
 \subsection{Node.js Middleware}
-\subsubsection{Overview}
+\subsubsection*{Overview}
 
 The \techname{Node.js} middleware (\texttt{node-middleware/}) is an
 \techname{Express~5} application that acts as the single network bridge between
@@ -328,7 +328,7 @@ the \techname{Flutter} client and \techname{Business Central}.
 The middleware exposes two distinct route families: \texttt{/api/<endpoint>}
 (proxied to BC) and \texttt{/api/ai/*} (forwarded to the Python agent).
 
-\subsubsection{AI Proxy Layer}
+\subsubsection*{AI Proxy Layer}
 
 The \texttt{src/aiProxy.js} \techname{Express} Router, mounted at
 \texttt{/api/ai}, forwards \texttt{POST /chat} requests to the Python agent at
@@ -340,7 +340,7 @@ endpoint aggregates the Node process uptime with the Python agent's own health
 status for monitoring purposes.
 
 
-\subsubsection{Configuration}
+\subsubsection*{Configuration}
 
 Table~\ref{tab:s5-middleware-config} lists the environment variables consumed by
 the middleware.
@@ -404,7 +404,7 @@ automatically if the first response is malformed), and one call for synthesis.
 	to optionally append a \texttt{actions} JSON block containing up to 4
 	\modulename{RedirectAction} objects.
 
-	\subsubsection{Intent Classification}
+	\subsubsection*{Intent Classification}
 
 	\textbf{LLM classifier.} The \modulename{LLMIntentIdentifier} constructs a
 	system prompt containing the full \texttt{TOOL\_CATALOGUE}
@@ -433,7 +433,7 @@ a \texttt{general} intent with an empty tool chain.
 Figure~\ref{fig:s5-architecture} shows the file architecture of the AI
 assistant layer.
 
-\subsubsection{Machine Name Resolution}
+\subsubsection*{Machine Name Resolution}
 When a user references a machine by a non-canonical name or a fuzzy
 identifier (e.g.\ ''Fraiseuse 3'', ''milling machine'', ''mc 1''),
 the orchestrator invokes the \texttt{agent/resolver.py} module before
@@ -539,7 +539,7 @@ work-centre and status, without making any tool calls.
 	No tool trigger matched     \\
 \end{longtable}
 
-\subsubsection{Tool Catalogue}
+\subsubsection*{Tool Catalogue}
 
 The 17 \techname{Business Central} web service wrappers in
 \texttt{tools/mes\_tools.py} correspond directly to the OData functions exposed
@@ -586,7 +586,7 @@ the resolved \texttt{machineNo} is present in the \texttt{allowed\_machines} map
 (populated by \texttt{list\_machines} calls for the authenticated user's work
 centres) before executing the step.
 
-\subsubsection{Data Enrichment}
+\subsubsection*{Data Enrichment}
 
 The \texttt{Orchestrator.\_enrich()} method runs pure-Python analytics over the
 raw tool results before they are passed to the synthesis LLM. Table~\ref{tab:s5-enrichment}
@@ -638,7 +638,7 @@ compares it to the required rate (remaining quantity divided by time until the
 planned end). The result is one of \textit{ahead}, \textit{on\_pace}, or
 \textit{behind}, along with a projected completion timestamp.
 
-\subsubsection{Context Serialisation and Budget Management}
+\subsubsection*{Context Serialisation and Budget Management}
 Before the synthesis \domainterm{LLM} call, \texttt{Orchestrator.\_build\_context()}
 converts the enriched result dictionary into a single markdown string that
 fits within the \texttt{LLM\_MAX\_CONTEXT\_CHARS} character budget
@@ -711,7 +711,7 @@ markdown form they produce.
 
 \subsection{Flutter Frontend}
 
-\subsubsection{Chat Page and Provider}
+\subsubsection*{Chat Page and Provider}
 
 The \techname{AiChatPage} widget adapts its rendering to the available screen
 width: on screens wider than 600\,dp it is displayed as a \texttt{Positioned}
@@ -726,7 +726,7 @@ the user turn, calls \texttt{AiChatService.sendMessage()} with the history
 primary message), appends the assistant reply, and stores the last
 \techname{AiChatResponse} for action button rendering.
 
-\subsubsection{Redirect Actions}
+\subsubsection*{Redirect Actions}
 
 After each assistant reply, the \techname{AiChatPage} inspects
 \texttt{lastResponse.actions}. If non-empty and the message is the last in the
@@ -747,7 +747,7 @@ reply bubble. The \texttt{\_handleAction()} method routes each action type:
 	      \techname{MachineHistoryPage} with \texttt{machineNo}.
 \end{itemize}
 
-\subsubsection{User Interface}
+\subsubsection*{User Interface}
 
 The \uilabel{AI Chat Panel}, shown in Figure~\ref{fig:s5-ui-chat-panel},
 is accessible from the \uilabel{Machine List Page} via a floating action button.
@@ -772,6 +772,7 @@ A \uilabel{Clear} button resets the conversation history.
 % 4. TESTING AND VALIDATION
 % ---------------------------------------------------------------------------
 \subsection{Integration Tests}
+\subsubsection*{Integration test}
 
 For integration testing we used \techname{Postman} for the Node.js middleware
 endpoints and the \techname{FastAPI} built-in \texttt{/docs} interface for the

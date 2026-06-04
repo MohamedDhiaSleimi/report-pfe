@@ -1012,7 +1012,7 @@ model.
 \section{Implementation}
 
 \subsection{Backend Implementation}
-\subsubsection{Tables and Entities}
+\subsubsection*{Tables and Entities}
 
 \begin{longtable}{@{} P{0.21\linewidth} P{0.17\linewidth} P{0.57\linewidth} @{}}
 	\caption{MES Operation Execution (Table 50110) --- Field Dictionary}
@@ -1121,7 +1121,7 @@ model.
 \end{longtable}
 
 
-\subsubsection{REST API and Web Services Implementation}
+\subsubsection*{REST API and Web Services Implementation}
 
 All endpoints are exposed as ODataV4 unbound actions through
 \techname{MES Web Service} (codeunit~50126) and are served by the
@@ -1179,7 +1179,7 @@ to the controller. All live data streams (\texttt{fetchOperationLiveDataStream},
 that yield on both the initial fetch and on each event from the shared broadcast stream, enabling 
 coordinated, push-driven UI updates without polling.
 
-\subsubsection{Provider Architecture}
+\subsubsection*{Provider Architecture}
 
 \begin{longtable}{@{} P{0.30\linewidth} P{0.65\linewidth} @{}}
 	\caption{Provider Responsibilities --- Sprint 3 Additions}
@@ -1204,7 +1204,7 @@ coordinated, push-driven UI updates without polling.
 	\techname{AuthProvider}& Adds \texttt{changePassword()} and \texttt{adminSetPassword()}; manages \texttt{needsPasswordChange} flag in the in-memory session. \\
 \end{longtable}
 
-\subsubsection{User Interface}
+\subsubsection*{User Interface}
 Figures~\ref{fig:s3-ui-op-detail-running} through~\ref{fig:s3-ui-op-detail-cancelled} illustrate the \uilabel{Operation Detail Page}
 across its possible states. Each view adapts its action buttons and status badge
 to the current state, while the production chart, cycle table, and BOM list remain consistently visible. On desktop, the page 
@@ -1240,7 +1240,7 @@ and \uilabel{Print Label} is enabled only once the operation is finished.
 \end{figure}
 
 \section{Test and Validation}
-\subsection{Integration test}
+\subsection*{Integration test}
 
 For integration testing, we chose Postman, a powerful and user-friendly tool for API evaluation. Figure~\ref{fig:s3-test-postman-fetchBom} shows a test case for the \apiendpoint{/fetchBom} endpoint.
 

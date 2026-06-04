@@ -302,7 +302,7 @@ All backend work consists of new query and aggregation procedures added to
 \techname{MES Web Service} (codeunit~50126), reading from tables defined in
 Sprints~1 through~3.
 
-\subsubsection{Dashboard Aggregation}
+\subsubsection*{Dashboard Aggregation}
 
 \texttt{fetchMachineDashboard()} accepts a \texttt{hoursBack} window and an
 optional \texttt{workCenterNoJson} filter. For each \modulename{Machine Center}
@@ -311,7 +311,7 @@ summing \texttt{Cycle Quantity} from linked \modulename{MES Operation
 Progression} entries to obtain total produced and scrap counts, and computing
 uptime as \texttt{runningMinutes / (hoursBack × 60) × 100}, capped at 100.
 
-\subsubsection{Activity Log Aggregation}
+\subsubsection*{Activity Log Aggregation}
 
 \texttt{fetchActivityLog()} queries four tables within the \texttt{hoursBack}
 window --- \modulename{MES Operation State}, \modulename{MES Operation
@@ -319,7 +319,7 @@ Progression}, \modulename{MES Operation Scrap}, and \modulename{MES Component
 Consumption} --- resolves operator names via the \modulename{Employee} table,
 and merges the results into a single descending-timestamp JSON array.
 
-\subsubsection{API Endpoints Added in Sprint 4}
+\subsubsection*{API Endpoints Added in Sprint 4}
 
 All endpoints are exposed as ODataV4 unbound actions through
 \techname{MES Web Service} (codeunit~50126) and are served by the
@@ -357,7 +357,7 @@ ODataV4 action call of the form:
 
 \subsection{Frontend Implementation}
 
-\subsubsection{Shared HTTP Infrastructure}
+\subsubsection*{Shared HTTP Infrastructure}
 
 All sprint services (including retroactively migrated ones) share a
 \techname{HttpClient} and \techname{HttpResponseParser} layer, replacing
@@ -371,7 +371,7 @@ write responses and surfaces backend errors; \texttt{\_assertSuccess()}
 validates HTTP status codes and throws a structured exception on non-2xx
 responses.
 
-\subsubsection{Provider Architecture}
+\subsubsection*{Provider Architecture}
 
 \begin{longtable}{@{} P{0.30\linewidth} P{0.65\linewidth} @{}}
   \caption{Provider Responsibilities --- Sprint 4 Additions}
@@ -398,7 +398,7 @@ responses.
   \techname{AuthProvider}. \\
 \end{longtable}
 
-\subsubsection{User Interface}
+\subsubsection*{User Interface}
 
 
 \begin{figure}[H]
@@ -429,7 +429,7 @@ time range.
   \label{fig:s4-ui-activity-log}
 \end{figure}
 \section{Test and validation}
-\subsection{Integration test}
+\subsection*{Integration test}
 
 For integration testing, we chose Postman, a powerful and user-friendly tool for API evaluation. Figure~\ref{fig:s4-test-postman-activityLog} shows a test case for the \apiendpoint{/activityLog} endpoint.
 

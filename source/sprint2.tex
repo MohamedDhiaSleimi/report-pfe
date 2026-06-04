@@ -532,7 +532,7 @@ production management domain shows the \modulename{MES Machine Status} and
 
 \subsection{Backend Implementation}
 
-\subsubsection{Backend Structure Overview}
+\subsubsection*{Backend Structure Overview}
 
 The machines domain follows the same layered structure established in Sprint~1.
 Two new sub-folders were added under \modulename{src/1-Tables/machines/} and
@@ -540,7 +540,7 @@ Two new sub-folders were added under \modulename{src/1-Tables/machines/} and
 \modulename{src/3-CodeUnit/machines/}. The OData web service is published through
 the existing \modulename{WebServices.xml} mechanism under a new service name.
 
-\subsubsection{MES Machine Status Table}
+\subsubsection*{MES Machine Status Table}
 
 The \modulename{MES Machine Status} table (50107) stores the full history of
 machine state changes as an append-only log. Each insert creates a new record;
@@ -591,7 +591,7 @@ lists the fields and their descriptions.
   
 \end{longtable}
 
-\subsubsection{MES Operation State Table}
+\subsubsection*{MES Operation State Table}
 
 The \modulename{MES Operation Status} table (50108) implements the same
 append-only pattern for operation lifecycle events. Every state transition
@@ -656,7 +656,7 @@ Key points:
         efficient retrieval of the latest event per group.
 \end{itemize}
 
-\subsubsection{Enumerations}
+\subsubsection*{Enumerations}
 
 Two enumerations support the domain.
 \modulename{MES Machine Status}  defines two values:
@@ -668,7 +668,7 @@ Both enumerations are declared \texttt{Extensible = true} to allow future
 additions without modifying the base objects.
 
 
-\subsubsection{Machine Actions Business Logic}
+\subsubsection*{Machine Actions Business Logic}
 Machine and operation business logic is encapsulated across three codeunits:
 \modulename{MES Machine Fetch} for read operations and
 \modulename{MES Machine Write} and \modulename{MES Machine Insert} for write 
@@ -723,7 +723,7 @@ The machines domain retains the same four-layer call stack introduced in
 Sprint~1 (\domainterm{Model} \textrightarrow{} \domainterm{Service}
 \textrightarrow{} \domainterm{Provider} \textrightarrow{} \domainterm{UI}).
 
-\subsubsection{Model Layer}
+\subsubsection*{Model Layer}
 
 Two models were introduced.
 \modulename{MachineModel} (\modulename{mes\_machine\_model.dart}) holds the
@@ -732,7 +732,7 @@ from the \apiendpoint{FetchMachines} response.
 \modulename{MachineOrderModel} (\modulename{erp\_order\_model.dart}) holds the
 full set of production order fields returned by \apiendpoint{getMachineOrders}.
 
-\subsubsection{Service Layer}
+\subsubsection*{Service Layer}
 
 Two service classes handle all network communication for the machines domain. 
 MESMachineListService (mes\_MachineList.dart) exposes fetchMachines for retrieving
@@ -745,7 +745,7 @@ records. A companion streamMachines generator applies the same polling pattern a
 5-second interval for the operations progress view.
 
 
-\subsubsection{State Management Layer}
+\subsubsection*{State Management Layer}
 
 Two providers were introduced. \modulename{MesMachinesProvider} wraps the 
 \modulename{MESMachineListService} stream and exposes it directly to the UI,
@@ -754,7 +754,7 @@ state. \modulename{MachineOrdersProvider} follows the standard \texttt{ChangeNot
 pattern and manages both machine order retrieval and order start logic, exposing
 the operation status polling stream to the UI layer.
 
-\subsubsection{User Interface}
+\subsubsection*{User Interface}
 
 The \uilabel{Machine List Page} is the entry point for operators after login. It
 displays a live-updating grid (tablet/desktop) or list (mobile) of machine cards
@@ -843,7 +843,7 @@ shows the desktop and mobile views.
 \end{figure}
 
 \section{Testing and Validation}
-\subsection{Integrations tests}
+\subsection*{Integrations tests}
 For integration testing, we chose Postman, a powerful and user-friendly tool for endpoint evaluation.
 Figure~\ref{fig:s2-test-postman-fetchMachines} shows a test case for the \apiendpoint{/fetchmachines} endpoint.
 
