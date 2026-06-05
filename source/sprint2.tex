@@ -845,7 +845,7 @@ shows the desktop and mobile views.
 \section{Testing and Validation}
 \subsection*{Integrations tests}
 For integration testing, we chose Postman, a powerful and user-friendly tool for endpoint evaluation.
-Figure~\ref{fig:s2-test-postman-fetchMachines} shows a test case for the \apiendpoint{/fetchmachines} endpoint.
+Figure~\ref{fig:s2-test-postman-fetchMachines} shows a test case for the \apiendpoint{/fetchMachines} endpoint.
 
 \begin{figure}[H]
   \centering
@@ -874,7 +874,7 @@ This sprint successfully delivered the machine monitoring and production order
 management foundation of the \domainterm{MES} application.On the backend, two
 new append-only tables (\modulename{MES Machine Status} and
 \modulename{MES Operation State}) and dedicated codeunits
-(\modulename{MES Machine Fetch} and \modulename{MES Machine Write}) were
+(\modulename{MES Machine Fetch}, \modulename{MES Machine Validation} and \modulename{MES Machine Write}) were
 implemented in \techname{Business Central AL}, exposing five \domainterm{OData V4}
 endpoints that cover the full machine and operation lifecycle. The append-only design ensures a complete, tamper-evident
 audit trail of every state transition without requiring any record modification.

@@ -44,10 +44,12 @@ will interact with our system:
 	administration application dashboards. \\[6pt]
 
 	Supervisor     &
-	This is an intermediate user. They can monitor the progress of production operations
-	on their work centre, view machine status and track the progress of production
-	orders. Mark operation as finished or cancel/interupt uneeded operations. 
-	View machine dashboards. Have access to all the access of the operators \\[6pt]
+	An intermediate user who is a superset of the Operator role. In addition to their 
+	own access, they inherit all Operator permissions. They can monitor the progress 
+	of production operations on their work centre, view machine status, and track 
+	the progress of production orders. They can mark operations as finished, cancel, 
+	or interrupt unneeded operations, view machine dashboards, and declare on behalf 
+	of an Operator. \\[6pt]
 
 	Operator       &
 	This is the end user of the MES application. Assigned to a work centre
@@ -83,9 +85,10 @@ solution meets these functional requirements.
 
 	\item \textbf{User Management}: This feature allows the administrator to:
 	      \begin{itemize}
-	      	\item View the complete list of MES users.
+	      	\item View the list of MES users.
+	      	\item Export the list of users.
 	      	\item Create a new user account by linking it to a Business
-	      	      Central employee and assigning them a role and work centre(s) if needed.
+	      	      Central employee and assigning them a role and work centre(s).
 	      	\item Generate and assign a temporary password.
 	      	\item Activate or deactivate an account (automatic revocation of active tokens).
 	      	\item Change a user's role (Operator, Supervisor, Administrator) and work centre assignment.
@@ -344,7 +347,7 @@ these non-functional requirements:
 	As an \userrole{Administrator}, I need to export the list of users so that
 	I can use the information in other applications or processes.
 	& \begin{itemize}[nosep, leftmargin=*]
-	\item The ability to export all user info.
+	\item The ability to export users.
 	\item The information is structured in the form of an excel file.
 	\end{itemize} &
 	Medium \\
@@ -394,8 +397,8 @@ these non-functional requirements:
 	& \begin{itemize}[nosep, leftmargin=*]
 	\item Only \domainterm{Planned}, \domainterm{Firm Planned}, or
 	\domainterm{Released} orders are shown.
-	\item Each card displays order number, item description, planned quantity,
-	planned start and end dates, operation description, and operation number.
+	\item Each card displays order number, product description, planned quantity,
+	planned start and end dates, and operation description.
 	\end{itemize} &
 	High \\
 	\midrule
@@ -405,15 +408,12 @@ these non-functional requirements:
 	production operation so that the system reflects the change.
 	& \begin{itemize}[nosep, leftmargin=*]
 	\item Only \domainterm{operation} from \domainterm{Released} orders may be started.
-	\item An operation cannot be started if it is already running.
-	\end{itemize} & High \\ & &
-	\begin{itemize}[nosep, leftmargin=*]
 	\item A machine cannot run two operations simultaneously.
 	\item A new MES Operation State record is created with status change so it can be tracked.
 	\item The previous operation in the same production order (if any) must be
 	\domainterm{Finished}, \domainterm{Interrupted}, or currently \domainterm{Running}
 	with enough send-ahead quantity.
-	\end{itemize} & \\ \midrule
+	\end{itemize} & High\\ \midrule
 
 	\textbf{US-2.4} &
 	As a \userrole{Supervisor} or \userrole{Operator}, I need to monitor the
@@ -445,11 +445,9 @@ these non-functional requirements:
 	\item Orders can be searched by order number, item description, or date.
 	\item Orders can be filtered by status (\domainterm{All}, \domainterm{Planned},
 	\domainterm{Firm Planned}, \domainterm{Released}).
-	\end{itemize} & High \\ & &
-	\begin{itemize}[nosep, leftmargin=*]
-		\item Orders can be sorted by planned start date ascending or descending.
+	\item Orders can be sorted by planned start date ascending or descending.
 	\item On mobile, the status filter is accessible via a compact popup menu.
-	\end{itemize} &  \\ \midrule
+	\end{itemize} & High \\ \midrule
 
 	\textbf{US-2.7} &
 	As a \userrole{Supervisor} or \userrole{Operator}, I need to view the
@@ -515,8 +513,8 @@ these non-functional requirements:
 	the machine is released and the order is closed in the system.
 	&
 	\begin{itemize}[nosep, leftmargin=*]
-	\item Finishing a complete order (100\%) shows a green confirmation dialog.
-	\item Interrupting or Cancelling an operation shows a red warning dialog.
+	\item Finishing a complete order (100\%) shows a confirmation dialog.
+	\item Interrupting or Cancelling an operation shows a warning dialog.
 	\item If the operation is started then it is marked as interrupted otherwise as cancelled
 	\item Closing sets the execution end time and inserts an Idle machine status.
 	\end{itemize}
@@ -561,7 +559,7 @@ these non-functional requirements:
 	available in the inventory.&
 	\begin{itemize}[nosep, leftmargin=*]
 	\item Components are colour-coded by remaining amount (the needed amount (green) / less then necessary to make a single item (red) otherwise (yellow)).
-	\item BOM data refreshes after every consumption event.
+	\item BOM data updates after every consumption event.
 	\item can be expanded to a dialog for a better view on larger screens.
 	\item search by name and filter by state
 	\end{itemize}
@@ -829,8 +827,7 @@ functional increment verified by a sprint review with the professional superviso
 	supervisor proxy declaration, and label printing. \\ \midrule
 
 	Sprint~4        & Administration and System Monitoring \& Configuration              &
-	Monitoring dashboard and Administrator activity log, barcode view and printing, user
-	export, multi-language support (EN/FR/AR) and RTL layout, in-app onboarding tutorials. \\ \midrule
+	Monitoring dashboard and Administrator activity log, barcode view and printing, multi-language support (EN/FR/AR) and RTL layout, in-app onboarding tutorials. \\ \midrule
 
 	Sprint~5        & AI Assistant \& Analytical Intelligence           &
 	Natural-language chat assistant, \techname{Node.js} reverse proxy middleware,
@@ -898,7 +895,7 @@ The back-end is structured in five layers:
 	\item \textbf{Tables (1-Tables)}: define the persistent data model; 
 	MES User, MES Auth Token, MES Machine Status, MES Operation State, 
 	MES Operation Scrap, MES Operation Execution, MES Operation Progression,
-	MES Settings, MES Component Scan, and MES User Execution Interaction.
+	MES Settings, MES Operation Scan, MES User Work center, and MES User Execution Interaction.
 	\item \textbf{Enums (2-Enum)}: define the enumerated types; MES User 
 	Role (Operator, Supervisor, Admin), MES Machine Status (Idle, Working), 
 	MES Operation State (Running, Paused, Finished, Cancelled, Interrupted), 

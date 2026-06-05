@@ -413,14 +413,15 @@ responses.
   \label{fig:s4-ui-machine-dashboard}
 \end{figure}
 
-Figures~\ref{fig:s4-ui-machine-dashboard} and~\ref{fig:s4-ui-activity-log} illustrate
-the two pages. The \uilabel{Machine Dashboard Page} renders one card per machine
+Figures~\ref{fig:s4-ui-machine-dashboard}, ~\ref{fig:s4-ui-barcode}, and~\ref{fig:s4-ui-activity-log} illustrate
+the three pages. The \uilabel{Machine Dashboard Page} renders one card per machine
 with a circular uptime indicator and four metric rows (finished operations, 
 Cancelled and Interrupted operations, produced, scrap, uptime), and
 an AppBar time-range dropdown that re-fetches on change. The \uilabel{Activity Log Page}
 presents a paginated, newest-first event list where each row shows a type icon, 
 operator, machine, time, order, operation number and action ; AppBar dropdowns filter by type and 
-time range.
+time range. The \uilabel{Barcode Page} presents a searchable list of all items with their associated
+barcodes rendered as DataMatrix codes.
 
 \begin{figure}[H]
   \centering
@@ -428,6 +429,14 @@ time range.
   \caption{\uilabel{Activity Log Page} --- desktop and mobile views.}
   \label{fig:s4-ui-activity-log}
 \end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-4-Report/UI/barcode/wide.png}
+  \caption{\uilabel{Barcode Page} --- desktop and mobile views.}
+  \label{fig:s4-ui-barcode}
+\end{figure}
+
 \section{Test and validation}
 \subsection*{Integration test}
 

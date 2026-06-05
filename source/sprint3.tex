@@ -43,9 +43,9 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 		\item Create table \techname{MES Operation Progression}.
 		\item Create the functions:
 		\begin{itemize}[nosep, leftmargin=*]
-			\item \texttt{TryDeclareProduction()} in codeunit \techname{MESMachineValidation}.
-			\item \texttt{InsertNewProgressionCycle()} in codeunit \techname{MESMachineInsert}.
-			\item \texttt{declareProduction()} in codeunit \techname{MESMachineWrite}.
+			\item \texttt{TryDeclareProduction()} in codeunit \techname{MES Machine Validation}.
+			\item \texttt{InsertNewProgressionCycle()} in codeunit \techname{MES Machine Insert}.
+			\item \texttt{declareProduction()} in codeunit \techname{MES Machine Write}.
 		\end{itemize} 
 		\item Expose \texttt{declareProduction()} through the codeunit \techname{MES Web Service}.
 		\item Create page \techname{MES Operation Progression} list page.
@@ -53,7 +53,7 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	\\ & &
 	\noindent\textit{Flutter:}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Updated \techname{ErpMachineOrdersService} to consume the \texttt{declareProduction} endpoint and \techname{MachineordersProvider} to manage it.
+		\item Updated \techname{ErpMachineOrdersService} to consume the \texttt{declareProduction} endpoint and \techname{MachineOrdersProvider} to manage it.
 	\end{itemize}
 	\\ & &
 	\noindent\textit{Flutter(continuation):}
@@ -70,8 +70,8 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	\begin{itemize}[nosep, leftmargin=*]
 		\item Create the functions:
 		\begin{itemize}[nosep, leftmargin=*] 
-			\item \texttt{TryPauseOperation()} and \texttt{TryResumeOperation()} in codeunit \techname{MESMachineValidation}.
-			\item \texttt{ExecuteOperationTransition()}, \texttt{pauseOperation()}, and \texttt{resumeOperation()} in codeunit \techname{MESMachineWrite}. 
+			\item \texttt{TryPauseOperation()} and \texttt{TryResumeOperation()} in codeunit \techname{MES Machine Validation}.
+			\item \texttt{ExecuteOperationTransition()}, \texttt{pauseOperation()}, and \texttt{resumeOperation()} in codeunit \techname{MES Machine Write}. 
 		\end{itemize}
 		\item Expose \texttt{pauseOperation()} and \texttt{resumeOperation()} throught codeunit \techname{MES Web Service}.
 	\end{itemize}
@@ -79,10 +79,10 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	\noindent\textit{Flutter:}
 	\begin{itemize}[nosep, leftmargin=*]
 		\item Implement \techname{ErpMachineOrdersService} to consume the new endpoints 
-		\item Implement \techname{MachineordersProvider} to manage its state.
+		\item Implement \techname{MachineOrdersProvider} to manage its state.
 		\item Create widget \techname{OperationActionButtons}.
 		\item Implement pause/resume operation toggle handling in \techname{OrdersProgressionPage}.
-	\end{itemize} \\
+	\end{itemize} \\	
 	\midrule
 	\textbf{US-3.3}
 	& As a \userrole{Supervisor}, I need to finish, interrupt or cancel a production
@@ -92,10 +92,10 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	\begin{itemize}[nosep, leftmargin=*]
 		\item Create the functions:
 		\begin{itemize}[nosep, leftmargin=*]
-			\item \texttt{TryCloseOperation()} in codeunit \techname{MESMachineValidation}.
-			\item \texttt{InsertOperationStatus()}, \texttt{SetErpOrderToFinish()}, \texttt{InsertStartMESMachineStatus()}  and \texttt{InsertIdleMachineStatus()} in codeunit \techname{MESMachineInsert}.
-			\item \texttt{finishOperation()} and \texttt{cancelOperation()} in codeunit \techname{MESMachineWrite}.
-			\item \texttt{ExecuteCancelUnstartedOperation()} in codeunit \techname{MESMachineWrite}.
+			\item \texttt{TryCloseOperation()} in codeunit \techname{MES Machine Validation}.
+			\item \texttt{InsertOperationStatus()}, \texttt{SetErpOrderToFinish()}, \texttt{InsertStartMESMachineStatus()}  and \texttt{InsertIdleMachineStatus()} in codeunit \techname{MES Machine Insert}.
+			\item \texttt{finishOperation()} and \texttt{cancelOperation()} in codeunit \techname{MES Machine Write}.
+			\item \texttt{Execute\-Cancel\-Unstarted\-Operation()} in codeunit \techname{MES Machine Write}.
 		\end{itemize}
 		\item Expose \texttt{finishOperation()} and \texttt{cancelOperation()} in codeunit \techname{MES Web Service}.
 	\end{itemize}
@@ -114,8 +114,8 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[nosep, leftmargin=*]
 		\item Create table \techname{MES Operation Execution}.
-		\item Create function \texttt{InsertMESOperationExecution()} in codeunit \techname{MESMachineInsert}.
-		\item Create function \texttt{fetchOperationLiveData()} in codeunit \techname{MESMachineFetch}.
+		\item Create function \texttt{InsertMESOperationExecution()} in codeunit \techname{MES Machine Insert}.
+		\item Create function \texttt{fetchOperationLiveData()} in codeunit \techname{MES Machine Fetch}.
 		\item Expose \texttt{fetchOperationLiveData()} through codeunit \techname{MES Web Service}.
 		\item Create page \techname{MES Operation Execution}.
 	\end{itemize}
@@ -137,7 +137,7 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	declaration's information.
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Create function \texttt{fetchProductionCycles()} in codeunit \techname{MESMachineFetch}.
+		\item Create function \texttt{fetchProductionCycles()} in codeunit \techname{MES Machine Fetch}.
 		\item Expose \texttt{fetchProductionCycles()} throught codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
@@ -167,7 +167,7 @@ This sprint covers \textbf{Domain 3:} \textbf{\domainterm{Production Execution \
 	available in the inventory.
 	& \noindent\textit{Business Central (AL):}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Create function \texttt{fetchBom()} in codeunit \techname{MESMachineFetch}.
+		\item Create function \texttt{fetchBom()} in codeunit \techname{MES Machine Fetch}.
 		\item Expose \texttt{fetchBom()} through codeunit \techname{MES Web Service}.
 		
 	\end{itemize}
@@ -287,7 +287,7 @@ in the intended business flow. The resulting use case diagram is shown in Figure
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/useCase/sprint3-1.png}
-  \caption{UML Use Case Diagram --- Sprint 3 (manage production)}
+  \caption{UML Use Case Diagram --- Sprint 3 (Production Execution)}
   \label{fig:s3-uc-manage-production}
 \end{figure}
 
@@ -322,7 +322,7 @@ in the intended business flow. The resulting use case diagram is shown in Figure
 	\begin{itemize}[nosep, leftmargin=*]
 	\item The user is authenticated and navigated to an Operation Detail page.
 	\item The operation status is \domainterm{Running}.
-	\item The produced quantity is below the remaining scanned quantity.
+	\item The quantity produced is below the requested quantity.
 	\end{itemize} \\
 	\midrule
 	\textbf{Postconditions} & 
@@ -337,7 +337,8 @@ in the intended business flow. The resulting use case diagram is shown in Figure
 	\item The user taps \uilabel{Declare Production} in the Quick Actions panel.
 	\item The \techname{DeclareProductionDialog} opens showing the remaining quantity.
 	\item The user (if Supervisor) optionally selects an operator from the dropdown to declare on behalf of.
-	\item The user enters a positive integer not exceeding the remaining scanned quantity.
+	\item The user must enter a positive integer less than or equal to the remaining requested quantity, 
+	and the remaining scanned component quantity must be sufficient to support the entered production quantity.
 	\item The user taps \uilabel{Submit}.
 	\item The ERP validates the quantity and inserts the progression record.
 	\item The user is redirected to the declaration lable print page
@@ -834,7 +835,7 @@ simultaneously: one polling the current operation status and quantities from
 \techname{Business Central} (SD-18), one consuming the production-cycle stream
 (SD-22), and one consuming the BOM stream (SD-21). The \techname{Flutter}
 client merges all three data sources and renders the full detail view. If the
-operation is finished, cancelled, or interrupted, the live-data stream
+operation is finished, cancelled, or interrupted, the request
 returns an empty response and the client falls back to the history view.
 
 \begin{figure}[H]
@@ -1107,10 +1108,9 @@ Figures~\ref{fig:s3-ui-op-detail-running} through~\ref{fig:s3-ui-op-detail-cance
 across its possible states. Each view adapts its action buttons and status badge
 to the current state, while the production chart, cycle table, and BOM list remain consistently visible. On desktop, the page 
 uses a two-column layout with order information and production data on the left, and the \uilabel{Quick Actions} panel on the
-right; on mobile, these sections stack vertically. Action button availability is state-dependent: \uilabel{Declare Production} 
-and \uilabel{Declare Scrap} are disabled in the Paused, Finished, and Cancelled states; the close button triggers a 
-\uilabel{Finish Production Order} or \uilabel{Interrupt Production Order} action depending on whether the progress has reached 100\%;
-and \uilabel{Print Label} is enabled only once the operation is finished.
+right; on mobile, these sections stack vertically. Action and Scan button availability is state-dependent. All action buttons 
+are disabled when the operation is in the Paused, Finished, Canceled, or Interrupted state. The only exception is the Print 
+Label button, which remains available when the operation is Finished.
 
 \begin{figure}[H]
     \centering
@@ -1154,7 +1154,7 @@ For integration testing, we chose Postman, a powerful and user-friendly tool for
 \addcontentsline{toc}{section}{Conclusion}
 
 This sprint delivered the complete shop-floor execution loop for the MES system.
-Operators can now start, pause, resume, interrupt and close production operations, declare
+Operators can now pause, resume, interrupt and close production operations, declare
 production output cycle by cycle, track cumulative progress through real-time
 charts and paginated tables, inspect the Bill of Materials, scan physical components
 via barcodes, declare scrapped units with reason codes, and print
