@@ -217,29 +217,47 @@
 \begin{center}{\large\bfseries Abstract}\end{center}
 
 \noindent\textbf{Français :} \\[4pt]
-\textbf{Mots-clés :}
-\textbf{English :}
+Ce projet présente un Système d'Exécution de la Fabrication (MES) intégré nativement à Microsoft Dynamics 365 Business
+Central, développé lors d'un stage de quatre mois chez Mavision, pour pallier l'absence de visibilité en temps réel
+sur l'atelier dans les environnements de production à suivi papier. L'architecture comprend quatre composants : une
+extension AL exposant des endpoints OData V4 avec authentification par jeton ; un reverse proxy Node.js pour
+l'authentification BC ; une application Flutter multiplateforme (Android, Web, desktop) ; et un agent IA Python FastAPI
+pour les requêtes en langage naturel. Les opérateurs et superviseurs accèdent au suivi des machines, au contrôle des
+opérations, aux nomenclatures, à la lecture de codes-barres, au signalement des rebuts et à l'impression d'étiquettes ;
+les administrateurs gèrent les utilisateurs et le journal d'activité. L'interface supporte trois langues avec RTL
+automatique. Le développement a suivi Scrum en quatre sprints de deux semaines, avec une piste d'audit en ajout seul
+garantissant l'inviolabilité des enregistrements. \\[4pt]
+\textbf{Mots-clés :} MES, Système d'Exécution de la Fabrication, Business Central, Flutter, OData V4,
+Intégration ERP, Industrie 4.0, Suivi de Production, Scrum. \\[4pt]
+\noindent\textbf{English :} \\[4pt]
 This project presents a Manufacturing Execution System (MES) natively integrated with Microsoft Dynamics 365 Business
-Central, developed over a four-month internship at Mavision, an ERP consulting firm. It addresses the absence of real-time
-shop-floor visibility in manufacturing companies relying on paper-based production tracking.
-The architecture spans four components: an AL extension inside Business Central exposing OData V4 endpoints with
-token-based authentication; a Node.js reverse proxy handling BC authentication; a cross-platform Flutter application
-targeting Android, Web, and desktop; and a Python FastAPI AI agent enabling natural-language queries over
-machine states, production orders, and operational data.
-Operators and Supervisors gain real-time machine monitoring, operation lifecycle control, BOM tracking, barcode
-scanning, scrap reporting, and label printing. Administrators access the activity log, and
-user management. The interface supports English, French, and Arabic with automatic RTL layout. Development
-followed Scrum across four two-week sprints, with an append-only audit trail guaranteeing tamper-evident shop-floor
-records.\\[4pt]
-\textbf{Keywords:} MES, Manufacturing Execution System, Business Central,
-Flutter, OData V4, ERP Integration, Industry 4.0, Production Tracking,
-Scrum. \\[12pt]
+Central, developed over a four-month internship at Mavision, an ERP consulting firm, to address the lack of real-time
+shop-floor visibility in paper-based manufacturing environments. The architecture spans four components: an AL extension
+exposing OData V4 endpoints with token-based authentication; a Node.js reverse proxy for BC authentication; a
+cross-platform Flutter application (Android, Web, desktop); and a Python FastAPI AI agent for natural-language shop-floor
+queries. Operators and Supervisors gain machine monitoring, operation control, BOM tracking, barcode scanning, scrap
+reporting, and label printing; Administrators manage users and the activity log. The interface supports English, French,
+and Arabic with automatic RTL layout. Development followed Scrum across four two-week sprints, with an append-only
+audit trail guaranteeing tamper-evident records. \\[4pt]
+\textbf{Keywords:} MES, Manufacturing Execution System, Business Central, Flutter, OData V4,
+ERP Integration, Industry 4.0, Production Tracking, Scrum. \\[4pt]
 \begin{Arabic}
   \begin{RTL}
     \textbf{العربية:} \\[4pt]
-    \textbf{الكلمات المفتاحية:} 
+    يُقدِّم هذا المشروع نظام تنفيذ التصنيع (MES) المدمج مع Microsoft Dynamics 365 Business Central،
+    المطوَّر خلال تدريب أربعة أشهر في شركة Mavision، لمعالجة غياب الرؤية الآنية لأرضية الإنتاج
+    في بيئات التتبع الورقي. تتكوّن البنية من امتداد AL يكشف نقاط نهاية OData V4 بمصادقة بالرمز المميّز؛
+    ووكيل عكسي Node.js لمصادقة BC؛ وتطبيق Flutter متعدد المنصات (Android، ويب، سطح المكتب)؛
+    ووكيل ذكاء اصطناعي Python FastAPI للاستعلام بلغة طبيعية. يتمكّن المشغّلون والمشرفون من مراقبة
+    الآلات والعمليات وقوائم المواد ومسح الباركود والإبلاغ عن الهدر وطباعة التسميات، فيما يُدير
+    المسؤولون المستخدمين ويطّلعون على سجل النشاط. تدعم الواجهة ثلاث لغات مع RTL تلقائي، واتّبع
+    التطوير Scrum في أربعة سبرينتات مع مسار تدقيق إلحاقي يضمن سجلات غير قابلة للتلاعب. \\[4pt]
+    \textbf{الكلمات المفتاحية:} نظام تنفيذ التصنيع، Business Central، Flutter،
+    OData V4، تكامل ERP، الصناعة 4.0، تتبع الإنتاج، Scrum.
   \end{RTL}
 \end{Arabic}
+\newpage
+\newpage
 \newpage
 
 %── ─ Dédicaces ────────────────────────────────────────────────────────────────
