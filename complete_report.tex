@@ -216,24 +216,15 @@
 \thispagestyle{empty}
 \begin{center}{\large\bfseries Abstract}\end{center}
 
-\noindent\textbf{Français :} 
-Ce projet présente un système d'exécution de la production (MES) intégré nativement à Microsoft Dynamics 365 Business Central, 
-développé lors d'un stage de quatre mois chez Mavision, cabinet de conseil ERP. Il répond à l'absence de visibilité en temps 
-réel sur l'atelier dans les entreprises manufacturières s'appuyant sur un suivi papier. L'architecture repose sur quatre 
-composants: une extension AL exposant des endpoints OData V4 avec authentification par jeton ; un reverse proxy Node.js ; 
-une application Flutter multiplateforme (Android, iOS, Web, bureau) ; et un agent IA Python FastAPI permettant des requêtes 
-en langage naturel. Les opérateurs et superviseurs bénéficient du suivi des machines, du cycle de vie des opérations, de la 
-nomenclature, du scan de codes-barres, du signalement des rebuts et de l'impression d'étiquettes. L'interface supporte le 
-français, l'anglais et l'arabe avec mise en page RTL automatique. \\[4pt]
-\textbf{Mots-clés :} MES, Système d'Exécution de la Production, Business Central, Flutter, OData V4, Intégration ERP, Industrie 4.0, Suivi de Production, Scrum \\[12pt]
-
+\noindent\textbf{Français :} \\[4pt]
+\textbf{Mots-clés :}
 \textbf{English :}
 This project presents a Manufacturing Execution System (MES) natively integrated with Microsoft Dynamics 365 Business
 Central, developed over a four-month internship at Mavision, an ERP consulting firm. It addresses the absence of real-time
 shop-floor visibility in manufacturing companies relying on paper-based production tracking.
 The architecture spans four components: an AL extension inside Business Central exposing OData V4 endpoints with
 token-based authentication; a Node.js reverse proxy handling BC authentication; a cross-platform Flutter application
-targeting Android, iOS, Web, and desktop; and a Python FastAPI AI agent enabling natural-language queries over
+targeting Android, Web, and desktop; and a Python FastAPI AI agent enabling natural-language queries over
 machine states, production orders, and operational data.
 Operators and Supervisors gain real-time machine monitoring, operation lifecycle control, BOM tracking, barcode
 scanning, scrap reporting, and label printing. Administrators access the activity log, and
@@ -245,8 +236,8 @@ Flutter, OData V4, ERP Integration, Industry 4.0, Production Tracking,
 Scrum. \\[12pt]
 \begin{Arabic}
   \begin{RTL}
-    \textbf{العربية:} يقدّم هذا المشروع نظام تنفيذ التصنيع (MES) المدمج أصلاً مع Microsoft Dynamics 365 Business Central، والذي طُوِّر خلال تدريب مدته أربعة أشهر في شركة Mavision للاستشارات. يعالج النظام غياب الرؤية الفورية لأرضية الإنتاج في المؤسسات الصناعية التي تعتمد على التتبع الورقي. تتألف البنية من أربعة مكوّنات: امتداد AL يكشف نقاط نهاية OData V4 مع مصادقة قائمة على الرمز المميز؛ وخادم وسيط Node.js؛ وتطبيق Flutter متعدد المنصات يستهدف Android وiOS والويب وسطح المكتب؛ ووكيل ذكاء اصطناعي Python FastAPI يتيح الاستعلام بالغة الطبيعية عن حالات الآلات وأوامر الإنتاج. يحصل المشغّلون والمشرفون على مراقبة الآلات وإدارة دورة حياة العمليات وتتبع قوائم المواد ومسح الباركود والإبلاغ عن الخردة وطباعة الملصقات. تدعم الواجهة العربية والفرنسية والإنجليزية مع تخطيط RTL تلقائي. اتّبع التطوير منهجية Scrum عبر أربعة سبرينتات. \\[4pt]
-    \textbf{الكلمات المفتاحية:} نظام تنفيذ التصنيع، Business Central، Flutter، \LR{OData V4}، تكامل نظام تخطيط الموارد، الصناعة \LR{4.0}، تتبع الإنتاج، \LR{Scrum}
+    \textbf{العربية:} \\[4pt]
+    \textbf{الكلمات المفتاحية:} 
   \end{RTL}
 \end{Arabic}
 \newpage
@@ -440,9 +431,9 @@ authentication system, role-based access control, and a full administrator
 interface for user and account management. Sprint~2 delivered real-time machine
 monitoring, production order management, and a complete operation history trail.
 Sprint~3 completed the production execution loop with cycle declarations, pause,
-resume, and close flows, Bill of Materials visibility, component scanning, scrap
-tracking, and label printing. Sprint~4 added the administration layer with a
-machine performance dashboard, a paginated activity log, multi-language support
+resume, finish, and close flows, Bill of Materials visibility, component scanning, scrap
+tracking, and label printing. Sprint~4 added a
+machine performance dashboard, a paginated activity log for the Administrator, multi-language support
 covering English, French, and Arabic, and in-app onboarding tutorials.
 Sprint~5 delivered the AI intelligence layer: a natural-language chat assistant
 embedded in the Flutter frontend, a Node.js reverse-proxy middleware bridging
