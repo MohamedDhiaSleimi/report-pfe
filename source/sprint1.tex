@@ -49,20 +49,21 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	that users only access features appropriate to their role.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Implement the functions \texttt{AdminCreateUser()} and \texttt{AdminSetActive()} in codeunit \techname{MES Authentification Actions}.
-		\item Expose \texttt{AdminCreateUser()} and \texttt{AdminSetActive()} through codeunit \techname{MES Web Service}.
+		\item Create the tables \techname{MES User}, \techname{MES User Work Center} and \techname{MES AuthToken}.
+		\item Create enum \techname{MES User Role}  and \techname{MES Token state}.
+		\item Implement the functions \techname{AdminCreateUser()} and \techname{AdminSetActive()} in codeunit \techname{MES Authentication Actions}.
+		\item Expose \techname{AdminCreateUser()} and \techname{AdminSetActive()} through codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
 	\begin{itemize}[nosep, leftmargin=*]
 		\item Implement \techname{ApiService} to consume the new endpoints.
-		\item Implement  \techname{MesUserService} to consume \texttt{fetchMesUsers()} and \texttt{AdminCreateUser()} endpoints.
+		\item Implement  \techname{MesUserService} to consume \techname{fetchMesUsers()} and \techname{AdminCreateUser()} endpoints.
 		\item Create provider \techname{MesUserProvider} to manage its state.
+		\item Create widget \techname{AddUserDialog}.
 	\end{itemize}
 \\ & &
 	\begin{itemize}[nosep, leftmargin=*]
-		
-		\item Create widget \techname{AddUserDialog}.
 		\item Implement role-based navigation in \techname{\_AuthGate}.
 	\end{itemize}\\
 	\midrule
@@ -72,12 +73,10 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	features appropriate to my role.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Create the tables \techname{MES User} and \techname{MES AuthToken}.
-		\item Create enum \techname{MES User Role}.
-		\item Implement functions \texttt{MakeSalt()}, \texttt{HashPassword()}, and \texttt{VerifyPassword()} in codeunit \techname{MES Password Mgt}.
-		\item Implement functions \texttt{CreateUser()}, \texttt{SetPassword()}, \texttt{ValidateCredentials()}, \texttt{IssueNewToken()}, \texttt{ValidateToken()}, \texttt{TouchToken()}, \texttt{Logout()}, \texttt{ValidateChangePassword()}, \texttt{ValidateAdminToken()}, \texttt{SetActive()}, and \texttt{CleanupExpiredTokens()} in codeunit \techname{MESAuthMgt}.
-		\item Implement functions \texttt{Login()}, \texttt{Logout()}, \texttt{Me()}, and \texttt{ChangePassword()} in codeunit \techname{MES Unbound Actions}.
-		\item Expose \texttt{Login()}, \texttt{Logout()}, \texttt{Me()}, and \texttt{ChangePassword()} in codeunit \techname{MES Web Service}.
+		\item Implement functions \techname{MakeSalt()}, \techname{HashPassword()}, and \techname{VerifyPassword()} in codeunit \techname{MES Password Mgt}.
+		\item Implement functions \techname{CreateUser()}, \techname{SetPassword()}, \techname{ValidateCredentials()}, \techname{IssueNewToken()}, \techname{ValidateToken()}, \techname{TouchToken()}, \techname{Logout()}, \techname{ValidateChangePassword()}, \techname{ValidateAdminToken()}, \techname{SetActive()}, and \techname{CleanupExpiredTokens()} in codeunit \techname{MESAuthMgt}.
+		\item Implement functions \techname{Login()}, \techname{Logout()}, \techname{Me()}, and \techname{ChangePassword()} in codeunit \techname{MES Authentication Actions}.
+		\item Expose \techname{Login()}, \techname{Logout()}, \techname{Me()}, and \techname{ChangePassword()} in codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
@@ -103,15 +102,15 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	users with their details so that I can manage accounts.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Create the function \texttt{fetchAllMESUsers} in codeunit \techname{MES Unbound Actions}.
-		\item Expose \texttt{fetchAllMESUsers} through codeunit \techname{MES Web Service}.
+		\item Create the function \techname{fetchAllMESUsers} in codeunit \techname{MES Authentication Actions}.
+		\item Expose \techname{fetchAllMESUsers} through codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
 	\begin{itemize}[nosep, leftmargin=*]
 		\item Create model \techname{MesUser}.
-		\item Implement \texttt{MesUserService} to consume the new endpoint.
-		\item Implement \texttt{MesUserProvider} to manage its state and its streams.
+		\item Implement \techname{MesUserService} to consume the new endpoint.
+		\item Implement \techname{MesUserProvider} to manage its state and its streams.
 		\item Implement user list display in \techname{AddUserPage}.
 	\end{itemize} \\
 	\midrule
@@ -120,14 +119,14 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	password to a user so that they can log in for the first time.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Implement function \texttt{AdminSetPassword()} in codeunit \techname{MES Unbound Actions}.
-		\item Expose \texttt{AdminSetPassword()} through codeunit \techname{MES Web Service}.
+		\item Implement function \techname{AdminSetPassword()} in codeunit \techname{MES Authentication Actions}.
+		\item Expose \techname{AdminSetPassword()} through codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
 	\begin{itemize}[nosep, leftmargin=*]
 		\item Create the widgets \techname{GeneratePasswordDialog} and \techname{EmployeeAvatar}.
-		\item Update \techname{ApiService} to consume \texttt{adminSetPassword()}.
+		\item Update \techname{ApiService} to consume \techname{adminSetPassword()}.
 		\item Update \techname{AuthProvider} to account for the new functions in the service.
 	\end{itemize}\\
 	\midrule
@@ -136,14 +135,14 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	assignment of an existing user so that access rights stay current.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Implement function \texttt{AdminChangeUserRole()} in codeunit \techname{MES Unbound Actions}.
-		\item Expose \texttt{AdminChangeUserRole()} through codeunit \techname{MES Web Service}.
+		\item Implement function \techname{AdminChangeUserRole()} in codeunit \techname{MES Authentication Actions}.
+		\item Expose \techname{AdminChangeUserRole()} through codeunit \techname{MES Web Service}.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Update \techname{MesUserService} to consume \texttt{changeUserRole()}.
-		\item Update \techname{MesUserProvider} to account for \texttt{changeUserRole()}.
+		\item Update \techname{MesUserService} to consume \techname{AdminChangeUserRole()}.
+		\item Update \techname{MesUserProvider} to account for \techname{AdminChangeUserRole()}.
 		\item Create widget \techname{ChangeRoleDialog}.
 	\end{itemize}\\
 	\midrule
@@ -152,8 +151,8 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	account so that access can be revoked without deleting the account.
 	& \noindent\textit{Flutter}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Update \techname{ApiService} to account for \texttt{toggleUserActiveStatus()}.
-		\item Update \techname{AuthProvider} to account for \texttt{toggleUserActiveStatus()}.
+		\item Update \techname{ApiService} to account for \techname{toggleUserActiveStatus()}.
+		\item Update \techname{AuthProvider} to account for \techname{toggleUserActiveStatus()}.
 		\item Integrate activate and deactivate actions in \techname{AddUserPage}.
 \end{itemize}\\
 \midrule
@@ -164,19 +163,19 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	my identity is verified by a second factor.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Add field \texttt{Badge Secret} (Text[64]) to table \techname{MES User}.
-		\item Implement \texttt{GenerateBadgeSecret()} in \techname{MES User OnInsert}.
-		\item Implement \texttt{VerifyBadge()}, \texttt{GetBadgeSecret()}, and \texttt{RegenerateBadgeSecret()} in codeunit \techname{MESAuthMgt}.
+		\item Add field \techname{Badge Secret} (Text[64]) to table \techname{MES User}.
+		\item Implement \techname{GenerateBadgeSecret()} in \techname{MES User OnInsert}.
+		\item Implement \techname{VerifyBadge()}, \techname{GetBadgeSecret()}, and \techname{RegenerateBadgeSecret()} in codeunit \techname{MESAuthMgt}.
 		\item Expose the three procedures through codeunit \techname{MES Web Service}.
-		\item Add field \texttt{TwoFA Enabled} (Boolean) to table \techname{MES Settings}.
-		\item Return \texttt{twoFAEnabled} flag in the \texttt{Login()} response.
+		\item Add field \techname{TwoFA Enabled} (Boolean) to table \techname{MES Settings}.
+		\item Return \techname{twoFAEnabled} flag in the \techname{Login()} response.
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Update \techname{AuthProvider.login()} to detect \texttt{twoFAEnabled} flag and hold pending session state.
+		\item Update \techname{AuthProvider.login()} to detect \techname{twoFAEnabled} flag and hold pending session state.
 		\item Create page/dialog \techname{BadgeScanDialog} with live camera feed (\techname{mobile\_scanner}) and manual entry fallback.
-		\item Implement \texttt{verifyBadge()}, \texttt{cancelBadgeScan()} in \techname{AuthProvider}.
+		\item Implement \techname{verifyBadge()}, \techname{cancelBadgeScan()} in \techname{AuthProvider}.
 		\item Integrate badge verification step into \techname{\_AuthGate} routing logic.
 	\end{itemize}\\
 	\midrule
@@ -187,7 +186,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	& \noindent\textit{Flutter}
 	\begin{itemize}[nosep, leftmargin=*]
 		\item Create dialog \techname{UserBadgeDialog} rendering badge QR via \techname{barcode\_widget} package.
-		\item Implement \texttt{getBadgeSecret()} and \texttt{regenerateBadge()} in \techname{AuthProvider}.
+		\item Implement \techname{getBadgeSecret()} and \techname{regenerateBadge()} in \techname{AuthProvider}.
 		\item Implement PDF export in \techname{UserBadgeDialog.\_exportPdf()}.
 		\item Add \uilabel{View Badge} action to \techname{UserActionMenu} (active users only).
 	\end{itemize}\\
@@ -199,8 +198,8 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	control the organisation's authentication security level.
 	& \noindent\textit{Business Central (AL)}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Add field \texttt{PW change period} (Duration) to table \techname{MES Settings}.
-		\item Implement \texttt{GetMESSettings()} and \texttt{UpdateMESSettings()} in codeunit \techname{MES Settings Functions}.
+		\item Add field \techname{PW change period} (Duration) to table \techname{MES Settings}.
+		\item Implement \techname{GetMESSettings()} and \techname{UpdateMESSettings()} in codeunit \techname{MES Settings Functions}.
 		\item Expose both procedures through codeunit \techname{MES Web Service}.
 		\item Implement codeunit \techname{MES Password Expiry Worker} (Job Queue, runs every 24~h) that flags users whose password age exceeds the configured period.
 		\item Register the worker in \techname{MES Setup.RegisterPasswordExpiryWorker()}.
@@ -208,8 +207,8 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 \\ & &
 	\noindent\textit{Flutter}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Create model \techname{SettingModel} with \texttt{pwChangePeriod} and \texttt{twoFAEnabled} fields.
-		\item Create \techname{SettingService} consuming \texttt{fetchSettings} and \texttt{updateSettings} endpoints.
+		\item Create model \techname{SettingModel} with \techname{pwChangePeriod} and \techname{twoFAEnabled} fields.
+		\item Create \techname{SettingService} consuming \techname{fetchSettings} and \techname{updateSettings} endpoints.
 		\item Create \techname{MesSettingsProvider} managing fetch, dirty-state detection, and save.
 		\item Create page \techname{MesSettingsPage} with toggle and numeric input; animated dirty banner with \uilabel{Discard} / \uilabel{Save} actions.
 		\item Add \uilabel{Settings} section to \techname{AdminPage} sidebar.
@@ -221,12 +220,12 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	a QR~code) so that the application connects to the correct server instance.
 	& \noindent\textit{Flutter}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Create page \techname{ParingPage} shown on first launch when \texttt{AppConstants.host} is empty.
+		\item Create page \techname{ParingPage} shown on first launch when \techname{AppConstants.host} is empty.
 		\item Implement URL validation (no spaces, no backslash, no illegal characters).
 		\item Implement QR scanning via \techname{QrScannerDialog} to populate the host field.
-		\item Persist accepted host via \texttt{AppConstants.changeHost()} (SharedPreferences).
+		\item Persist accepted host via \techname{AppConstants.changeHost()} (SharedPreferences).
 		\item Add \uilabel{Change Host} link on \techname{LoginPage} for reconfiguration.
-		\item Add \texttt{AppConstants.loadHost()} call to the app initialisation sequence in \texttt{main()}.
+		\item Add \techname{AppConstants.loadHost()} call to the app initialisation sequence in \techname{main()}.
 	\end{itemize}\\
 	\midrule
 	\textbf{US-1.12}
@@ -251,7 +250,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	primary actors (\userrole{Operator}, \userrole{Supervisor},
 	\userrole{Administrator}) and their interactions with the \domainterm{MES}
 	authentication and user management system.  In addition to the core login,
-	logout, change password, 
+	logout, change password, and user creation 
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.6\textwidth}
@@ -262,7 +261,7 @@ This sprint covers \textbf{Domain 1:} \textbf{\domainterm{Authentication \& User
 	\label{fig:s1-uc-manage-settings}
 \end{minipage}
 
-and user creation flows, the diagram includes the
+flows, the diagram includes the
 \uilabel{Change Role and Work Centre}, \uilabel{Activate / Deactivate Account}, and export users
 use cases available exclusively to the \userrole{Administrator}, as well as the settings management
 \uilabel{Badge QR Scan} two-factor verification step and the automatique password change. 
@@ -311,17 +310,19 @@ use cases available exclusively to the \userrole{Administrator}, as well as the 
 	\textbf{Preconditions}  &                                                                      
 	\begin{itemize}[nosep, leftmargin=*]
 	\item The employee account exists in the \techname{ERP} system.
-	\item The user has an assigned role and department.
+	\item The employee has a user account in the \techname{MES} that is active.
+	\item The user has an assigned role.
 	\item The account must have a password.
-	\item The user account is active.
 	\end{itemize} \\
 	\midrule
 	
 	\textbf{Postconditions} &                                                                      
 	\begin{itemize}[nosep, leftmargin=*]
-	\item If the credentials are valid, the user is successfully authenticated.
+		\item If the credentials are valid, the user is successfully authenticated.
+		\item A session token is generated and stored securely.
+	\end{itemize}  \\  & 
+	\begin{itemize}[nosep, leftmargin=*]
 	\item If \domainterm{2FA} is enabled, the badge QR scan step is completed before a session token is issued.
- 	\item A session token is generated and stored securely.
 	\item The user is redirected to the appropriate dashboard based on their
 	role (\userrole{Admin} or MES interface).
 	\item If the \domainterm{need change password} flag is set to true, they
@@ -358,7 +359,7 @@ the \techname{AL} business logic for each authentication flow.
  
 Figure~\ref{fig:s1-seq-login} depicts the login flow, in which the user submits
 credentials, the \techname{AL} layer validates them against the
-\techname{Business Central} user store, and the application either returns a
+\techname{MES}, and the application either returns a
 structured error or issues a session token (or, when \domainterm{2FA} is enabled,
 holds a pending state until the badge scan is verified) and redirects the user to
 the appropriate page based on their role and password-change flag.
@@ -415,6 +416,14 @@ the appropriate page based on their role and password-change flag.
 %     end
 %====================================================================
 
+Figure~\ref{fig:s1-seq-badge-scan} depicts the badge scan flow, which is entered
+when \domainterm{2FA} is enabled after credentials have been validated
+(see \hyperref[fig:seq-login]{SD-01}). The user presents a \domainterm{QR} badge
+or enters the secret manually; \techname{Flutter} forwards it to the
+\techname{AL} layer, which verifies the secret against the pending token record
+and either activates the session or returns an error. Cancelling at any point
+clears the pending state and returns the user to the \techname{LoginPage}.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/badge-scan.png}%
@@ -464,21 +473,20 @@ the appropriate page based on their role and password-change flag.
 %====================================================================
 
 
-Figure~\ref{fig:s1-seq-Token-Validation} presents the token validation flow,
-which is invoked by the \techname{AL} backend before processing any
-authenticated request. The backend retrieves the token record from
-\techname{Business Central}, verifies its validity and expiry, confirms
-that the associated user account is still active, and either updates the
-\texttt{LastSeenAt} timestamp or returns an error that forces the
-\techname{Flutter} client to redirect the user to the login page.
- 
-
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/diagrams/sequence/token-validation.png}%
 	\caption{SD-02: Token Validation.}%
 	\label{fig:s1-seq-Token-Validation}%
 \end{figure}%
+
+Figure~\ref{fig:s1-seq-Token-Validation} presents the token validation flow,
+which is invoked by the \techname{AL} backend before processing any
+authenticated request. The backend retrieves the token record from
+\techname{MES}, verifies its validity and expiry, confirms
+that the associated user account is still active, and either updates the
+\techname{LastSeenAt} timestamp or returns an error that forces the
+\techname{Flutter} client to redirect the user to the login page.
 
 %======SD-02=========================================================
 % sequenceDiagram
@@ -540,7 +548,7 @@ Figure~\ref{fig:s1-seq-ChangePw} describes the change-password flow. The
 \techname{Flutter} client first validates locally that the fields, then forwards the request to
 the \techname{AL} layer, which re-validates the token (SD-02), verifies
 the current password hash, checks the new password strength, and on
-success updates the credential record in \techname{Business Central}.
+success updates the credential record in \techname{MES}.
 
 \begin{figure}[H]
 	\centering
@@ -747,10 +755,8 @@ so that the updated user list is reflected immediately in the UI.
 
 The UML Class Diagram of the \domainterm{MES} authentication domain, shown in
 Figure~\ref{fig:s1-class-diagram}, depicts the \modulename{MesUser},
-\modulename{AuthToken}, and \modulename{PasswordPolicy} classes with their
-attributes and associations. The \texttt{BadgeSecret} field on
-\modulename{MesUser} and the \modulename{MESSettings} singleton are also shown,
-reflecting the 2FA and password expiry extensions introduced in this sprint.
+\modulename{AuthToken}, and \modulename{settings} classes with their
+attributes.
 
 \begin{figure}[H]
 	\centering
@@ -766,21 +772,24 @@ reflecting the 2FA and password expiry extensions introduced in this sprint.
 
 \subsection{Backend Implementation}
 
-\subsubsection*{Backend Structure Overview}
-
-The backend project structure is illustrated in Figure~\ref{fig:s1-backend-structure}.
-
-\begin{figure}[H]
+\noindent
+\begin{minipage}[t]{0.65\textwidth}
+	\vspace{0pt}
+	\subsubsection*{Backend Structure Overview}
+	The backend project structure is illustrated in Figure~\ref{fig:s1-backend-structure}.
+	\subsubsection*{MES User Table Implementation}
+	The \modulename{MES User} table is implemented to store user information,
+	as described in Table~\ref{tab:s1-mes_user_fields}.
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.33\textwidth}
+	\vspace{0pt}
 	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/backend.png}
-	\caption{Backend project structure.}
+	\includegraphics[width=\linewidth]{./media/MES_Sprint-1-Repport/backend.png}
+	\captionof{figure}{Backend project structure.}
 	\label{fig:s1-backend-structure}
-\end{figure}
+\end{minipage}
 
-\subsubsection*{MES User Table Implementation}
-
-The \modulename{MES User} table is implemented to store user information,
-as described in Table~\ref{tab:s1-mes_user_fields}.
 
 \begin{longtable}{@{} P{0.18\linewidth} P{0.18\linewidth} P{0.64\linewidth} @{}}
 	
@@ -800,18 +809,18 @@ as described in Table~\ref{tab:s1-mes_user_fields}.
 	\endlastfoot
 	
 	User Id           & Code[50]                      &                      
-	Primary key. Login identifier used at the MES login prompt (e.g., \texttt{JDOE}, \texttt{OP001}). If blank on insert, a GUID-derived value is assigned automatically. \\
+	Primary key. Login identifier used at the MES login prompt (e.g., \techname{JDOE}, \techname{OP001}). If blank on insert, a GUID-derived value is assigned automatically. \\
 	\midrule
 	
 	Employee ID       & Code[50]                      &                      
-	\texttt{Employee."No."}. Required for every MES account and enforced as unique (one Employee maps to one MES User). \\
+	\techname{Employee."No."}. Required for every MES account and enforced as unique (one Employee maps to one MES User). \\
 	\midrule
 	
 	Auth ID           & Text[100]                     &                      
-	Auto-generated external identifier in the form \texttt{AUTH-XXXXXXXX}. Used as the login identifier at the MES login prompt. Uniqueness enforced. \\
+	Auto-generated external identifier in the form \techname{AUTH-XXXXXXXX}. Used as the login identifier at the MES login prompt. Uniqueness enforced. \\
 	\midrule
 	
-	Role              & Enum (\texttt{MES User Role}) &                      
+	Role              & Enum (\techname{MES User Role}) &                      
 	Authorization role for the MES application (e.g., Operator / Supervisor / Admin). Used to control permissions and access. \\
 	\midrule
 	
@@ -875,11 +884,11 @@ in Table~\ref{tab:s1-mes_auth_token_fields}.
 	\midrule
 	
 	User Id       & Code[50]      &                      
-	Foreign key to \texttt{MES User."User Id"}. Identifies the MES user who owns this session/token. Enforces referential integrity via \texttt{TableRelation}. \\
+	Foreign key to \techname{MES User."User Id"}. Identifies the MES user who owns this session/token. Enforces referential integrity via \techname{TableRelation}. \\
 	\midrule
 	
 	Device Id     & Text[100]     &                      
-	Optional identifier for the device that requested the token (e.g., \texttt{tablet-floor-02}, \texttt{scanner-01}). Stored for traceability/audit only; not used for validation. \\
+	Optional identifier for the device that requested the token (e.g., \techname{tablet-floor-02}, \techname{scanner-01}). Stored for traceability/audit only; not used for validation. \\
 	\midrule
 	
 	Issued At     & DateTime      &                      
@@ -887,14 +896,14 @@ in Table~\ref{tab:s1-mes_auth_token_fields}.
 	\midrule
 	
 	Expires At    & DateTime      &                      
-	UTC timestamp after which the token must be rejected even if not revoked. Set to \texttt{Issued At + TTL}. Token validation enforces \texttt{Expires At > CurrentDateTime()}. \\
+	UTC timestamp after which the token must be rejected even if not revoked. Set to \techname{Issued At + TTL}. Token validation enforces \techname{Expires At > CurrentDateTime()}. \\
 	\midrule
 	
 	Last Seen At  & DateTime      &                      
-	Updated on every successful token validation. Supports session monitoring (activity/idle detection). Not used for expiry enforcement (use \texttt{Expires At}). \\
+	Updated on every successful token validation. Supports session monitoring (activity/idle detection). Not used for expiry enforcement (use \techname{Expires At}). \\
 	\midrule
 	
-	State       & Enum (\texttt{MES Auth Token State})       &                      
+	State       & Enum (\techname{MES Auth Token State})       &                      
 	The state of the authentication token (Pending, Active, Revoked) set to pending when 2FA is on, and revoked when logging out and bulk revocation (password change, account deactivation). \\
 	\midrule
 	\noalign{\vskip 4pt}
@@ -963,16 +972,16 @@ table. If the credentials are correct and the account is active, and
 \domainterm{2FA} is disabled in \modulename{MES Settings}, a token is generated
 and stored in the \modulename{MES Auth Token} table and set as active. When \domainterm{2FA} is
 enabled, a token is generated
-and stored in the \modulename{MES Auth Token} table and set as pending, the backend returns the \texttt{twoFAEnabled} flag and the
+and stored in the \modulename{MES Auth Token} table and set as pending, the backend returns the \techname{twoFAEnabled} flag and the
 \techname{Flutter} client suspends the session until the badge QR~code is
-verified via the \texttt{VerifyBadge} endpoint at which point the token is set to active.
+verified via the \techname{VerifyBadge} endpoint at which point the token is set to active.
 
 \textbf{Logout}
 
 On logout, the user's session authentication token is revoked. The token
 record matching the supplied session token is located in the
-\modulename{MES Auth Token} table and its \texttt{State} is set to
-\texttt{Revoked}, immediately invalidating the session (soft revocation).
+\modulename{MES Auth Token} table and its \techname{State} is set to
+\techname{Revoked}, immediately invalidating the session (soft revocation).
 
 \textbf{Change Password}
 
@@ -983,11 +992,11 @@ password, and a new password that complies with security rules.
 
 The \modulename{MES Password Expiry Worker} (Codeunit 50129) is a scheduled
 \techname{Business Central} Job Queue entry that runs every 24~hours. On each
-run it reads the \texttt{PW change period} value from \modulename{MES Settings}
-and computes a cutoff datetime equal to \texttt{CurrentDateTime() minus the period}.
-It then iterates all active MES Users whose \texttt{Last Password Changed At}
+run it reads the \techname{PW change period} value from \modulename{MES Settings}
+and computes a cutoff datetime equal to \techname{CurrentDateTime() minus the period}.
+It then iterates all active MES Users whose \techname{Last Password Changed At}
 falls before the cutoff (or is zero, meaning the password has never been changed)
-and sets their \texttt{Need To Change Pw} flag to \texttt{true}. Affected users
+and sets their \techname{Need To Change Pw} flag to \techname{true}. Affected users
 are prompted to change their password on their next login.
 
 \subsection{REST API and Web Services Implementation}
@@ -1000,19 +1009,21 @@ were implemented using AL.
 
 Exposed these functions in the \techname{MES Web Service} codeunit (50126).
 Configured \techname{WebServices.xml} to publish \techname{MES Web Service} as an ODataV4 web service under the service name
-\texttt{MESWebService}.
+\techname{MESWebService}.
 
 \subsection{Frontend Implementation}
-
-The frontend of this system was developed using \techname{Flutter}. The
-application is structured into four main layers: a \textbf{\domainterm{UI Layer}}
-consisting of Screens and Widgets; a \textbf{\domainterm{State Management Layer}}
-built on Providers; a \textbf{\domainterm{Service Layer}} for API communication;
-and a \textbf{\domainterm{Model Layer}} for Data Models.
 
 
 \noindent
 \begin{minipage}[t]{0.6\textwidth}
+
+
+	The frontend of this system was developed using \techname{Flutter}. The
+	application is structured into four main layers: a \textbf{\domainterm{UI Layer}}
+	consisting of Screens and Widgets; a \textbf{\domainterm{State Management Layer}}
+	built on Providers; a \textbf{\domainterm{Service Layer}} for API communication;
+	and a \textbf{\domainterm{Model Layer}} for Data Models.
+
 	The data flow follows a unidirectional pattern from the \domainterm{UI Layer}
 	through the \domainterm{State Management Layer} (\modulename{Provider} pattern)
 	and \domainterm{Service Layer} to the \techname{Business Central} REST API backend,
@@ -1025,7 +1036,7 @@ and a \textbf{\domainterm{Model Layer}} for Data Models.
 
 	Four services were implemented: the \modulename{api\_service} manages
 	authentication requests such as \uilabel{login}, \uilabel{logout}, and
-	\uilabel{password change}, while the \modulename{mes\_user\_service} handles MES
+	\uilabel{password change}, while the \modulename{mes\_user\_service } handles MES
 	user operations including fetching and creating new users, A dedicated
 	\modulename{setting\_service} handles fetching and updating the MES global settings,
 	And finaly \modulename{export user Service} handles the export user list to Excel feature.
@@ -1038,6 +1049,7 @@ and a \textbf{\domainterm{Model Layer}} for Data Models.
 	memory rather than persisted until badge verification succeeds. The \uilabel{logout} method
 	sends the active session token to the \apiendpoint{/logout} endpoint to trigger server-side
 	token revocation.
+	
 	
 \end{minipage}
 \hfill
@@ -1074,7 +1086,7 @@ flow; \modulename{MesUserProvider}, which handles MES user data; and
 \modulename{MesSettingsProvider}, which manages the global settings fetch. Each provider wraps
 the corresponding service layer calls and exposes reactive state (authenticated
 user, user list, settings, loading flag, error message) consumed by the \domainterm{UI Layer}
-via \texttt{context.watch}.
+via \techname{context.watch}.
 
 \subsubsection*{User Interface}
 
@@ -1082,7 +1094,7 @@ The \uilabel{Paring Page}, shown in Figure~\ref{fig:s1-ui-paring-page}, is the v
 first screen presented when the application has no saved host URL. The user
 enters the middleware URL manually or taps \uilabel{Scan QR Code} to open the
 \techname{QrScannerDialog} and populate the field automatically. On submission
-the URL is validated and persisted via \texttt{AppConstants.changeHost()}.
+the URL is validated and persisted via \techname{AppConstants.changeHost()}.
 
 
 \begin{figure}[H]
@@ -1103,13 +1115,6 @@ entry screen presented to all users on launch. It contains \uilabel{User ID} and
 authentication redirects the user to the role-appropriate dashboard, or to the
 \uilabel{Badge Scan Dialog} if \domainterm{2FA} is enabled.
 
-% \begin{figure}[H]
-% 	\centering
-% 	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/image23.png}
-% 	\caption{\uilabel{Login Page}.}
-% 	\label{}
-% \end{figure}
-
 \begin{figure}[H]
   \centering
   \setlength{\fboxsep}{5pt}
@@ -1121,6 +1126,7 @@ authentication redirects the user to the role-appropriate dashboard, or to the
   \caption{\uilabel{Login Page} --- desktop and mobile views.}
   \label{fig:s1-ui-login}
 \end{figure}
+
 
 The \uilabel{Badge Scan Dialog}, shown in Figure~\ref{fig:s1-ui-badge-scan},
 is displayed after a successful first-factor login when \domainterm{2FA} is
@@ -1179,28 +1185,30 @@ The \uilabel{Generate Password Dialog}, shown in Figure~\ref{fig:s1-ui-generate-
 is a modal dialog through which the \userrole{Administrator} triggers server-side
 secure password generation for a selected \domainterm{MES} user. The generated
 password is displayed once and must be communicated to the user out-of-band.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/generatePassword/wide.png}
-	\caption{\uilabel{Generate Password Dialog}.}
-	\label{fig:s1-ui-generate-password}
-\end{figure}
-
 The \uilabel{Password Generated Successfully Dialog}, shown in
 Figure~\ref{fig:s1-ui-password-success}, is a confirmation dialog showing the
 plaintext password to the \userrole{Administrator} for one-time transmission to
 the user. The password is not stored in plaintext on the server after this point.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/successPwGeneration/wide.png}
-	\caption{\uilabel{Password Generated Successfully Dialog}.}
-	\label{fig:s1-ui-password-success}
-\end{figure}
+\noindent
+\begin{minipage}[t]{0.60\textwidth}
+  \vspace{0pt}
+  \centering
+  \includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/generatePassword/wide.png}
+  \captionof{figure}{\uilabel{Generate Password Dialog}}
+  \label{fig:s1-ui-generate-password}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.38\textwidth}
+  \vspace{0pt}
+  \centering
+	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-1-Repport/UI/successPwGeneration/wide.png}
+  \captionof{figure}{\uilabel{Password Generated Successfully Dialog}}
+  \label{fig:s1-ui-password-success}
+\end{minipage}
+
 
 The \uilabel{Change Password Page}, shown in Figure~\ref{fig:s1-ui-change-password},
-is presented to users whose \domainterm{needChangePassword} flag is \texttt{true}
+is presented to users whose \domainterm{needChangePassword} flag is \techname{true}
 after login, requiring them to enter their current password and choose a new
 password before accessing the main application.
 
@@ -1272,6 +1280,25 @@ For integration testing, we chose Postman, a powerful and user-friendly tool for
 	\label{fig:s1-test-postman-fetchAllMesUsers}
 \end{figure}
 
+\subsection*{System testing}
+Figures~\ref{fig:s1-test-disabled-account} and~\ref{fig:s1-test-invalid-credentials} illustrate the validation results of the sprint's implemented features, capturing both nominal execution paths and system responses to invalid or unauthorized actions.
+
+\noindent
+\begin{minipage}[t]{0.49\textwidth}
+	\vspace{0pt}
+	\centering
+	\includegraphics[width=\linewidth]{./media/MES_Sprint-1-Repport/UI/errors/disabledAccount.png}
+	\captionof{figure}{Validation dialog --- Disabled Account.}
+	\label{fig:s1-test-disabled-account}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.49\textwidth}
+	\vspace{0pt}
+	\centering
+	\includegraphics[width=\linewidth]{./media/MES_Sprint-1-Repport/UI/errors/invalidCredentials.png}
+	\captionof{figure}{Validation dialog --- Invalid Credentials.}
+	\label{fig:s1-test-invalid-credentials}
+\end{minipage}
 
 % -----------------------------------------------------------------------
 \phantomsection

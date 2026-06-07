@@ -3,7 +3,7 @@
 
 This sprint delivers the administration layer, multi-language support, and
 in-app onboarding tutorials that complete the \domainterm{MES} solution.
-Administrators receives access to an activity log, and a user role management
+Administrators receives access to an activity log, barcode list, and a user role management
 interface. Quality-of-life features include full internationalisation with English,
 French, and Arabic support, automatic right-to-left layout for Arabic, and guided 
 coach-mark tutorials shown once in the main screens on first use. This sprint also 
@@ -23,93 +23,95 @@ This sprint covers \textbf{Domain 4:}
 %  US-4.1
 % ----------------------------------------------------------
 \begin{longtable}{@{} P{0.09\linewidth} P{0.34\linewidth} P{0.53\linewidth} @{}}
-      \caption{Sprint 4 Story Backlog}
-      \label{tab:s4-sprint-backlog} \\
-      \toprule
-      \textbf{ID} & \textbf{User Story} & \textbf{Tasks} \\
-      \midrule
-      \endfirsthead
-      \toprule
-      \textbf{ID} & \textbf{User Story} & \textbf{Tasks} \\
-      \midrule
-      \endhead
-      \multicolumn{3}{r}{\small Continued on next page} \\
-      \endfoot
-      \bottomrule
-      \endlastfoot
-            
-      \textbf{US-4.1}
-      & As an \userrole{Supervisor}, I need a performance dashboard for all
-      machines so that I can monitor production health across the facility.
-      & \noindent\textit{Business Central (AL):}
-      \begin{itemize}[nosep, leftmargin=*]
-            \item Create function \texttt{fetchMachineDashboard()} in codeunit \techname{MES Machine Fetch}.
-            \item Expose the function through the codeunit \techname{MES Web Service}.
-      \end{itemize}
-      \\ & &
-      \noindent\textit{Flutter:}
-      \begin{itemize}[nosep, leftmargin=*]
-            \item Create model \techname{MachineDashboardModel}.
-            \item Create \techname{LogService} to consume the \texttt{fetchMachineDashboard} endpoint and \techname{LogProvider} to manage its state.
-            \item Create page \techname{MachineDashboardPage}.
-            \item Implement machine dashboard search and time-range filtering in \techname{MachineDashboardPage}.
-      \end{itemize} \\  
-      \midrule 
-      \textbf{US-4.2}
-      & As an \userrole{Administrator}, I need a filterable log of all
-      system actions so that I can audit operator and machine activity.
-      & \noindent\textit{Business Central (AL):}
-      \begin{itemize}[nosep, leftmargin=*]
-            \item Create function \texttt{fetchActivityLog()} in codeunit \techname{MES Machine Fetch}.
-            \item Add the wrapper of the function to \techname{MES Web Service}.
-      \end{itemize}
-      \\ & &
-      \noindent\textit{Flutter:}
-      \begin{itemize}[nosep, leftmargin=*]
-            \item Create model \techname{ActivityLogModel}.
-            \item Create \techname{LogService} to consume the \texttt{fetchActivityLog()} endpoint and \techname{LogProvider} to manage its state.
-            \item Create page \techname{ActivityLogPage}.
-            \item Implement activity log search, type filtering, time-range filtering, and pagination in \techname{ActivityLogPage}.
-      \end{itemize} \\
-      \midrule
-      \textbf{US-4.3}
-      & As any user, I need the application available in English, French, and
-      Arabic so that I can use it in my preferred language.
-      & \noindent\textit{Flutter:}
-      \begin{itemize}[nosep, leftmargin=*]
-            \item Integrate the \texttt{easy\_localization} package.
-            \item Create translation JSON files for \texttt{en}, \texttt{fr}, and \texttt{ar}.
-            \item Create widget \techname{LanguageSelector}.
-            \item Implement language selection in \techname{ProfilePage}.
-            \item Add the \techname{EasyLocalization} wrapper in \texttt{main()}.
-            \item Implement right-to-left layout support through \texttt{MaterialApp}.
-      \end{itemize} \\
-      \midrule
-      \textbf{US-4.4}
-      & As a first-time user, I need guided coach-mark tutorials so that I can
-      learn the interface without external documentation.
-      & \noindent\textit{Flutter:}
-      \begin{itemize}[nosep, leftmargin=*]
-            \item Integrate the \texttt{tutorial\_coach\_mark} package.
-            \item Implement tutorial persistence using \techname{SharedPreferences}.
-            \item Create \techname{MachineListTutorial}, \techname{MachineDetailTabsTutorial}, \techname{OperationDetailTutorial}, and \techname{AdminDashboardTutorial}.
-            \item Implement tutorial target styling and localisation.
-      \end{itemize} \\
-      \midrule
-      \textbf{US-4.4}
-      & As an \userrole{Administrator}, I need a searchable barcode page
-	so that I have a source of the mes barcodes labels.
-      & \noindent\textit{Business Central (AL):}
-      \begin{itemize}[nosep, leftmargin=*]
-            \item Create function \texttt{fetchAllItemBarcodes()} in codeunit \techname{MES Machine Fetch}.
-            \item Add the wrapper of the function to \techname{MES Web Service}.
-      \end{itemize}
-	\\ & & \noindent\textit{Flutter:}
-      \begin{itemize}[nosep, leftmargin=*]
-            \item created the page \techname{BarcodeListPage.dart}.
-            \item updated the povider mes\_barcode\_provider.dart and mes\_barcode\_service.dart to consume the new endpoints.
-            \item created the widget dataMatrix\_card.dart.
-      \end{itemize} \\
+  \caption{Sprint 4 Story Backlog}
+  \label{tab:s4-sprint-backlog} \\
+  \toprule
+  \textbf{ID} & \textbf{User Story} & \textbf{Tasks} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{ID} & \textbf{User Story} & \textbf{Tasks} \\
+  \midrule
+  \endhead
+  \multicolumn{3}{r}{\small Continued on next page} \\
+  \endfoot
+  \bottomrule
+  \endlastfoot
+
+  \textbf{US-4.1}
+  & As an \userrole{Supervisor}, I need a performance dashboard for all
+  machines so that I can monitor production health across the facility.
+  & \noindent\textit{Business Central (AL):}
+  \begin{itemize}[nosep, leftmargin=*]
+    \item Create function \techname{fetchMachineDashboard()} in codeunit \techname{MES Machine Fetch}.
+    \item Expose the function through the codeunit \techname{MES Web Service}.
+  \end{itemize}\\ & &
+  \noindent\textit{Flutter:}
+  \begin{itemize}[nosep, leftmargin=*]
+    \item Create model \techname{MachineDashboardModel}.
+    \item Create \techname{LogService} to consume the \techname{fetchMachineDashboard} endpoint and \techname{LogProvider} to manage its state.
+    \item Create page \techname{MachineDashboardPage}.
+    \item Implement machine dashboard search and time-range filtering in \techname{MachineDashboardPage}.
+  \end{itemize} \\  
+  \midrule 
+  \textbf{US-4.2}
+  & As an \userrole{Administrator}, I need a filterable log of all
+  system actions so that I can audit operator and machine activity.
+  & \noindent\textit{Business Central (AL):}
+  \begin{itemize}[nosep, leftmargin=*]
+    \item Create function \techname{fetchActivityLog()} in codeunit \techname{MES Machine Fetch}.
+    \item Add the wrapper of the function to \techname{MES Web Service}.
+  \end{itemize}
+  \\ & &
+  \noindent\textit{Flutter:}
+  \begin{itemize}[nosep, leftmargin=*]
+    \item Create model \techname{ActivityLogModel}.
+    \item Create \techname{LogService} to consume the \techname{fetchActivityLog()} endpoint 
+  \end{itemize} \\ & &
+  \begin{itemize}[nosep, leftmargin=*]
+    \item Create \techname{LogProvider} to manage its state.
+    \item Create page \techname{ActivityLogPage}.
+    \item Implement activity log search, type filtering, time-range filtering, and pagination in \techname{ActivityLogPage}.
+  \end{itemize} \\
+  \midrule
+  \textbf{US-4.3}
+  & As any user, I need the application available in English, French, and
+  Arabic so that I can use it in my preferred language.
+  & \noindent\textit{Flutter:}
+  \begin{itemize}[nosep, leftmargin=*]
+    \item Integrate the \techname{easy\_localization} package.
+    \item Create translation JSON files for \techname{en}, \techname{fr}, and \techname{ar}.
+    \item Create widget \techname{LanguageSelector}.
+    \item Implement language selection in \techname{ProfilePage}.
+    \item Add the \techname{EasyLocalization} wrapper in \techname{main()}.
+    \item Implement right-to-left layout support through \techname{MaterialApp}.
+  \end{itemize} \\
+  \midrule
+  \textbf{US-4.4}
+  & As a first-time user, I need guided coach-mark tutorials so that I can
+  learn the interface without external documentation.
+  & \noindent\textit{Flutter:}
+  \begin{itemize}[nosep, leftmargin=*]
+    \item Integrate the \techname{tutorial\_coach\_mark} package.
+    \item Implement tutorial persistence using \techname{SharedPreferences}.
+    \item Create \techname{MachineListTutorial}, \techname{MachineDetailTabsTutorial}, \techname{OperationDetailTutorial}, and \techname{AdminDashboardTutorial}.
+    \item Implement tutorial target styling and localisation.
+  \end{itemize} \\
+  \midrule
+  \textbf{US-4.4}
+  & As an \userrole{Administrator}, I need a searchable barcode page
+  so that I have a source of the mes barcodes labels.
+  & \noindent\textit{Business Central (AL):}
+  \begin{itemize}[nosep, leftmargin=*]
+    \item Create function \techname{fetchAllItemBarcodes()} in codeunit \techname{MES Machine Fetch}.
+    \item Add the wrapper of the function to \techname{MES Web Service}.
+  \end{itemize}
+  \\ & & \noindent\textit{Flutter:}
+  \begin{itemize}[nosep, leftmargin=*]
+    \item created the page \techname{BarcodeListPage.dart}.
+    \item updated the povider mes\_barcode\_provider.dart and mes\_barcode\_service.dart to consume the new endpoints.
+    \item created the widget dataMatrix\_card.dart.
+  \end{itemize} \\
 \end{longtable}
 % ---------------------------------------------------------------------------
 % 2. BUSINESS RULES
@@ -165,7 +167,7 @@ represents the most significant new administrator workflow in this sprint.
       \textbf{Postconditions} &                          
       \begin{itemize}[nosep, leftmargin=*]
       \item A grid of machine cards is displayed, each showing uptime, production
-      totals, and scrap for the selected time window.
+      totals, finished operation and concelled/interrupted operations and scrap for the selected time window.
       \item Changing the time-range selector refreshes all card metrics.
       \end{itemize} \\
       \midrule
@@ -174,7 +176,7 @@ represents the most significant new administrator workflow in this sprint.
       \item The Supervisor logs in and is routed to \techname{machineList}.
       \item The Supervisor selects \uilabel{Machine Dashboard} in the topBar.
       \item The system POSTs to \apiendpoint{/MESWebService\_fetchMachineDashboard}
-      with the default \texttt{hoursBack = 24}.
+      with the default \techname{hoursBack = 24}.
       \item The backend aggregates execution and progression records and returns
       per-machine metrics.
       \item The Supervisor changes the time range to 48\,h via the AppBar
@@ -192,7 +194,7 @@ introduced in Sprint~4.
 
 Figure~\ref{fig:s4-seq-fetch-dashboard} depicts the machine dashboard retrieval
 flow. The \techname{AL} layer iterates over all \domainterm{Machine Center}
-records and, for each machine, computes the total operation count, cancelled/Interrupted operations,
+records and, for each machine, computes the total finished operation count, cancelled/Interrupted operations,
 total production and scrap quantities, and uptime percentage from the corresponding
 \techname{Business Central} records before assembling the per-machine KPI rows
 returned to the \techname{Flutter} client.
@@ -236,7 +238,7 @@ returned to the \techname{Flutter} client.
 Figure~\ref{fig:s4-seq-fetch-activity-log} presents the activity log retrieval
 flow. The \techname{AL} layer queries four event tables in parallel;
 \domainterm{MES Operation State}, \domainterm{MES Operation Progression},
-\domainterm{MES Operation Scrap}, and \domainterm{MES Component Consumption}
+\domainterm{MES Operation Scrap}, and \domainterm{MES Operation Scan}
 , filtering each by the requested time window. For every event row it joins
 the associated \domainterm{MES User} and \domainterm{MES Operation Execution}
 records to enrich the entry with operator identity and execution context. The
@@ -304,19 +306,19 @@ Sprints~1 through~3.
 
 \subsubsection*{Dashboard Aggregation}
 
-\texttt{fetchMachineDashboard()} accepts a \texttt{hoursBack} window and an
-optional \texttt{workCenterNoJson} filter. For each \modulename{Machine Center}
-it aggregates the matched \modulename{MES Operation Execution} records,
-summing \texttt{Cycle Quantity} from linked \modulename{MES Operation
-Progression} entries to obtain total produced and scrap counts, and computing
-uptime as \texttt{runningMinutes / (hoursBack × 60) × 100}, capped at 100.
+\techname{fetchMachineDashboard()} accepts a \techname{hoursBack} window and an
+optional \techname{workCenterNoJson} filter. For each Machine Center, it aggregates 
+execution data, counts finished and cancelled operations, calculates produced and 
+scrap quantities within the selected time window, and computes uptime from machine 
+status records as the percentage of time spent in the Working state.
 
 \subsubsection*{Activity Log Aggregation}
 
-\texttt{fetchActivityLog()} queries four tables within the \texttt{hoursBack}
-window --- \modulename{MES Operation State}, \modulename{MES Operation
+
+\techname{fetchActivityLog()} queries four tables within the \techname{hoursBack}
+window \modulename{MES Operation State}, \modulename{MES Operation
 Progression}, \modulename{MES Operation Scrap}, and \modulename{MES Component
-Consumption} --- resolves operator names via the \modulename{Employee} table,
+Consumption} resolves operator names via the \modulename{Employee} table,
 and merges the results into a single descending-timestamp JSON array.
 
 \subsubsection*{API Endpoints Added in Sprint 4}
@@ -326,14 +328,14 @@ All endpoints are exposed as ODataV4 unbound actions through
 middleware at:
 
 \begin{center}
-  \texttt{middlewareHostURL/api/<endpointName>}
+  \techname{middlewareHostURL/api/<endpointName>}
 \end{center}
 
 \noindent Each request is forwarded to the \techname{AL} layer as an
 ODataV4 action call of the form:
 
 \begin{center}
-  \texttt{POST~<baseUrl>/ODataV4/MESWebService\_<ProcedureName>?company=<companyId>}
+  \techname{POST~<baseUrl>/ODataV4/MESWebService\_<ProcedureName>?company=<companyId>}
 \end{center}
 
 \begin{longtable}{@{} P{0.48\linewidth} @{\hspace{0.04\linewidth}} P{0.48\linewidth} @{}}
@@ -361,13 +363,13 @@ ODataV4 action call of the form:
 
 All sprint services (including retroactively migrated ones) share a
 \techname{HttpClient} and \techname{HttpResponseParser} layer, replacing
-the inline \texttt{http.post} calls from Sprint~1.
+the inline \techname{http.post} calls from Sprint~1.
 \techname{HttpClient.post()} is a centralised wrapper that injects
 JSON headers and encodes the request body.
 \techname{HttpResponseParser} exposes four static helpers:
-\texttt{parseList()} and \texttt{parseObject()} decode OData list and
-single-object responses respectively; \texttt{parseWriteResult()} decodes
-write responses and surfaces backend errors; \texttt{\_assertSuccess()}
+\techname{parseList()} and \techname{parseObject()} decode OData list and
+single-object responses respectively; \techname{parseWriteResult()} decodes
+write responses and surfaces backend errors; \techname{\_assertSuccess()}
 validates HTTP status codes and throws a structured exception on non-2xx
 responses.
 
@@ -390,16 +392,26 @@ responses.
   \endlastfoot
 
   \techname{LogProvider}        &
-   Owns dashboard and activity log fetch calls; exposes \texttt{selectedHours},
-   \texttt{hourOptions}, and \texttt{setHours()} shared between the two admin pages. \\
+   Owns dashboard and activity log fetch calls; exposes \techname{selectedHours},
+   \techname{hourOptions}, and \techname{setHours()} shared between the two admin pages. \\
   \addlinespace
   \techname{MesBarcodeProvider} & 
-  Exposes \texttt{fetchAllBarcodes()}; resolves the session token automatically from
+  Exposes \techname{fetchAllBarcodes()}; resolves the session token automatically from
   \techname{AuthProvider}. \\
 \end{longtable}
 
 \subsubsection*{User Interface}
 
+
+Figures~\ref{fig:s4-ui-machine-dashboard}, ~\ref{fig:s4-ui-barcode}, and~\ref{fig:s4-ui-activity-log} illustrate
+the three pages. The \uilabel{Machine Dashboard Page} renders one card per machine
+with a circular uptime indicator and four metric rows (finished operations, 
+Cancelled and Interrupted operations, produced, scrap, uptime), and
+an AppBar time-range dropdown that re-fetches on change. The \uilabel{Activity Log Page}
+presents a paginated, newest-first event list where each row shows a type icon, 
+operator, declared by, machine, time, order, operation number and action ; AppBar dropdowns filter by type and 
+time range. The \uilabel{Barcode Page} presents a searchable list of all items with their associated
+barcodes rendered as DataMatrix codes.
 
 \begin{figure}[H]
   \centering
@@ -412,16 +424,6 @@ responses.
   \caption{\uilabel{Machine Dashboard Page} --- desktop and mobile views.}
   \label{fig:s4-ui-machine-dashboard}
 \end{figure}
-
-Figures~\ref{fig:s4-ui-machine-dashboard}, ~\ref{fig:s4-ui-barcode}, and~\ref{fig:s4-ui-activity-log} illustrate
-the three pages. The \uilabel{Machine Dashboard Page} renders one card per machine
-with a circular uptime indicator and four metric rows (finished operations, 
-Cancelled and Interrupted operations, produced, scrap, uptime), and
-an AppBar time-range dropdown that re-fetches on change. The \uilabel{Activity Log Page}
-presents a paginated, newest-first event list where each row shows a type icon, 
-operator, machine, time, order, operation number and action ; AppBar dropdowns filter by type and 
-time range. The \uilabel{Barcode Page} presents a searchable list of all items with their associated
-barcodes rendered as DataMatrix codes.
 
 \begin{figure}[H]
   \centering
@@ -465,11 +467,11 @@ Figure~\ref{fig:s4-test-postman-machineDashboard} shows a test case for the \api
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
 
-This sprint completed the \domainterm{MES} solution by delivering the
-administration layer and cross-cutting quality-of-life features. \userrole{Supervisor}
-can now monitor the production health of the entire facility through a
-configurable machine performance dashboard, and the \userrole{Administrator} can audit all operator and machine
-actions through a paginated activity log, view the barcodes of all the items, and manage users. All users benefit from
-full internationalisation covering English, French, and Arabic with automatic
-right-to-left layout, and from guided coach-mark tutorials that ease onboarding
-for first-time users.
+This sprint completed the \domainterm{MES} solution by delivering the administration
+layer and cross-cutting quality-of-life features. \userrole{Supervisor} can now monitor
+the production health through a configurable machine performance dashboard, and the 
+\userrole{Administrator} can audit all operator and machine actions through a paginated
+activity log, view the barcodes of all the items, and manage users. All users benefit 
+from full internationalisation covering English, French, and Arabic with automatic 
+right-to-left layout, and from guided coach-mark tutorials that ease onboarding for 
+first-time users.

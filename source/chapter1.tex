@@ -10,20 +10,20 @@ methodology used to implement this work.
 \section{Presentation of the Host Company}
 
 To properly organise this section, we begin with some general details about
-Mavision before addressing the activities directly relevant to us.
+MAVISION before addressing the activities directly relevant to us.
 
 \noindent
 \begin{minipage}[t]{0.6\textwidth}
 	\vspace{0pt}
-	\subsection{Overview of Mavision}
+	\subsection{Overview of MAVISION}
 		 
-	Founded in 2014 and headquartered in Manar~II, Tunis, Mavision~\cite{mavision} is a
+	Founded in 2014 and headquartered in Manar~II, Tunis, MAVISION~\cite{mavision} is a
 	software development company specialising in consulting, auditing and implementing ERP
-	information systems. Mavision supports companies in
+	information systems. MAVISION supports companies in
 	their IT development projects and helps its clients better organise themselves around
-	their information systems. In addition to its ERP offerings, Mavision develops and
+	their information systems. In addition to its ERP offerings, MAVISION develops and
 	integrates reporting solutions to help its clients manage
-	their business activities more effectively. In order to build lasting trust, Mavision
+	their business activities more effectively. In order to build lasting trust, MAVISION
 	places emphasis on its professionalism, commitment and the technical and functional
 	expertise of its team.
 \end{minipage}
@@ -32,14 +32,14 @@ Mavision before addressing the activities directly relevant to us.
 	\vspace{0pt}
 	\centering
 	\includegraphics[width=\linewidth]{./media/MES_chapter-1-repport/mavision_logo.jpg}
-	\captionof{figure}{Mavision Logo \textnormal{\small  [Source: Mavision, \url{https://www.mavision.tn}, visited April 2025]}}
+	\captionof{figure}{MAVISION Logo \textnormal{\small  [Source: MAVISION, \url{https://www.mavision.tn}, visited April 2025]}}
 	\label{fig:mescha-logo_mavision}
 \end{minipage}
 
 
 \subsection{Areas of Expertise}
  
-Mavision's activities are structured around three main areas:
+MAVISION's activities are structured around three main areas:
  
 \textbf{ERP Integration:} Consulting, implementation and integration of ERP solutions,
 with a strong focus on Microsoft Dynamics 365 Business Central, as well as project and
@@ -55,13 +55,13 @@ their business activities with greater agility and efficiency.
 
 
 % ── 1.2 ─────────────────────────────────────────────────────
-\section{Project Framework}
+\section{Project Context}
 
 This project forms part of our end-of-studies internship, an essential step for
 obtaining the \texttt{bachelor's} degree at the
 \texttt{Higher Institute of Technological Studies}.
 This internship, lasting \texttt{four months}, took place from
-\texttt{February 2\textsuperscript{nd}} to \texttt{May 30\textsuperscript{th}} at Mavision. During
+\texttt{February 2}\textsuperscript{nd} to \texttt{May 30}\textsuperscript{th} at MAVISION. During
 this period, we were assigned to the development team.
 
 This team is responsible for designing and maintaining software solutions that meet
@@ -84,7 +84,7 @@ execution of production orders, monitors machine status, records production
 declarations and provides operators and supervisors with a consolidated view of
 the workshop.
 
-In this context, our project reflects a desire to provide Mavision and its industrial
+In this context, our project reflects a desire to provide MAVISION and its industrial
 clients with a MES solution natively integrated with Microsoft Dynamics 365 Business
 Central. The primary objective is to allow operators to start and monitor their
 production operations from an intuitive mobile/web application, while ensuring data
@@ -103,7 +103,7 @@ This gap leads to several consequences: inability to track the progress of produ
 orders as they are being executed, manual entry of production declarations through
 paper routing sheets or spreadsheet files, lack of visibility for supervisors and
 managers on machine states and operation statuses, and insufficient traceability of
-actual shop-floor activity. Thus, a central question arises: how can Mavision provide
+actual shop-floor activity. Thus, a central question arises: how can MAVISION provide
 its industrial clients with a solution that optimises the management of production
 operations, ensuring effective, accurate and real-time synchronisation between the shop
 floor and the ERP system?
@@ -119,7 +119,7 @@ or spreadsheet files, leading to data entry errors, delays in information report
 and the absence of reliable traceability.
 
 Supervisors and production managers have no real-time visibility into the progress of
-production orders, nor the current status of machines (running, paused, out of order).
+production orders, nor the current status of machines (running, paused).
 There is often no tool to automatically correlate production declarations with orders
 planned in the ERP.
 
@@ -130,7 +130,7 @@ Delmia Apriso, one of the leading enterprise-grade Manufacturing Execution Syste
 on the market, whose interface is illustrated in the figure below.
 
 Delmia Apriso is a comprehensive cloud-based MES platform developed by Dassault
-Systemes, designed for large-scale industrial enterprises.  It covers the full spectrum
+Systemes~\cite{dassault_apriso}, designed for large-scale industrial enterprises.  It covers the full spectrum
 of manufacturing operations including production execution, quality management,
 labour tracking and supply chain integration. While technically mature and feature-rich, 
 it targets large multinational manufacturers with complex and highly customised
@@ -145,11 +145,11 @@ that place it out of reach for small and medium-sized manufacturers.
 \end{figure}
 
 
-From Mavision's perspective as a software provider, the goal is not to use an MES
+From MAVISION's perspective as a software provider, the goal is not to use an MES
 solution internally, but to deliver one to its industrial clients. The solution must
 therefore be cost-effective to sell, straightforward to deploy and maintain at client
 sites, and natively integrated into Microsoft Dynamics 365 Business Central, which is
-already Mavision's core ERP offering. A heavyweight platform such as Delmia Apriso,
+already MAVISION's core ERP offering. A heavyweight platform such as Delmia Apriso,
 which requires a separate infrastructure and lengthy implementation cycles, is
 incompatible with this commercial model. Table~\ref{tab:mescha-comparaison_existant}
 summarises the key attributes of Delmia Apriso against the specific needs of the
@@ -193,7 +193,7 @@ limitations, as detailed in the previous section. To address these, we propose t
 design and deploy an innovative MES solution natively integrated with Microsoft
 Dynamics 365 Business Central.
 
-This solution consists of two complementary parts:
+This solution consists of four complementary parts:
 
 \begin{itemize}
 	\item \textbf{An AL back-end (Business Central)}: developed in AL language, it
@@ -207,7 +207,7 @@ This solution consists of two complementary parts:
 	      handling SSPI/Windows authentication toward Business Central and exposing
 	      a unified REST API to both the Flutter client and the Python AI agent.
 	\item \textbf{A Python AI agent (FastAPI)}: provides the conversational
-	      intelligence layer introduced in Sprint~5: intent classification, multi-provider
+	      intelligence layer, intent classification, multi-provider
 	      LLM synthesis, fuzzy machine resolution, and contextual redirect actions.
 \end{itemize}
 
@@ -224,7 +224,7 @@ Our MES solution aims to:
 	      from the Business Central ERP.
 	\item Allow operators to start, pause and complete operations from an intuitive
 	      reactive interfaces.
-	\item Record production declarations (produced quantities, scrap) and synchronise
+	\item Record production declarations (produced quantities, scrap, scan) and synchronise
 	      them with production orders in Business Central.
 	\item Manage users by roles (Administrator, Supervisor, Operator) with secure
 	      token-based authentication.
@@ -243,7 +243,7 @@ phases, for efficient and optimal management.
 
 \subsubsection*{Selection of the Agile Methodology}
 
-Agile is an iterative and collaborative working method that takes into account the
+Agile is an iterative and collaborative working method~\cite{agilemanifesto} that takes into account the
 initial needs of the client and any changes that may arise. Its central ingredient is
 customer-centred iterative development, which allows a team to gather client feedback
 on a regular basis and make the necessary adjustments at the right time.
@@ -255,7 +255,7 @@ to satisfy a client.
 
 \subsubsection*{Adoption of the Scrum Framework}
 
-We adopted the Scrum framework, an agile approach based on short sprints and regular
+We adopted the Scrum framework~\cite{scrumguide}, an agile approach based on short sprints and regular
 ceremonies. This choice allowed us to deliver functional increments at the end of each sprint, while maintaining smooth communication with the professional and 
 our academic supervisors.
 
@@ -271,7 +271,7 @@ our academic supervisors.
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
 
-In this chapter, we presented Mavision, the company where the project is being
+In this chapter, we presented MAVISION, the company where the project is being
 carried out. We then defined the subject context, as well as the objectives of our
 work and the chosen methodology. In order to ensure the report progresses logically,
 we will examine the existing solutions used in the company. We will then explain the

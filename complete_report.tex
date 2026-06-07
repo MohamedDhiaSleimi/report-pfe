@@ -13,6 +13,7 @@
 % =============================================================================
 
 % --- Core ---
+\usepackage{tocloft}
 \usepackage{seqsplit}
 \usepackage{enumitem}
 \usepackage{float}
@@ -154,7 +155,7 @@
   pdfcreator={LaTeX},
   pdftitle={MES System},
   pdfauthor={Mohamed Dhia SLEIMI \& Mustapha BOUZIRI},
-  pdfsubject={End-of-Studies Project Report --- ISET Rades / Mavision}
+  pdfsubject={End-of-Studies Project Report --- ISET Rades / MAVISION}
 }
 
 % --- Page geometry (guide: top/bottom 2.5cm, left 3cm, right 2cm) ---
@@ -180,14 +181,44 @@
 % =============================================================================
 \newcommand{\modulename}[1]{\texttt{#1}}
 \newcommand{\apiendpoint}[1]{\texttt{#1}}
-\newcommand{\techname}[1]{\textsf{#1}}
+\usepackage{xparse}
+\ExplSyntaxOn
+  \NewDocumentCommand{\techname}{m}
+    {
+      \texttt{\__tn_start:w #1 \q_recursion_tail \q_recursion_stop}
+    }
+  \cs_new_protected:Npn \__tn_start:w #1 #2
+    {
+      \quark_if_recursion_tail_stop:N #1
+      #1
+      \__tn_scan:w #2
+    }
+  \cs_new_protected:Npn \__tn_scan:w #1
+    {
+      \quark_if_recursion_tail_stop:N #1
+      \__tn_lookahead:Nw #1
+    }
+  \cs_new_protected:Npn \__tn_lookahead:Nw #1 #2
+    {
+      \tl_if_in:NnTF \c__tn_U {#1}
+        {
+          \tl_if_in:NnTF \c__tn_L {#2}
+            { \- #1 }
+            { #1 }
+        }
+        { #1 }
+      \__tn_scan:w #2
+    }
+  \tl_const:Nn \c__tn_U {ABCDEFGHIJKLMNOPQRSTUVWXYZ}
+  \tl_const:Nn \c__tn_L {abcdefghijklmnopqrstuvwxyz0123456789}
+\ExplSyntaxOff
 \newcommand{\uilabel}[1]{\textit{#1}}
 \newcommand{\domainterm}[1]{\emph{#1}}
 \newcommand{\userrole}[1]{#1}
 
 % --- Project metadata ---
 \newcommand{\InstituteName}{Higher Institute Of Technological Studies Rades}
-\newcommand{\CompanyName}{Mavision}
+\newcommand{\CompanyName}{MAVISION}
 \newcommand{\ProjectName}{MES System}
 \newcommand{\StudentOne}{Mohamed Dhia \textsc{SLEIMI}}
 \newcommand{\StudentTwo}{Mustapha \textsc{BOUZIRI}}
@@ -215,44 +246,34 @@
 \cleardoublepage
 \thispagestyle{empty}
 \begin{center}{\large\bfseries Abstract}\end{center}
-
-\noindent\textbf{Français :} \\[4pt]
-Ce projet présente un Système d'Exécution de la Fabrication (MES) intégré nativement à Microsoft Dynamics 365 Business
-Central, développé lors d'un stage de quatre mois chez Mavision, pour pallier l'absence de visibilité en temps réel
-sur l'atelier dans les environnements de production à suivi papier. L'architecture comprend quatre composants : une
-extension AL exposant des endpoints OData V4 avec authentification par jeton ; un reverse proxy Node.js pour
-l'authentification BC ; une application Flutter multiplateforme (Android, Web, desktop) ; et un agent IA Python FastAPI
-pour les requêtes en langage naturel. Les opérateurs et superviseurs accèdent au suivi des machines, au contrôle des
-opérations, aux nomenclatures, à la lecture de codes-barres, au signalement des rebuts et à l'impression d'étiquettes ;
-les administrateurs gèrent les utilisateurs et le journal d'activité. L'interface supporte trois langues avec RTL
-automatique. Le développement a suivi Scrum en quatre sprints de deux semaines, avec une piste d'audit en ajout seul
-garantissant l'inviolabilité des enregistrements. \\[4pt]
-\textbf{Mots-clés :} MES, Système d'Exécution de la Fabrication, Business Central, Flutter, OData V4,
-Intégration ERP, Industrie 4.0, Suivi de Production, Scrum. \\[4pt]
-\noindent\textbf{English :} \\[4pt]
-This project presents a Manufacturing Execution System (MES) natively integrated with Microsoft Dynamics 365 Business
-Central, developed over a four-month internship at Mavision, an ERP consulting firm, to address the lack of real-time
-shop-floor visibility in paper-based manufacturing environments. The architecture spans four components: an AL extension
-exposing OData V4 endpoints with token-based authentication; a Node.js reverse proxy for BC authentication; a
-cross-platform Flutter application (Android, Web, desktop); and a Python FastAPI AI agent for natural-language shop-floor
-queries. Operators and Supervisors gain machine monitoring, operation control, BOM tracking, barcode scanning, scrap
-reporting, and label printing; Administrators manage users and the activity log. The interface supports English, French,
-and Arabic with automatic RTL layout. Development followed Scrum across four two-week sprints, with an append-only
-audit trail guaranteeing tamper-evident records. \\[4pt]
+\noindent\textbf{Français:} \\[2pt]
+Un Système d'Exécution de la Fabrication intégré à Microsoft Dynamics 365 Business Central, 
+développé lors d'un stage de quatre mois chez MAVISION. Le système fait le lien entre les ateliers
+fonctionnant sur papier et une visibilité en temps réel grâce à quatre couches : une extension AL 
+avec des endpoints OData V4, un proxy d'authentification Node.js, une application Flutter 
+multiplateforme, et un agent IA Python FastAPI pour les requêtes en langage naturel. Les 
+opérateurs et superviseurs gèrent la surveillance des machines, le suivi des nomenclatures, 
+la lecture de codes-barres, le signalement des rebuts et l'impression d'étiquettes ; les 
+administrateurs gèrent les utilisateurs, les codes-barres et un journal d'audit. Support 
+trilingue (anglais, français, arabe) avec mise en page RTL automatique, livré en cinq sprints 
+Scrum. \\[2pt]
+\textbf{Mots-clés:} MES, Système d'Exécution de la Fabrication, Business Central, Flutter, OData V4,
+Intégration ERP, Industrie 4.0, Suivi de Production, Scrum. \\[2pt]
+\noindent\textbf{English:} \\[2pt]
+A Manufacturing Execution System integrated with Microsoft Dynamics 365 Business Central, built 
+during a four-month internship at MAVISION. The system bridges paper-based shop floors with 
+real-time visibility through four layers: an AL extension with OData V4 endpoints, a Node.js 
+authentication proxy, a cross-platform Flutter app, and a Python FastAPI AI agent for natural-language 
+queries. Operators and supervisors handle machine monitoring, BOM tracking, barcode scanning, 
+scrap reporting, and label printing; admins manage users, barcodes and an audit log. Trilingual 
+support (English, French, Arabic) with automatic RTL layout, delivered across five Scrum sprints. \\[2pt]
 \textbf{Keywords:} MES, Manufacturing Execution System, Business Central, Flutter, OData V4,
-ERP Integration, Industry 4.0, Production Tracking, Scrum. \\[4pt]
+ERP Integration, Industry 4.0, Production Tracking, Scrum. \\[0pt]
 \begin{Arabic}
   \begin{RTL}
-    \textbf{العربية:} \\[4pt]
-    يُقدِّم هذا المشروع نظام تنفيذ التصنيع (MES) المدمج مع Microsoft Dynamics 365 Business Central،
-    المطوَّر خلال تدريب أربعة أشهر في شركة Mavision، لمعالجة غياب الرؤية الآنية لأرضية الإنتاج
-    في بيئات التتبع الورقي. تتكوّن البنية من امتداد AL يكشف نقاط نهاية OData V4 بمصادقة بالرمز المميّز؛
-    ووكيل عكسي Node.js لمصادقة BC؛ وتطبيق Flutter متعدد المنصات (Android، ويب، سطح المكتب)؛
-    ووكيل ذكاء اصطناعي Python FastAPI للاستعلام بلغة طبيعية. يتمكّن المشغّلون والمشرفون من مراقبة
-    الآلات والعمليات وقوائم المواد ومسح الباركود والإبلاغ عن الهدر وطباعة التسميات، فيما يُدير
-    المسؤولون المستخدمين ويطّلعون على سجل النشاط. تدعم الواجهة ثلاث لغات مع RTL تلقائي، واتّبع
-    التطوير Scrum في أربعة سبرينتات مع مسار تدقيق إلحاقي يضمن سجلات غير قابلة للتلاعب. \\[4pt]
-    \textbf{الكلمات المفتاحية:} نظام تنفيذ التصنيع، Business Central، Flutter،
+    \textbf{العربية:} \\[2pt]
+    نظام تنفيذ التصنيع مدمج مع Microsoft Dynamics 365 Business Central، تم تطويره خلال تدريب مدته أربعة أشهر في شركة MAVISION. يربط النظام بين بيئات العمل الورقية في المصانع والرؤية الفورية في الوقت الحقيقي من خلال أربع طبقات: امتداد AL مع نقاط نهاية OData V4، وبروكسي مصادقة Node.js، وتطبيق Flutter متعدد المنصات، ووكيل ذكاء اصطناعي بـ Python FastAPI للاستعلامات باللغة الطبيعية. يتولى المشغلون والمشرفون مراقبة الآلات وتتبع قوائم المواد ومسح الباركود والإبلاغ عن الهدر وطباعة الملصقات؛ فيما يدير المسؤولون المستخدمين والباركود وسجل المراجعة. يدعم النظام ثلاث لغات (الإنجليزية، الفرنسية، العربية) مع تخطيط تلقائي من اليمين إلى اليسار، وقد تم تسليمه عبر خمسة سبرينتات Scrum. \\[2pt]
+    \textbf{الكلمات المفتاحية:} نظام تنفيذ التصنيع، Business Central، Flutter，
     OData V4، تكامل ERP، الصناعة 4.0، تتبع الإنتاج، Scrum.
   \end{RTL}
 \end{Arabic}
@@ -261,10 +282,57 @@ ERP Integration, Industry 4.0, Production Tracking, Scrum. \\[4pt]
 \newpage
 
 %── ─ Dédicaces ────────────────────────────────────────────────────────────────
-\chapter*{Dédicaces}
-\markboth{Dédicaces}{}
-[Dédicace de \StudentOne{}] \\[12pt]
-[Dédicace de \StudentTwo{}]
+\begingroup
+\titlespacing*{\chapter}{0pt}{-50pt}{12pt}
+\chapter*{Dedication}
+\endgroup
+
+\vspace{12pt}
+\itshape
+\textbf{To my parents}\\[0.1em]
+Who have always encouraged me in my studies. Their unconditional love and
+their sacrifices have been a constant source of inspiration for me. I am
+grateful to have had their support throughout this journey.\\
+
+
+\vspace{0.1em}
+\textbf{To my family}\\[0.1em]
+For the efforts you have made to support me throughout my studies.\\
+
+
+\vspace{0.1em}
+\textbf{To my project partner}\\[0.1em]
+Your collaboration and invaluable support have been essential\\
+to our shared success.\\
+
+
+\vspace{0.1em}
+\textbf{To all my friends}\\[0.1em]
+Their sincere friendship, presence and support have made this experience\\
+even more enjoyable and meaningful.\\
+\vspace{1em}
+\begin{flushright}
+\normalfont\textit{SLEIMI Mohamed Dhia}
+\end{flushright}
+
+\vspace{2em}
+\itshape
+\textbf{To my family}\\[0.1em]
+For your love, patience, and constant support, which have been 
+my greatest source of strength throughout this journey.\\
+
+\vspace{0.1em}
+\textbf{To my friends}\\[0.1em]
+For your encouragement, understanding, and motivation during this experience.\\
+
+\vspace{0.1em}
+\textbf{To my teammate}\\[0.1em]
+For your collaboration, effort, and commitment, which were essential 
+to the success of this project.\\
+\vspace{1em}
+\begin{flushright}
+\normalfont\textit{BOUZIRI Mustapha}
+\end{flushright}
 \newpage
 
 
@@ -273,12 +341,12 @@ ERP Integration, Industry 4.0, Production Tracking, Scrum. \\[4pt]
 \markboth{Acknowledgements}{}
 
 First and foremost, We would like to thank our academic supervisor,
-\textbf{Ms.~\texttt{Marwa CHAABANI}}, for their expert guidance and
+\textbf{Ms.~\texttt{CHAABANI Marwa}}, for their expert guidance and
 unwavering commitment. Their in-depth knowledge, availability and unconditional support
 have been of paramount importance in the completion of this project.
 
 We would also like to express our gratitude to our professional supervisor at
-\textbf{Mavision}, \textbf{Mr.~\texttt{Mourad YOUNSI}}. Their
+\textbf{MAVISION}, \textbf{Mr.~\texttt{YOUNSI Mourad}}. Their
 contribution to this project, both on a technical and organisational level, has been
 invaluable. Their strategic vision, domain expertise and availability greatly facilitated
 our progress and allowed us to gain an enriching professional experience.
@@ -293,16 +361,22 @@ our progress and allowed us to gain an enriching professional experience.
 \newpage
 
 % ── List of Tables ──────────────────────────────────────────────────────────
-\listoftables
+{
+  \setlength{\cftbeforelottitleskip}{0pt}
+  \setlength{\cftafterlottitleskip}{10pt}
+  \listoftables
+}
 \newpage
-
 % ── List of Figures ─────────────────────────────────────────────────────────
-\listoffigures
+{
+  \setlength{\cftbeforeloftitleskip}{0pt}
+  \setlength{\cftafterloftitleskip}{10pt}
+  \listoffigures
+}
 \newpage
 
 
 \chapter*{List of Abbreviations}
-\addstarredchapter{List of Abbreviations}
 \markboth{List of Abbreviations}{}
 \begin{longtable}{@{} P{0.18\linewidth} P{0.78\linewidth} @{}}
   \toprule
@@ -314,15 +388,33 @@ our progress and allowed us to gain an enriching professional experience.
   \multicolumn{2}{r}{\small Continued on next page} \\ \endfoot \endlastfoot
   AL      & Application Language (Microsoft Dynamics 365 Business Central) \\
   API     & Application Programming Interface \\
+  AI      & Artificial Intelligence \\
   BOM     & Bill of Materials \\
   ERP     & Enterprise Resource Planning \\
+  BI      & Business Intelligence \\
+  CORS    & Cross-Origin Resource Sharing \\
   GUID    & Globally Unique Identifier \\
+  HTTP    & Hypertext Transfer Protocol \\
+  JSON    & JavaScript Object Notation \\
+  KPI     & Key Performance Indicator \\
+  LLM     & Large Language Model \\
   MES     & Manufacturing Execution System \\
   OData   & Open Data Protocol \\
+  PDF     & Portable Document Format \\
+  QR      & Quick Response (code) \\
+  REST    & Representational State Transfer \\
   RTL     & Right-to-Left \\
+  SaaS    & Software as a Service \\
   SCRUM   & (no acronym — Scrum is a proper noun) \\
   SHA-256 & Secure Hash Algorithm 256-bit \\
+  SSPI    & Security Support Provider Interface \\
+  TOTP    & Time-based One-Time Password \\
+  TTL     & Time To Live \\
+  URL     & Uniform Resource Locator \\
   UML     & Unified Modelling Language \\
+  UTC     & Coordinated Universal Time \\
+  XML     & Extensible Markup Language \\
+  2FA     & Two-Factor Authentication \\
   \bottomrule
 \end{longtable}
 \newpage
@@ -345,7 +437,7 @@ these challenges by bridging the gap between decision-making layers
 \textit{Enterprise Resource Planning} (ERP) and  the production floor.
 
 It is within this context that the present end-of-studies project was carried out at
-\textbf{Mavision}. The project consists of the design and development of an integrated
+\textbf{MAVISION}. The project consists of the design and development of an integrated
 MES system, structured around two main components: a business back-end developed in
 AL language on the Microsoft Dynamics 365 Business Central platform, and a
 cross-platform mobile/web application developed with the Flutter framework. The system
@@ -367,9 +459,9 @@ performance, serving both operators and management alike.
 %% CHAPTERS:BEGIN
 
 % ---------------------------------------------------------------------------
-% Global Project Framework
+% Global Project Context
 % ---------------------------------------------------------------------------
-\chapter{Global Project Framework}
+\chapter{Global Project Context}
 \graphicspath{{./media/MES_chapter-1-repport/}}
 \minitoc
 \newpage
@@ -448,7 +540,7 @@ Sprint~1 established the security and identity foundation: a token-based
 authentication system, role-based access control, and a full administrator
 interface for user and account management. Sprint~2 delivered real-time machine
 monitoring, production order management, and a complete operation history trail.
-Sprint~3 completed the production execution loop with cycle declarations, pause,
+Sprint~3 completed the production execution loop with declarations, pause,
 resume, finish, and close flows, Bill of Materials visibility, component scanning, scrap
 tracking, and label printing. Sprint~4 added a
 machine performance dashboard, a paginated activity log for the Administrator, multi-language support
@@ -465,7 +557,7 @@ declaration. The reactive stream architecture in the Flutter frontend provides
 operators and supervisors with a consistent, real-time view of the production
 floor without manual refreshes.
 The project demonstrates that a tightly integrated MES solution can be built
-on top of Microsoft Dynamics 365 Business Central using OData V4 unbound
+on top of Microsoft Dynamics 365 Business Central~\cite{businesscentral} using OData V4 unbound
 actions, with a Node.js middleware layer handling Windows authentication and
 AI routing. The extensible layered architecture positions the system for future
 enhancements such as statistical reporting, alert management, and additional
@@ -474,14 +566,75 @@ language support.
 % ---------------------------------------------------------------------------
 % BIBLIOGRAPHY
 % ---------------------------------------------------------------------------
-\begin{thebibliography}{9}
-
-%% BIBLIOGRAPHY:BEGIN 
-% -- auto-merged bibliography entries --
-\bibitem{mavision}
-  Mavision, \textit{Official Website}, \url{https://www.mavision.tn},
-  visited April 2025.
-%% BIBLIOGRAPHY:END
-
-\end{thebibliography}
+% ── Webography ────────────────────────────────────────────────────────────────
+{
+  \setlength{\cftbeforelottitleskip}{0pt}
+  \setlength{\cftafterlottitleskip}{10pt}
+  \renewcommand{\bibname}{Webography}
+  \begin{thebibliography}{9}
+  %% BIBLIOGRAPHY:BEGIN 
+  % -- auto-merged bibliography entries --
+  \bibitem{mavision}
+      MAVISION, \textit{Official Website}, \url{https://www.mavision.tn},
+      visited April 2025. 
+    \bibitem{dassault_apriso}
+      Dassault Syst\`{e}mes,\textit{DELMIA Apriso --- Manufacturing Operations Management},
+      \url{https://www.3ds.com/products/delmia/apriso}, visited April 2025. 
+    \bibitem{agilemanifesto}
+      K.~Beck \textit{et~al.},
+      \textit{Manifesto for Agile Software Development}, 2001.
+      \url{https://agilemanifesto.org}, visited April 2025.    
+    \bibitem{scrumguide}
+      K.~Schwaber and J.~Sutherland,
+      \textit{The Scrum Guide},
+      Scrum.org, November 2020.
+      \url{https://scrumguides.org/scrum-guide.html}, visited April 2025.
+  \bibitem{nodejs}
+      OpenJS Foundation,
+      \textit{Node.js --- JavaScript Runtime Built on Chrome's V8 Engine},
+      \url{https://nodejs.org}, visited April 2025. 
+    \bibitem{express}
+      OpenJS Foundation,
+      \textit{Express 5.x --- Fast, Unopinionated, Minimalist Web Framework for Node.js},
+      \url{https://expressjs.com}, visited April 2025.   
+    \bibitem{flutter}
+      Google LLC,
+      \textit{Flutter --- Build Apps for Any Screen},
+      \url{https://flutter.dev}, visited April 2025.   
+    \bibitem{fastapi}
+      S.~Ram\'{\i}rez,
+      \textit{FastAPI --- Modern, Fast Web Framework for Building APIs with Python},
+      \url{https://fastapi.tiangolo.com}, visited April 2025.
+    \bibitem{python}
+      Python Software Foundation,
+      \textit{Python Programming Language},
+      \url{https://www.python.org}, visited April 2025.
+    \bibitem{businesscentral}
+      Microsoft Corporation,
+      \textit{Microsoft Dynamics~365 Business Central Documentation},
+      \url{https://learn.microsoft.com/en-us/dynamics365/business-central/},
+      visited April 2025.
+    \bibitem{dart_lang}
+      Google LLC,
+      \textit{Dart Programming Language},
+      \url{https://dart.dev}, visited April 2025.
+    \bibitem{postman}
+      Postman Inc.,
+      \textit{Postman --- API Platform for Building and Using APIs},
+      \url{https://www.postman.com}, visited April 2025.
+    \bibitem{ollama}
+      Ollama,
+      \textit{Ollama --- Get Up and Running with Large Language Models Locally},
+      \url{https://ollama.ai}, visited April 2025.
+    \bibitem{openai_api}
+      OpenAI,
+      \textit{OpenAI API Reference},
+      \url{https://platform.openai.com/docs/api-reference}, visited April 2025.
+    \bibitem{anthropic}
+      Anthropic,
+      \textit{Anthropic --- AI Safety Company},
+      \url{https://www.anthropic.com}, visited April 2025.
+  %% BIBLIOGRAPHY:END
+  \end{thebibliography}
+}
 \end{document}

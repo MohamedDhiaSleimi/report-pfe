@@ -37,33 +37,32 @@ This sprint covers \textbf{Domain 5:}
 
 	\textbf{US-5.1}
 	& As an \userrole{Operator} or \userrole{Supervisor}, I need a
-	natural-language chat assistant so that I can query machine status,
-	production progress, and operational data without navigating the full UI.
+	natural-language chat assistant so that I can query shop floor 
+	status without navigating the full UI.
 	& \noindent\textit{Python AI Agent}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Implement \techname{FastAPI} application (\texttt{main.py}) with
-		      \texttt{/health} and \texttt{POST /chat} endpoints and lifespan context
+		\item Implement \techname{FastAPI} application (\techname{main.py}) with
+		      \techname{/health} and \techname{POST /chat} endpoints and lifespan context
 		      manager.
-		\item Implement \texttt{agent/models.py}: \modulename{ChatRequest},
+		\item Implement \techname{agent/models.py}: \modulename{ChatRequest},
 		      \modulename{ChatResponse}, \modulename{UserContext},
 		      \modulename{ConversationTurn}, \modulename{ToolResult},
 		      \modulename{RedirectAction}, \modulename{ActionType}.
-		\item Implement \texttt{agent/config.py} with all environment variable
+		\item Implement \techname{agent/config.py} with all environment variable
 		      constants (LLM provider, model, timeouts, middleware URL).
-	\end{itemize}
-	\\ & &
-	\begin{itemize}[nosep, leftmargin=*]
-		\item Implement \texttt{agent/llm\_client.py}: \modulename{LLMClient}
-		      abstraction and \texttt{build\_llm\_client()} factory supporting
-		      Ollama, OpenAI, HuggingFace, OpenAI-compatible, and Anthropic providers.
-		\item Implement \texttt{tools/mes\_tools.py}: all 17 BC web service tool
-		      classes, \texttt{TOOL\_MAP} registry, \texttt{MACHINE\_SCOPED\_TOOLS}
-		      set, \texttt{\_post()} HTTP helper, and \texttt{\_extract\_value()}
+		\item Implement \techname{agent/llm\_client.py}: \modulename{LLMClient}
+		      abstraction and \techname{build\_llm\_client()} factory supporting
+		      Ollama~\cite{ollama}, OpenAI~\cite{openai_api}, OpenAI-compatible, and Anthropic~\cite{anthropic} providers.
+		\item Implement \techname{tools/mes\_tools.py}: all 17 BC web service tool
+		      classes, \techname{TOOL\_MAP} registry, \techname{MACHINE\_SCOPED\_TOOLS}
+		      set, \techname{\_post()} HTTP helper, and \techname{\_extract\_value()}
 		      response normaliser.
-		\item Implement \texttt{agent/llm\_intent.py}:
-          \modulename{LLMIntentIdentifier} with \texttt{\_llm\_classify()},
-          \texttt{\_llm\_classify\_retry()} (error-context retry on first
-          failure), \texttt{\_validate\_plan()}, \texttt{\_plan\_to\_tool\_chain()},
+	\end{itemize} \\ & &
+	\begin{itemize}[nosep, leftmargin=*]
+		\item Implement \techname{agent/llm\_intent.py}:
+          \modulename{LLMIntentIdentifier} with \techname{\_llm\_classify()},
+          \techname{\_llm\_classify\_retry()} (error-context retry on first
+          failure), \techname{\_validate\_plan()}, \techname{\_plan\_to\_tool\_chain()},
           and \modulename{ThinkingBlock} reasoning trace.
 	\end{itemize}
 \\ & &
@@ -71,12 +70,12 @@ This sprint covers \textbf{Domain 5:}
 	\begin{itemize}[nosep, leftmargin=*]
 		\item Create model \techname{AiChatResponse}, \techname{ConversationTurn},
 		      and \techname{AiRedirectAction}.
-		\item Create \techname{AiChatService} consuming \texttt{POST /api/ai/chat}.
+		\item Create \techname{AiChatService} consuming \techname{POST /api/ai/chat}.
 		\item Create \techname{AiChatProvider} managing conversation history,
 		      loading state, and last response.
 		\item Create page \techname{AiChatPage} rendering as side overlay
 		      (width $\geq$ 600\,dp) or dialog (mobile).
-		\item Integrate chat FAB and overlay toggle in \techname{Machinelistpage}.
+		\item Integrate chat floating action button and overlay toggle in \techname{Machinelistpage}.
 	\end{itemize}\\
 	\midrule
 
@@ -87,17 +86,17 @@ This sprint covers \textbf{Domain 5:}
 	visiting each machine individually.
 	& \noindent\textit{Python AI Agent}
 	\begin{itemize}[nosep, leftmargin=*]
-	\item Implement \texttt{agent/composite.py}: \texttt{is\_composite()}
+	\item Implement \techname{agent/composite.py}: \techname{is\_composite()}
 		      detection, \modulename{CompositeResult} dataclass,
-		      \texttt{run\_composite()} with status filters (running/idle/overdue/scrap),
+		      \techname{run\_composite()} with status filters (running/idle/overdue/scrap),
 		      fan-out capped at 12 machines in batches of 4.
 		\end{itemize}
 	\\ & &
 	\begin{itemize}[nosep, leftmargin=*]
-		 \item Implement \texttt{build\_composite\_context()} context builder.
-		\item Integrate composite path in \texttt{Orchestrator.run()} and
-		      \texttt{Orchestrator.\_run\_composite()}.
-		\item Add \texttt{is\_composite} flag detection to both LLM and regex
+		 \item Implement \techname{build\_composite\_context()} context builder.
+		\item Integrate composite path in \techname{Orchestrator.run()} and
+		      \techname{Orchestrator.\_run\_composite()}.
+		\item Add \techname{is\_composite} flag detection to both LLM and regex
 		      classifiers.
 	\end{itemize}\\
 	\midrule
@@ -108,20 +107,20 @@ This sprint covers \textbf{Domain 5:}
 	operation, or dashboard directly from the chat response.
 	& \noindent\textit{Python AI Agent}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Define \texttt{ActionType} enum and \modulename{RedirectAction}
-		      schema in \texttt{agent/models.py}.
-		\item Implement \texttt{Orchestrator.\_parse\_actions()} to extract
-		      \texttt{actions} JSON block from LLM reply (up to 4 actions).
+		\item Define \techname{ActionType} enum and \modulename{RedirectAction}
+		      schema in \techname{agent/models.py}.
+		\item Implement \techname{Orchestrator.\_parse\_actions()} to extract
+		      \techname{actions} JSON block from LLM reply (up to 4 actions).
 		\item Document supported action types and payload shapes in
-		      \texttt{prompts/system\_prompts.py} (\texttt{SYNTHESIS\_USER\_TEMPLATE}).
+		      \techname{prompts/system\_prompts.py} (\techname{SYNTHESIS\_USER\_TEMPLATE}).
 	\end{itemize}
 \\ & &
 	\noindent\textit{Flutter}
 	\begin{itemize}[nosep, leftmargin=*]
-			\item Implement \texttt{AiChatPage.\_handleAction()} routing:
-		      \texttt{redirect\_machine} $\to$ \techname{MachineMainPage},
-		      \texttt{redirect\_machine\_list} $\to$ \texttt{popUntil},
-		      \texttt{redirect\_operation} $\to$ \techname{OperationDetailPage}.
+			\item Implement \techname{AiChatPage.\_handleAction()} routing:
+		      \techname{redirect\_machine} $\to$ \techname{MachineMainPage},
+		      \techname{redirect\_machine\_list} $\to$ \techname{popUntil},
+		      \techname{redirect\_operation} $\to$ \techname{OperationDetailPage}.
 		\item Render action buttons only on the last assistant message.
 	\end{itemize}\\
 	\midrule
@@ -131,35 +130,35 @@ This sprint covers \textbf{Domain 5:}
 	anomalies so that I can act before problems escalate.
 	& \noindent\textit{Python AI Agent}
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Integrate enrichment into \texttt{Orchestrator.\_enrich()} for all
+		\item Integrate enrichment into \techname{Orchestrator.\_enrich()} for all
 		      result key types (machines, orders, live\_data, cycles, activity,
 		      dashboard, history, bom, etc.).
-		\item Implement \texttt{prompts/system\_prompts.py}:
-		      \texttt{SYNTHESIS\_SYSTEM} and \texttt{SYNTHESIS\_USER\_TEMPLATE}
+		\item Implement \techname{prompts/system\_prompts.py}:
+		      \techname{SYNTHESIS\_SYSTEM} and \techname{SYNTHESIS\_USER\_TEMPLATE}
 		      with anomaly alert rules and action block instructions.
 	\end{itemize}
 	\\ & &
 	\begin{itemize}[nosep, leftmargin=*]
-		\item Implement \texttt{agent/data\_analysis.py}:
-              \texttt{enrich\_deadlines()} (hours until deadline, overdue flag,
-              risk level), \texttt{analyse\_scrap()} (scrap rate, severity,
-              spike detection at $\times 2.5$ baseline), \texttt{analyse\_velocity()}
+		\item Implement \techname{agent/data\_analysis.py}:
+              \techname{enrich\_deadlines()} (hours until deadline, overdue flag,
+              risk level), \techname{analyse\_scrap()} (scrap rate, severity,
+              spike detection at $\times 2.5$ baseline), \techname{analyse\_velocity()}
               (units per hour, projected end, velocity status),
-              \texttt{summarise\_machines()}, \texttt{summarise\_dashboard()},
-              \texttt{analyse\_work\_center\_summary()} (fleet utilisation
-              across work centres), \texttt{analyse\_operator\_summary()}
+              \techname{summarise\_machines()}, \techname{summarise\_dashboard()},
+              \techname{analyse\_work\_center\_summary()} (fleet utilisation
+              across work centres), \techname{analyse\_operator\_summary()}
               (active vs idle operator counts, top producers),
-              \texttt{analyse\_scrap\_summary()} (top machines/orders/reason
-              codes by scrap quantity), and \texttt{analyse\_delay\_report()}
+              \techname{analyse\_scrap\_summary()} (top machines/orders/reason
+              codes by scrap quantity), and \techname{analyse\_delay\_report()}
               (overdue count, abnormal-pause count, worst offenders by delay
               minutes).
-		\item Implement \texttt{agent/orchestrator.py}: full 7-stage pipeline
-				(\texttt{Orchestrator.run()}, \texttt{\_resolve\_machine\_ref()},
-				\texttt{\_execute\_step()}, \texttt{\_fetch\_all\_machines()},
-				\texttt{\_enrich()}, \texttt{\_build\_context()},
-				\texttt{\_synthesise()}, \texttt{\_parse\_actions()}).
-		\item Wire all 17 tools to the \texttt{fetchSupervisorOverview} and
-		      \texttt{fetchDelayReport} BC endpoints used in anomaly detection.
+		\item Implement \techname{agent/orchestrator.py}: full 7-stage pipeline
+				(\techname{Orchestrator.run()}, \techname{\_resolve\_machine\_ref()},
+				\techname{\_execute\_step()}, \techname{\_fetch\_all\_machines()},
+				\techname{\_enrich()}, \techname{\_build\_context()},
+				\techname{\_synthesise()}, \techname{\_parse\_actions()}).
+		\item Wire all 17 tools to the \techname{fetchSupervisorOverview} and
+		      \techname{fetchDelayReport} BC endpoints used in anomaly detection.
 	\end{itemize}\\
 
 \end{longtable}
@@ -185,12 +184,12 @@ Both roles benefit from the fuzzy machine resolution and redirect action use cas
 \subsection{Textual Use Case Description}
 
 The following table (Table~\ref{tab:s5-uc-chat}) provides the detailed textual
-description of the \textit{Query via Chat Assistant} use case, which represents
+description of the \textit{Ask Question via Chat Assistant} use case, which represents
 the central interaction delivered in this sprint.
 
 \Needspace{8\baselineskip}
 \begin{longtable}{@{} P{0.21\linewidth} P{0.75\linewidth} @{}}
-	\caption{Textual Use Case Description --- Query via Chat Assistant}
+	\caption{Textual Use Case Description --- Ask Question}
 	\label{tab:s5-uc-chat} \\
 	\toprule
 	\endfirsthead
@@ -201,57 +200,59 @@ the central interaction delivered in this sprint.
 	\bottomrule
 	\endlastfoot
 
-	\textbf{Use Case Name}  & Query via Chat Assistant \\
+	\textbf{Use Case Name}  & Ask Question via Chat Assistant \\
 	\midrule
 	\textbf{Primary Actors} & \userrole{Operator}, \userrole{Supervisor} \\
  	\midrule
 	\textbf{Preconditions} &
 	\begin{itemize}[nosep, leftmargin=*]
-	\item The user is authenticated and holds a valid session token.
-	\item The \techname{Node.js} middleware and \techname{Python} AI agent are
-	      running and reachable.
-	\item At least one work centre is assigned to the authenticated user.
+		\item The user is authenticated and holds a valid session token.
+		\item The \techname{Node.js} middleware and \techname{Python} AI agent are
+			running and reachable.
+		\item At least one work centre is assigned to the authenticated user.
  	\end{itemize} \\
 	\midrule
 	\textbf{Postconditions} &
 	\begin{itemize}[nosep, leftmargin=*]
-	\item A natural-language answer is displayed in the chat panel.
-	\item Up to 4 contextual navigation action buttons may appear below the reply.
-	\item The conversation turn is appended to the session history for multi-turn context.
+		\item A natural-language answer is displayed in the chat panel.
+		\item Up to 4 contextual navigation action buttons may appear below the reply.
+		\item The conversation turn is appended to the session history for multi-turn context.
  	\end{itemize} \\
  	\midrule
 	\textbf{Main Scenario} &
 	\begin{enumerate}[nosep, leftmargin=*]
-	\item The user opens the chat panel from the \uilabel{Machine List Page}.
-	\item The user types a question in natural language (e.g.,\ ``What is MC-001 producing?'').
-	\item The \techname{Flutter} client sends a \texttt{POST /api/ai/chat} request
-	      to the \techname{Node.js} middleware with the message, user context, and
-	      conversation history.
-	\item The middleware forwards the request to the \techname{Python} AI agent.
-	\item The AI agent classifies intent via the \domainterm{LLM} classifier
-	      and builds a \modulename{ToolChain}.
-	\item If the machine reference is ambiguous, the agent resolves it using the
-	      five-tier fuzzy resolver.
-	\item The agent executes each \modulename{ToolStep} in sequence, calling the
-	      corresponding \techname{BC} web service via the \techname{Node.js} middleware.
-	\item The agent enriches the raw results with pure-Python analytics
-	      (deadline enrichment, scrap analysis, velocity computation).
-	\item The agent synthesises a natural-language answer via a second \domainterm{LLM}
-	      call using the enriched context block.
-	\item Any contextual redirect actions are extracted from the reply and returned
-	      as structured \modulename{RedirectAction} objects.
-	\item The \techname{Flutter} client displays the answer and optional action buttons.
+		\item The user opens the chat panel from the \uilabel{Machine List Page}.
+		\item The user types a question in natural language (e.g.,\ ``What is MC-001 producing?'').
+	\end{enumerate} \\ & 
+	\begin{enumerate}[resume, nosep, leftmargin=*]
+		\setcounter{enumi}{2}
+		\item The \techname{Flutter} client sends a \techname{POST /api/ai/chat} request
+		to the \techname{Node.js} middleware with the message, user context, and
+		conversation history.
+		\item The middleware forwards the request to the \techname{Python} AI agent.
+		\item The AI agent classifies intent via the \domainterm{LLM} classifier
+			and builds a \modulename{ToolChain}.
+		\item If the machine reference is ambiguous, the agent resolves it using the
+			five-tier fuzzy resolver.
+		\item The agent executes each \modulename{ToolStep} in sequence, calling the
+			corresponding \techname{BC} web service via the \techname{Node.js} middleware.
+		\item The agent enriches the raw results with pure-Python analytics
+			(deadline enrichment, scrap analysis, velocity computation).
+		\item The agent synthesises a natural-language answer via a second \domainterm{LLM}
+			call using the enriched context block.
+		\item Any contextual redirect actions are extracted from the reply and returned
+			as structured \modulename{RedirectAction} objects.
+		\item The \techname{Flutter} client displays the answer and optional action buttons.
 	\end{enumerate} \\
 	\midrule
 	\textbf{Alternative Flows} &
 	\begin{itemize}[nosep, leftmargin=*]
-	\item \textit{Ambiguous machine name:} the agent returns a disambiguation
-	      message listing up to 3 candidates; the user clarifies in the next turn.
-	\item \textit{Fleet-wide query:} the agent triggers the composite fan-out
-	      path, querying up to 12 machines in parallel batches of 4.
-	
-	\item \textit{General question:} no tool calls are made; the \domainterm{LLM}
-	      answers from general manufacturing knowledge.
+		\item \textit{Ambiguous machine name:} the agent returns a disambiguation
+			message listing up to 3 candidates; the user clarifies in the next turn.
+		\item \textit{Fleet-wide query:} the agent triggers the composite fan-out
+			path, querying up to 12 machines in parallel batches of 4.
+		\item \textit{General question:} no tool calls are made; the \domainterm{LLM}
+			answers from general manufacturing knowledge.
  	\end{itemize} \\
 \end{longtable}
 
@@ -262,7 +263,7 @@ Figure~\ref{fig:s5-seq-intent-classification} illustrates the two-tier intent cl
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}
+  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/diagrams/sequence/Intent-Classiﬁcation.png}
   \caption{SD-31: Intent Classification, LLM with Two-Attempt Retry.}
   \label{fig:s5-seq-intent-classification}
 \end{figure}
@@ -293,6 +294,51 @@ Figure~\ref{fig:s5-seq-intent-classification} illustrates the two-tier intent cl
 %           LLMIntent-->>Orch: (ToolChain, ThinkingBlock)
 %       end
 
+Figure~\ref{fig:s5-seq-view-chat} illustrates the end-to-end flow for viewing an ongoing operation, showing the Flutter client initiating the request, the Node middleware routing to the AI Module, the sequential \domainterm{ToolChain} execution against Business Central to resolve machines and ongoing operations, and the final LLM synthesis step that produces the \domainterm{ChatResponse} consumed by the Flutter navigation layer.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/diagrams/sequence/viewChat.png}
+  \caption{SD-31: view chat.}
+  \label{fig:s5-seq-view-chat}
+\end{figure}
+
+% sequenceDiagram
+%     actor User
+%     participant Flutter
+%     participant Node
+%     participant AI as AI Module
+%     participant BC as Business Central
+
+%     User->>Flutter: Tap "View operation"
+
+%     Flutter->>Node: POST /api/ai/chat\n{message, user_context, history}
+
+%     Node->>AI: POST /chat (payload)
+
+%     Note over AI: Classify intent\n(machine_live / operation_live)
+
+%     AI->>Node: Tool: list_machines
+%     Node->>BC: POST /api/FetchMachines
+%     BC-->>Node: 200 OK — machines[]
+%     Node-->>AI: machines[]
+
+%     AI->>Node: Tool: get_ongoing_operations
+%     Node->>BC: POST /api/fetchOngoingOperationsState
+%     BC-->>Node: 200 OK — operations[]
+%     Node-->>AI: operations[]
+
+%     Note over AI: Enrich data\nLLM synthesis
+
+%     AI-->>Node: ChatResponse {text, actions}
+%     Node-->>Flutter: 200 OK — {text, actions[]}
+
+%     Note over Flutter: Parse actions\nRender UI
+
+%     Flutter->>Flutter: Navigate to MachineMainPage\ninitialTabIndex = 1 (ongoing)
+
+%     Flutter-->>User: Show operation details
+
 
 \subsection{Class Diagram}
 
@@ -311,21 +357,21 @@ Figure~\ref{fig:s5-seq-intent-classification} illustrates the two-tier intent cl
 \subsection{Node.js Middleware}
 \subsubsection*{Overview}
 
-The \techname{Node.js} middleware (\texttt{node-middleware/}) is an
+The \techname{Node.js} middleware (\techname{node-middleware/}) is an
 \techname{Express~5} application that acts as the single network bridge between
 the \techname{Flutter} client and \techname{Business Central}.
 
-The middleware exposes two distinct route families: \texttt{/api/<endpoint>}
-(proxied to BC) and \texttt{/api/ai/*} (forwarded to the Python agent).
+The middleware exposes two distinct route families: \techname{/api/<endpoint>}
+(proxied to BC) and \techname{/api/ai/*} (forwarded to the Python agent).
 
 \subsubsection*{AI Proxy Layer}
 
-The \texttt{src/aiProxy.js} \techname{Express} Router, mounted at
-\texttt{/api/ai}, forwards \texttt{POST /chat} requests to the Python agent at
-\texttt{AI\_AGENT\_URL/chat} using the native \texttt{fetch} API. It validates
-that both \texttt{message} and \texttt{user\_context} are present before
-forwarding, enforces a \texttt{AI\_TIMEOUT\_MS} abort timeout, and passes the
-Python agent's response through unchanged. A \texttt{GET /api/ai/health}
+The \techname{src/aiProxy.js} \techname{Express} Router, mounted at
+\techname{/api/ai}, forwards \techname{POST /chat} requests to the Python agent at
+\techname{AI\_AGENT\_URL/chat} using the native \techname{fetch} API. It validates
+that both \techname{message} and \techname{user\_context} are present before
+forwarding, enforces a \techname{AI\_TIMEOUT\_MS} abort timeout, and passes the
+Python agent's response through unchanged. A \techname{GET /api/ai/health}
 endpoint aggregates the Node process uptime with the Python agent's own health
 status for monitoring purposes.
 
@@ -351,17 +397,18 @@ the middleware.
 	\bottomrule
 	\endlastfoot
 
-	\texttt{BC\_HOST}       & ---         & Base URL of the BC server (no trailing slash) \\ \midrule
-	\texttt{BC\_INSTANCE}   & ---         & BC server instance name \\ \midrule
-	\texttt{BC\_COMPANY}    & ---         & Company GUID \\ \midrule
-	\texttt{PROXY\_PORT}    & 3000      & Listening port \\ \midrule
-	\texttt{ALLOWED\_ORIGINS} & ""      & Comma-separated CORS origins \\ \midrule
-	\texttt{BC\_TIMEOUT\_MS} & 30\,000 & BC request timeout in milliseconds \\ \midrule
-	\texttt{AI\_AGENT\_URL} & port 3000 & Python agent base URL \\ \midrule
-	\texttt{AI\_TIMEOUT\_MS} & 60\,000 & AI request abort timeout in milliseconds \\
+	\techname{BC\_HOST}       & ---         & Base URL of the BC server (no trailing slash) \\ \midrule
+	\techname{BC\_INSTANCE}   & ---         & BC server instance name \\ \midrule
+	\techname{BC\_COMPANY}    & ---         & Company GUID \\ \midrule
+	\techname{PROXY\_PORT}    & 3000      & Listening port \\ \midrule
+	\techname{ALLOWED\_ORIGINS} & ""      & Comma-separated CORS origins \\ \midrule
+	\techname{BC\_TIMEOUT\_MS} & 30\,000 & BC request timeout in milliseconds \\ \midrule
+	\techname{AI\_AGENT\_URL} & port 3000 & Python agent base URL \\ \midrule
+	\techname{AI\_TIMEOUT\_MS} & 60\,000 & AI request abort timeout in milliseconds \\
 \end{longtable}
 
 \subsection{Python AI Agent}	
+Figure~\ref{fig:s5-architecture} shows the file architecture of the AI assistant layer.
 The agent makes up to three \domainterm{LLM} calls per user message;
 one or two calls for intent classification (a second call is triggered
 automatically if the first response is malformed), and one call for synthesis.
@@ -371,8 +418,8 @@ automatically if the first response is malformed), and one call for synthesis.
 \begin{minipage}[t]{0.6\textwidth}
 	\vspace{0pt}
 
-
 	\textbf{Call 1 --- Intent classification.} The \modulename{LLMIntentIdentifier}
+	following a ReAct-style reasoning pattern,
 	sends the user message, role, and work centres to the LLM with a structured
 	system prompt listing all 17 available tools and their required arguments. The
 	LLM responds with a JSON plan containing the intent label, a list of
@@ -381,25 +428,24 @@ automatically if the first response is malformed), and one call for synthesis.
 	The plan is validated against the tool catalogue before being converted to a
 	\modulename{ToolChain} dataclass.
 	The entire classification reasoning is stored in a \modulename{ThinkingBlock} and
-	returned in \texttt{ChatResponse.thinking} for debugging; it is never shown to the
+	returned in \techname{ChatResponse.thinking} for debugging; it is never shown to the
 	user.
 
 	\textbf{Call 2 --- Synthesis.} After all tool steps have been executed and their
-	results enriched, the \texttt{Orchestrator.\_synthesise()} method builds a context
+	results enriched, the \techname{Orchestrator.\_synthesise()} method builds a context
 	block containing the enriched data in markdown format (truncated at
-	\texttt{LLM\_MAX\_CONTEXT\_CHARS} characters) and calls the LLM with the
-	\texttt{SYNTHESIS\_SYSTEM} and \texttt{SYNTHESIS\_USER\_TEMPLATE} prompts. The
+	\techname{LLM\_MAX\_CONTEXT\_CHARS} characters) and calls the LLM with the
+	\techname{SYNTHESIS\_SYSTEM} and \techname{SYNTHESIS\_USER\_TEMPLATE} prompts. The
 	system prompt instructs the model to answer only from the pre-fetched data, to
 	highlight anomalies prominently, to respond in the same language as the user, and
-	to optionally append a \texttt{actions} JSON block containing up to 4
+	to optionally append a \techname{actions} JSON block containing up to 4
 	\modulename{RedirectAction} objects.
-
+	
 	\subsubsection*{Intent Classification}
 
 	\textbf{LLM classifier.} The \modulename{LLMIntentIdentifier} constructs a
-	system prompt containing the full \texttt{TOOL\_CATALOGUE}
-	and the list of valid intent labels. The user message is injected
-	
+	system prompt containing the full \techname{TOOL\_CATALOGUE}
+	and the list of valid intent labels.
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.38\textwidth}
@@ -410,47 +456,46 @@ automatically if the first response is malformed), and one call for synthesis.
 	\label{fig:s5-architecture}
 \end{minipage}
 
-via \texttt{\_IDENTIFIER\_USER\_TEMPLATE} along with the
+
+The user message is injected 
+via \techname{\_IDENTIFIER\_USER\_TEMPLATE} along with the
 user's role and work centres. The raw LLM response is stripped of JSON fences,
-parsed, validated against \texttt{\_VALID\_TOOLS} and \texttt{\_INTENT\_MAP}, and
-converted to a \modulename{ToolChain} via \texttt{\_plan\_to\_tool\_chain()}. 
+parsed, validated against \techname{\_VALID\_TOOLS} and \techname{\_INTENT\_MAP}, and
+converted to a \modulename{ToolChain} via \techname{\_plan\_to\_tool\_chain()}. 
 If the first attempt fails (timeout, malformed JSON, or invalid tool names),
 the identifier automatically retries with a second \domainterm{LLM} call
 that injects the original error reason into the conversation so the model
 can self-correct. Only after both attempts fail does the identifier return
-a \texttt{general} intent with an empty tool chain.
-
-Figure~\ref{fig:s5-architecture} shows the file architecture of the AI
-assistant layer.
+a \techname{general} intent with an empty tool chain.
 
 \subsubsection*{Machine Name Resolution}
 When a user references a machine by a non-canonical name or a fuzzy
 identifier (e.g.\ ''Fraiseuse 3'', ''milling machine'', ''mc 1''),
-the orchestrator invokes the \texttt{agent/resolver.py} module before
+the orchestrator invokes the \techname{agent/resolver.py} module before
 executing the tool chain. The resolver applies a five-tier cascade
-against the full machine catalogue fetched from
-\techname{Business Central}:
+against the full machine catalogue fetched from \techname{Business Central}:
+
 \begin{enumerate}[noitemsep, topsep=4pt, leftmargin=*]
-\item \textbf{Exact canonical match} --- the query matches a
-\texttt{machineNo} character-for-character (confidence 1.0).
-\item \textbf{Normalised exact match} --- accents stripped,
-case-folded, and punctuation normalised before comparison
-(confidence 0.97).
-\item \textbf{Digit-suffix match} --- the numeric suffix of the query
-matches the machine's numeric suffix after stripping leading zeros
-(confidence 0.88--0.90).
-\item \textbf{Token-overlap score} --- query tokens are matched against
-the machine name using a containment-biased formula; short
-queries that are fully contained in a longer name (e.g.
-Presse'' $\subset$ Presse hydraulique'') score  $\geq$ 0.80,
-  \item \textbf{Edit\-distance (Levenshtein)} --- normalised similarity
-        against the machine ID, used as a typo\-recovery fallback.
+	\item \textbf{Exact canonical match} --- the query matches a
+	\techname{machineNo} character-for-character (confidence 1.0).
+	\item \textbf{Normalised exact match} --- accents stripped,
+	case-folded, and punctuation normalised before comparison
+	(confidence 0.97).
+	\item \textbf{Digit-suffix match} --- the numeric suffix of the query
+	matches the machine's numeric suffix after stripping leading zeros
+	(confidence 0.88--0.90).
+	\item \textbf{Token-overlap score} --- query tokens are matched against
+	the machine name using a containment-biased formula; short
+	queries that are fully contained in a longer name (e.g.
+	Presse'' $\subset$ Presse hydraulique'') score  $\geq$ 0.80,
+	\item \textbf{Edit\-distance (Levenshtein)} --- normalised similarity
+	against the machine ID, used as a typo\-recovery fallback.
 \end{enumerate}
-A match at or above \texttt{HIGH\_CONFIDENCE} (0.85) is accepted
-silently. A match between \texttt{MIN\_CONFIDENCE} (0.45) and
-\texttt{HIGH\_CONFIDENCE} is accepted but the assumption is surfaced
+A match at or above \techname{HIGH\_CONFIDENCE} (0.85) is accepted
+silently. A match between \techname{MIN\_CONFIDENCE} (0.45) and
+\techname{HIGH\_CONFIDENCE} is accepted but the assumption is surfaced
 in the \domainterm{LLM} context block. A match below
-\texttt{MIN\_CONFIDENCE} is treated as ambiguous: the agent returns
+\techname{MIN\_CONFIDENCE} is treated as ambiguous: the agent returns
 a clarification message listing up to three candidates with their
 work-centre and status, without making any tool calls.
 
@@ -470,61 +515,61 @@ work-centre and status, without making any tool calls.
 	\bottomrule
 	\endlastfoot
 
-	\texttt{machine\_status}       &
+	\techname{machine\_status}       &
 	get\_ongoing\_operations       & 
 	machine, mc-N, status       \\ \midrule
-	\texttt{machine\_orders}       &
+	\techname{machine\_orders}       &
 	get\_machine\_orders           & 
 	order, queue, po-N          \\ \midrule
-	\texttt{machine\_live}         &
+	\techname{machine\_live}         &
 	get\_ongoing\_operations + get\_operation\_live\_data     & 
 	live, real-time, progress   \\ \midrule
-	\texttt{machine\_history}      &
+	\techname{machine\_history}      &
 	get\_operations\_history       & 
 	history, finished, past     \\ \midrule
-	\texttt{machine\_dashboard}    &
+	\techname{machine\_dashboard}    &
 	get\_ongoing\_operations + get\_machine\_dashboard        & 
 	dashboard, kpi, uptime      \\ \midrule
-	\texttt{department\_overview}  &
+	\techname{department\_overview}  &
 	list\_machines (fan-out)       & 
 	department, all machines    \\ \midrule
-	\texttt{activity\_log}         &
+	\techname{activity\_log}         &
 	get\_activity\_log             & 
 	activity, log, happened     \\ \midrule
-	\texttt{scrap\_analysis}       &
+	\techname{scrap\_analysis}       &
 	get\_scrap\_summary             & 
 	scrap, reject, defect       \\ \midrule
-	\texttt{operation\_bom}        &
+	\techname{operation\_bom}        &
 	get\_bom                       & 
 	bom, component, material    \\ \midrule
-	\texttt{production\_cycles}    &
+	\techname{production\_cycles}    &
 	get\_production\_cycles        & 
 	cycle, declaration, shift   \\ \midrule
-	\texttt{operation\_live}       &
+	\techname{operation\_live}       &
 	get\_operation\_live\_data     & 
 	live + order number         \\ \midrule
-	\texttt{work\_center\_summary} &
+	\techname{work\_center\_summary} &
 	get\_work\_center\_summary     & 
 	work center, wc summary          \\ \midrule
-	\texttt{operator\_summary}     &
+	\techname{operator\_summary}     &
 	get\_operator\_summary         & 
 	operator, staff, who is working  \\ \midrule
-	\texttt{supervisor\_overview}  &
+	\techname{supervisor\_overview}  &
 	get\_supervisor\_overview      & 
 	overview, shift briefing, floor  \\ \midrule
-	\texttt{my\_data}              &
+	\techname{my\_data}              &
 	get\_my\_data                  & 
 	my production, what did I do     \\ \midrule
-	\texttt{production\_orders}    &
+	\techname{production\_orders}    &
 	get\_production\_orders       & 
 	list orders, released orders     \\ \midrule
-	\texttt{delay\_report}         &
+	\techname{delay\_report}         &
 	get\_delay\_report             & 
 	overdue, delayed, blocked, late  \\ \midrule
-	\texttt{consumption\_summary}  &
+	\techname{consumption\_summary}  &
 	get\_consumption\_summary      & 
 	material usage, BOM variance     \\
-	\texttt{general}               &
+	\techname{general}               &
 	(none)                         & 
 	No tool trigger matched     \\
 \end{longtable}
@@ -532,7 +577,7 @@ work-centre and status, without making any tool calls.
 \subsubsection*{Tool Catalogue}
 
 The 17 \techname{Business Central} web service wrappers in
-\texttt{tools/mes\_tools.py} correspond directly to the OData functions exposed
+\techname{tools/mes\_tools.py} correspond directly to the OData functions exposed
 by \techname{MES Web Service} (Codeunit 50126). Table~\ref{tab:s5-tools} lists
 all tools, their AL endpoint mappings, and access scope.
 
@@ -552,33 +597,33 @@ all tools, their AL endpoint mappings, and access scope.
 	\bottomrule
 	\endlastfoot
 
-	\texttt{list\_machines}             & FetchMachines                    & Work-centre scoped \\ \midrule
-	\texttt{get\_machine\_orders}       & getMachineOrders                 & Machine scoped     \\ \midrule
-	\texttt{get\_ongoing\_operations}   & fetchOngoingOperationsState      & Machine scoped     \\ \midrule
-	\texttt{get\_operation\_live\_data} & fetchOperationLiveData           & Machine scoped     \\ \midrule
-	\texttt{get\_production\_cycles}    & fetchProductionCycles            & Machine scoped     \\ \midrule
-	\texttt{get\_operations\_history}   & fetchOperationsHistory           & Machine scoped     \\ \midrule
-	\texttt{get\_activity\_log}         & fetchActivityLog                 & Work-centre scoped \\ \midrule
-	\texttt{get\_machine\_dashboard}    & fetchMachineDashboard            & Work-centre scoped \\ \midrule
-	\texttt{get\_production\_orders}    & fetchProductionOrders            & Machine scoped     \\ \midrule
-	\texttt{get\_work\_center\_summary} & fetchWorkCenterSummary           & Work-centre scoped \\ \midrule
-	\texttt{get\_operator\_summary}     & fetchOperatorSummary             & Work-centre scoped \\ \midrule
-	\texttt{get\_my\_data}              & fetchMyData                      & User scoped        \\ \midrule
-	\texttt{get\_scrap\_summary}        & fetchScrapSummary                & Machine scoped     \\ \midrule
-	\texttt{get\_bom}                   & fetchBom                         & Operation scoped     \\ \midrule
-	\texttt{get\_delay\_report}         & fetchDelayReport                 & Work-centre scoped \\ \midrule
-	\texttt{get\_consumption\_summary}  & fetchConsumptionSummary          & Machine scoped     \\ \midrule
-	\texttt{get\_supervisor\_overview}  & fetchSupervisorOverview          & Work-centre scoped \\
+	\techname{list\_machines}             & FetchMachines                    & Work-centre scoped \\ \midrule
+	\techname{get\_machine\_orders}       & getMachineOrders                 & Machine scoped     \\ \midrule
+	\techname{get\_ongoing\_operations}   & fetchOngoingOperationsState      & Machine scoped     \\ \midrule
+	\techname{get\_operation\_live\_data} & fetchOperationLiveData           & Machine scoped     \\ \midrule
+	\techname{get\_production\_cycles}    & fetchProductionCycles            & Machine scoped     \\ \midrule
+	\techname{get\_operations\_history}   & fetchOperationsHistory           & Machine scoped     \\ \midrule
+	\techname{get\_activity\_log}         & fetchActivityLog                 & Work-centre scoped \\ \midrule
+	\techname{get\_machine\_dashboard}    & fetchMachineDashboard            & Work-centre scoped \\ \midrule
+	\techname{get\_production\_orders}    & fetchProductionOrders            & Machine scoped     \\ \midrule
+	\techname{get\_work\_center\_summary} & fetchWorkCenterSummary           & Work-centre scoped \\ \midrule
+	\techname{get\_operator\_summary}     & fetchOperatorSummary             & Work-centre scoped \\ \midrule
+	\techname{get\_my\_data}              & fetchMyData                      & User scoped        \\ \midrule
+	\techname{get\_scrap\_summary}        & fetchScrapSummary                & Machine scoped     \\ \midrule
+	\techname{get\_bom}                   & fetchBom                         & Operation scoped     \\ \midrule
+	\techname{get\_delay\_report}         & fetchDelayReport                 & Work-centre scoped \\ \midrule
+	\techname{get\_consumption\_summary}  & fetchConsumptionSummary          & Machine scoped     \\ \midrule
+	\techname{get\_supervisor\_overview}  & fetchSupervisorOverview          & Work-centre scoped \\
 \end{longtable}
 
 Machine-scoped tools are subject to access control: the orchestrator verifies that
-the resolved \texttt{machineNo} is present in the \texttt{allowed\_machines} map
-(populated by \texttt{list\_machines} calls for the authenticated user's work
+the resolved \techname{machineNo} is present in the \techname{allowed\_machines} map
+(populated by \techname{list\_machines} calls for the authenticated user's work
 centres) before executing the step.
 
 \subsubsection*{Data Enrichment}
 
-The \texttt{Orchestrator.\_enrich()} method runs pure-Python analytics over the
+The \techname{Orchestrator.\_enrich()} method runs pure-Python analytics over the
 raw tool results before they are passed to the synthesis LLM. Table~\ref{tab:s5-enrichment}
 summarises the enrichment applied to each result key.
 
@@ -598,42 +643,42 @@ summarises the enrichment applied to each result key.
 	\bottomrule
 	\endlastfoot
 
-	\texttt{machines}   & \texttt{summarise\_machines()} ; utilisation percentage, working/idle counts, interpretation string \\ \midrule
-	\texttt{orders}     & \texttt{enrich\_deadlines()} ; hours until deadline, overdue flag, risk level (\textit{at\_risk} threshold: $< 4$\,h) \\ \midrule
-	\texttt{live\_data} & \texttt{analyse\_scrap()} + \texttt{analyse\_velocity()} ; scrap severity, spike detection, units per hour, projected end \\ \midrule
-	\texttt{cycles}     & \texttt{analyse\_scrap()} ; scrap trend from cycle history \\ \midrule
-	\texttt{activity}   & \texttt{analyse\_scrap(activity=data)} ; recent scrap event count \\ \midrule
-	\texttt{dashboard}  & \texttt{summarise\_dashboard()} ; fleet totals, overall scrap severity \\ \midrule
-	\texttt{bom}        & Missing components list (items with zero scanned quantity) \\ \midrule
-	\texttt{ongoing}              & Operation list with count; raw \texttt{operations} array from \texttt{get\_ongoing\_operations} \\ \midrule
-	\texttt{production\_orders}   & Status counts per status value, running operation count, plain-English summary string \\ \midrule
-	\texttt{work\_center\_summary}& \texttt{analyse\_work\_center\_summary()} ; fleet utilisation across work centres, working/idle machine counts \\ \midrule
-	\texttt{operator\_summary}    & \texttt{analyse\_operator\_summary()} ; active vs logged-in-idle counts, top-3 producers by quantity \\ \midrule
-	\texttt{my\_data}             & Plain-English interpretation of personal completed ops, produced qty, scrap qty, running ops count \\ \midrule
-	\texttt{scrap\_summary}       & \texttt{analyse\_scrap\_summary()} ; top machines, top orders, top scrap reason codes by quantity \\ \midrule
-	\texttt{delay\_report}        & \texttt{analyse\_delay\_report()} ; overdue count, abnormal-pause count, worst 3 offenders by delay minutes \\ \midrule
-	\texttt{consumption\_summary} & Over-consumed and missing-consumption execution counts \\ \midrule
-	\texttt{supervisor\_overview} & Plain-English summary: stopped machines, idle operators, abnormal pauses, high-scrap ops, delayed ops \\
+	\techname{machines}   & \techname{summarise\_machines()} ; utilisation percentage, working/idle counts, interpretation string \\ \midrule
+	\techname{orders}     & \techname{enrich\_deadlines()} ; hours until deadline, overdue flag, risk level (\textit{at\_risk} threshold: $< 4$\,h) \\ \midrule
+	\techname{live\_data} & \techname{analyse\_scrap()} + \techname{analyse\_velocity()} ; scrap severity, spike detection, units per hour, projected end \\ \midrule
+	\techname{cycles}     & \techname{analyse\_scrap()} ; scrap trend from cycle history \\ \midrule
+	\techname{activity}   & \techname{analyse\_scrap(activity=data)} ; recent scrap event count \\ \midrule
+	\techname{dashboard}  & \techname{summarise\_dashboard()} ; fleet totals, overall scrap severity \\ \midrule
+	\techname{bom}        & Missing components list (items with zero scanned quantity) \\ \midrule
+	\techname{ongoing}              & Operation list with count; raw \techname{operations} array from \techname{get\_ongoing\_operations} \\ \midrule
+	\techname{production\_orders}   & Status counts per status value, running operation count, plain-English summary string \\ \midrule
+	\techname{work\_center\_summary}& \techname{analyse\_work\_center\_summary()} ; fleet utilisation across work centres, working/idle machine counts \\ \midrule
+	\techname{operator\_summary}    & \techname{analyse\_operator\_summary()} ; active vs logged-in-idle counts, top-3 producers by quantity \\ \midrule
+	\techname{my\_data}             & Plain-English interpretation of personal completed ops, produced qty, scrap qty, running ops count \\ \midrule
+	\techname{scrap\_summary}       & \techname{analyse\_scrap\_summary()} ; top machines, top orders, top scrap reason codes by quantity \\ \midrule
+	\techname{delay\_report}        & \techname{analyse\_delay\_report()} ; overdue count, abnormal-pause count, worst 3 offenders by delay minutes \\ \midrule
+	\techname{consumption\_summary} & Over-consumed and missing-consumption execution counts \\ \midrule
+	\techname{supervisor\_overview} & Plain-English summary: stopped machines, idle operators, abnormal pauses, high-scrap ops, delayed ops \\
 \end{longtable}
 
-\textbf{Scrap spike detection.} The \texttt{analyse\_scrap()} function computes
+\textbf{Scrap spike detection.} The \techname{analyse\_scrap()} function computes
 the scrap rate for the most recent quarter of declared cycles and compares it to
 the rate for the earlier three-quarters. If the recent rate exceeds the baseline
 by a factor of 2.5 or is above the critical threshold of 15\%, a spike is flagged
 and explicitly mentioned in the synthesis prompt.
 
-\textbf{Velocity projection.} The \texttt{analyse\_velocity()} function derives
+\textbf{Velocity projection.} The \techname{analyse\_velocity()} function derives
 the actual production rate (units per hour) from the last 6 declared cycles and
 compares it to the required rate (remaining quantity divided by time until the
 planned end). The result is one of \textit{ahead}, \textit{on\_pace}, or
 \textit{behind}, along with a projected completion timestamp.
 
 \subsubsection*{Context Serialisation and Budget Management}
-Before the synthesis \domainterm{LLM} call, \texttt{Orchestrator.\_build\_context()}
+Before the synthesis \domainterm{LLM} call, \techname{Orchestrator.\_build\_context()}
 converts the enriched result dictionary into a single markdown string that
-fits within the \texttt{LLM\_MAX\_CONTEXT\_CHARS} character budget
+fits within the \techname{LLM\_MAX\_CONTEXT\_CHARS} character budget
 (configurable via environment variable, default 20,000 characters).
-Each result key is rendered by \texttt{\_compress\_section()}, which
+Each result key is rendered by \techname{\_compress\_section()}, which
 dispatches to one of 18 type-specific format helpers. Instead of passing
 raw JSON to the \domainterm{LLM}, every helper produces the most
 token-efficient representation for its data type:
@@ -641,19 +686,19 @@ token-efficient representation for its data type:
   \item \textbf{Tabular data} (machines, orders, history, cycles, BOM,
         dashboard, operators, work centres, delays, production orders,
         activity log, consumption) → compact markdown tables via
-        \texttt{\_md\_table()}, with cell content capped at 38 characters
+        \techname{\_md\_table()}, with cell content capped at 38 characters
         and row counts capped per key (e.g.\ 20 rows for orders, 30 for
         cycles).
   \item \textbf{Scalar / KPI data} (live operation data, scrap summary,
         supervisor overview, personal data)→ key-value bullet lists
         with pre-computed analysis interpretations inline.
   \item \textbf{Pre-computed interpretation strings} (produced by the
-        enrichment functions in \texttt{data\_analysis.py}) are always
+        enrichment functions in \techname{data\_analysis.py}) are always
         rendered first in each section in bold, so the \domainterm{LLM}
         receives the conclusion before the supporting data.
 \end{itemize}
 Sections are added in order until the character budget is reached.
-If a section would overflow the budget, \texttt{\_emergency\_compress()}
+If a section would overflow the budget, \techname{\_emergency\_compress()}
 is called first: it emits only the pre-computed interpretation string
 for that key, appending \textit{(detail omitted --- budget)}. If even
 the interpretation string does not fit, the section is silently skipped.
@@ -678,24 +723,24 @@ markdown form they produce.
 \bottomrule
 \endlastfoot
 
-	\texttt{\_fmt\_machine\_table}           & \texttt{machines}              & Table: MachineNo, Name, Status, WC, CurrentOrder \\ \midrule
-	\texttt{\_fmt\_orders\_table}            & \texttt{orders}                & Table: OrderNo, Risk, HoursLeft, Item, Qty, Status \\ \midrule
-	\texttt{\_fmt\_dashboard\_table}         & \texttt{dashboard}             & Table: Machine, Uptime\%, Produced, Scrap, OpsFinished \\ \midrule
-	\texttt{\_fmt\_ongoing\_table}           & \texttt{ongoing}               & Table: OrderNo, OpNo, Status, Progress, Produced, OrderQty \\ \midrule
-	\texttt{\_fmt\_history\_table}           & \texttt{history}               & Table: OrderNo, OpNo, Status, Start, End (capped 20 rows) \\ \midrule
-	\texttt{\_fmt\_cycles\_table}            & \texttt{cycles}                & Table: Time, Operator, CycleQty, TotalProduced (capped 30) \\ \midrule
-	\texttt{\_fmt\_bom\_table}               & \texttt{bom}                   & Table: Item, Description, Required, Scanned, Status \\ \midrule
-	\texttt{\_fmt\_live\_kv}                 & \texttt{live\_data}            & Key-value list: status, progress, scrap, velocity \\ \midrule
-	\texttt{\_fmt\_wc\_table}                & \texttt{work\_center\_summary} & Table: WC, Name, Working/Total, RunningOps, Produced, Scrap \\ \midrule
-	\texttt{\_fmt\_operator\_table}          & \texttt{operator\_summary}     & Table: UserId, Name, LoggedIn, Machine, Produced, Scrap \\ \midrule
-	\texttt{\_fmt\_scrap\_summary\_kv}       & \texttt{scrap\_summary}        & Key-value list: total, top machines, top reason codes \\ \midrule
-	\texttt{\_fmt\_delay\_table}             & \texttt{delay\_report}         & Table: OrderNo, OpNo, Machine, Overdue, LongPause, Delay \\ \midrule
-	\texttt{\_fmt\_consumption\_table}       & \texttt{consumption\_summary}  & Table: OrderNo, Item, Planned, Consumed, Status (capped 25) \\ \midrule
-	\texttt{\_fmt\_supervisor\_kv}           & \texttt{supervisor\_overview}  & Key-value list: counts + stopped machines + abnormal pauses \\ \midrule
-	\texttt{\_fmt\_production\_orders\_table}& \texttt{production\_orders}    & Table: OrderNo, Status, Item, Qty, Progress, DueDate, Running \\ \midrule
-	\texttt{\_fmt\_activity\_table}          & \texttt{activity}              & Table: Time, Type, Machine, Operator, Action (capped 30) \\ \midrule
-	\texttt{\_fmt\_my\_data\_kv}             & \texttt{my\_data}              & Key-value list: user stats + last 5 operations \\ \midrule
-	\texttt{(fallback)}                      & unknown keys                   & Raw JSON capped at 600 characters \\
+	\techname{\_fmt\_machine\_table}           & \techname{machines}              & Table: MachineNo, Name, Status, WC, CurrentOrder \\ \midrule
+	\techname{\_fmt\_orders\_table}            & \techname{orders}                & Table: OrderNo, Risk, HoursLeft, Item, Qty, Status \\ \midrule
+	\techname{\_fmt\_dashboard\_table}         & \techname{dashboard}             & Table: Machine, Uptime\%, Produced, Scrap, OpsFinished \\ \midrule
+	\techname{\_fmt\_ongoing\_table}           & \techname{ongoing}               & Table: OrderNo, OpNo, Status, Progress, Produced, OrderQty \\ \midrule
+	\techname{\_fmt\_history\_table}           & \techname{history}               & Table: OrderNo, OpNo, Status, Start, End (capped 20 rows) \\ \midrule
+	\techname{\_fmt\_cycles\_table}            & \techname{cycles}                & Table: Time, Operator, CycleQty, TotalProduced (capped 30) \\ \midrule
+	\techname{\_fmt\_bom\_table}               & \techname{bom}                   & Table: Item, Description, Required, Scanned, Status \\ \midrule
+	\techname{\_fmt\_live\_kv}                 & \techname{live\_data}            & Key-value list: status, progress, scrap, velocity \\ \midrule
+	\techname{\_fmt\_wc\_table}                & \techname{work\_center\_summary} & Table: WC, Name, Working/Total, RunningOps, Produced, Scrap \\ \midrule
+	\techname{\_fmt\_operator\_table}          & \techname{operator\_summary}     & Table: UserId, Name, LoggedIn, Machine, Produced, Scrap \\ \midrule
+	\techname{\_fmt\_scrap\_summary\_kv}       & \techname{scrap\_summary}        & Key-value list: total, top machines, top reason codes \\ \midrule
+	\techname{\_fmt\_delay\_table}             & \techname{delay\_report}         & Table: OrderNo, OpNo, Machine, Overdue, LongPause, Delay \\ \midrule
+	\techname{\_fmt\_consumption\_table}       & \techname{consumption\_summary}  & Table: OrderNo, Item, Planned, Consumed, Status (capped 25) \\ \midrule
+	\techname{\_fmt\_supervisor\_kv}           & \techname{supervisor\_overview}  & Key-value list: counts + stopped machines + abnormal pauses \\ \midrule
+	\techname{\_fmt\_production\_orders\_table}& \techname{production\_orders}    & Table: OrderNo, Status, Item, Qty, Progress, DueDate, Running \\ \midrule
+	\techname{\_fmt\_activity\_table}          & \techname{activity}              & Table: Time, Type, Machine, Operator, Action (capped 30) \\ \midrule
+	\techname{\_fmt\_my\_data\_kv}             & \techname{my\_data}              & Key-value list: user stats + last 5 operations \\ \midrule
+	\techname{(fallback)}                      & unknown keys                   & Raw JSON capped at 600 characters \\
 
 \end{longtable}
 
@@ -704,14 +749,14 @@ markdown form they produce.
 \subsubsection*{Chat Page and Provider}
 
 The \techname{AiChatPage} widget adapts its rendering to the available screen
-width: on screens wider than 600\,dp it is displayed as a \texttt{Positioned}
+width: on screens wider than 600\,dp it is displayed as a \techname{Positioned}
 overlay panel (400\,dp wide, full height) anchored to the right side of the
-\techname{MachineListPage}; on mobile it opens as a \texttt{Dialog}. The chat
+\techname{MachineListPage}; on mobile it opens as a \techname{Dialog}. The chat
 input field and conversation history list are shared between both modes.
 
 The \techname{AiChatProvider} maintains the in-session conversation history as a
-\texttt{List<ConversationTurn>}. On each \texttt{sendMessage()} call it appends
-the user turn, calls \texttt{AiChatService.sendMessage()} with the history
+\techname{List<ConversationTurn>}. On each \techname{sendMessage()} call it appends
+the user turn, calls \techname{AiChatService.sendMessage()} with the history
 (excluding the most recently appended turn, which the server receives as the
 primary message), appends the assistant reply, and stores the last
 \techname{AiChatResponse} for action button rendering.
@@ -719,22 +764,22 @@ primary message), appends the assistant reply, and stores the last
 \subsubsection*{Redirect Actions}
 
 After each assistant reply, the \techname{AiChatPage} inspects
-\texttt{lastResponse.actions}. If non-empty and the message is the last in the
+\techname{lastResponse.actions}. If non-empty and the message is the last in the
 conversation, up to 4 \techname{ElevatedButton} widgets are rendered below the
-reply bubble. The \texttt{\_handleAction()} method routes each action type:
+reply bubble. The \techname{\_handleAction()} method routes each action type:
 
 \begin{itemize}[noitemsep]
-	\item \texttt{redirect\_machine} $\to$ \texttt{Navigator.push} to
-	      \techname{MachineMainPage} with the payload \texttt{machineNo}.
-	\item \texttt{redirect\_operation} $\to$ \texttt{Navigator.push} to
-	      \techname{OperationDetailPage} with \texttt{machineNo},
-	      \texttt{prodOrderNo}, and \texttt{operationNo}.
-	\item \texttt{redirect\_machine\_list} $\to$ \texttt{Navigator.popUntil}
+	\item \techname{redirect\_machine} $\to$ \techname{Navigator.push} to
+	      \techname{MachineMainPage} with the payload \techname{machineNo}.
+	\item \techname{redirect\_operation} $\to$ \techname{Navigator.push} to
+	      \techname{OperationDetailPage} with \techname{machineNo},
+	      \techname{prodOrderNo}, and \techname{operationNo}.
+	\item \techname{redirect\_machine\_list} $\to$ \techname{Navigator.popUntil}
 	      to the root route (machine list).
-	\item \texttt{redirect\_machine\_dashboard} $\to$ \texttt{Navigator.push}
+	\item \techname{redirect\_machine\_dashboard} $\to$ \techname{Navigator.push}
 	      to the admin machine dashboard.
-	\item \texttt{redirect\_history} $\to$ \texttt{Navigator.push} to
-	      \techname{MachineHistoryPage} with \texttt{machineNo}.
+	\item \techname{redirect\_history} $\to$ \techname{Navigator.push} to
+	      \techname{MachineHistoryPage} with \techname{machineNo}.
 \end{itemize}
 
 \subsubsection*{User Interface}
@@ -750,9 +795,9 @@ A \uilabel{Clear} button resets the conversation history.
 	\centering
 	\setlength{\fboxsep}{5pt}
 	\colorbox{black}{%
-		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}%
+		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/UI/aiChat/wide.png}%
 		\hspace{\fboxsep}%
-		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}%
+		\includegraphics[height=0.3\textheight,keepaspectratio]{./media/MES_Sprint-5-Report/UI/aiChat/small.png}%
 	}
 	\caption{\uilabel{AI Chat Panel} --- desktop side panel and mobile dialog views.}
 	\label{fig:s5-ui-chat-panel}
@@ -765,20 +810,8 @@ A \uilabel{Clear} button resets the conversation history.
 \subsubsection*{Integration test}
 
 For integration testing we used \techname{Postman} for the Node.js middleware
-endpoints and the \techname{FastAPI} built-in \texttt{/docs} interface for the
+endpoints and the \techname{FastAPI} built-in \techname{/docs} interface for the
 Python agent.
-
-Figure~\ref{fig:s5-test-chat} shows a test of the \apiendpoint{POST /api/ai/chat}
-endpoint with a single-machine live data query. The response contains the
-synthesised text, the \texttt{thinking} block with the classified intent and tool
-steps, and one \texttt{redirect\_machine} action.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}
-	\caption{Postman endpoint test --- \texttt{POST /api/ai/chat}.}
-	\label{fig:s5-test-chat}
-\end{figure}
 
 Figure~\ref{fig:s5-test-health} shows a test of the
 \apiendpoint{GET /api/ai/health} endpoint confirming that both the Node.js proxy
@@ -786,10 +819,23 @@ and the Python agent are reachable.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/placeholder-image.png}
-	\caption{Postman endpoint test --- \texttt{GET /api/ai/health}.}
+	\includegraphics[width=0.9\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/test/health.png}
+	\caption{Postman endpoint test --- \techname{GET /api/ai/health}.}
 	\label{fig:s5-test-health}
 \end{figure}
+
+Figure~\ref{fig:s5-test-chat} shows a test of the \apiendpoint{POST /api/ai/chat}
+endpoint with a single-machine live data query. The response contains the
+synthesised text, the \techname{thinking} block with the classified intent and tool
+steps, and one \techname{redirect\_machine} action.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth,keepaspectratio]{./media/MES_Sprint-5-Report/test/query.png}
+	\caption{Postman endpoint test --- \techname{POST /api/ai/chat}.}
+	\label{fig:s5-test-chat}
+\end{figure}
+
 
 \phantomsection
 \section*{Conclusion}

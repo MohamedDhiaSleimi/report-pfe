@@ -40,9 +40,9 @@ will interact with our system:
 
 	Administrator  &
 	This is the person responsible for the MES platform. They manage all users,
-	passwords and account statuses. They have access to all
+	passwords and account statuses, etc. They have access to all
 	administration application dashboards. \\[6pt]
-
+	\midrule
 	Supervisor     &
 	An intermediate user who is a superset of the Operator role. In addition to their 
 	own access, they inherit all Operator permissions. They can monitor the progress 
@@ -50,12 +50,13 @@ will interact with our system:
 	the progress of production orders. They can mark operations as finished, cancel, 
 	or interrupt unneeded operations, view machine dashboards, and declare on behalf 
 	of an Operator. \\[6pt]
-
+	\midrule
 	Operator       &
 	This is the end user of the MES application. Assigned to a work centre
 	(\textit{Work Center}), they can view the production orders assigned to their machine,
 	start, pause or resume an operation, declare produced quantities, declare defective 
 	material, and scan components for consumption. \\
+	\midrule
 
 \end{longtable}
 
@@ -116,16 +117,15 @@ solution meets these functional requirements.
 	      \begin{itemize}
 	      	\item Start an operation (validation of prerequisites: released order, free machine, previous operation completed if applicable).
 	      	\item Pause or resume an ongoing operation.
-		 	\item Declare produced quantities (validation: quantity $> 0$, no excess of the ordered quantity).
+		 	\item Declare produced quantities (validation: quantity $> 0$, enough scanned component, no excess of the ordered quantity, etc).
 	      	\item View progress in real time (produced quantity, completion percentage, operation status, scrapped units).
 			\item View the Bill of Materials for the current operation with component consumption
 	      	\item Report scrapped units with a reason code.
 	      	\item scan components into the operation to record consumption against the BOM.
 	      \end{itemize}
 
-	\item \textbf{Progress Dashboard}: Allows the operator and supervisor to view all
-	      active operations (Running / Paused) on a given machine, with their respective
-	      progress.
+	\item \textbf{Progress Dashboard}: Allows the supervisor to view an overview of all machines information 
+	 (uptime, operation completed, produced units, etc)
 
 	\item \textbf{Password Change}: Allows any logged-in user to change their password
 	      by entering their old password and the new one.
@@ -176,6 +176,18 @@ these non-functional requirements:
 \end{itemize}
 
 % ── 2.2 ─────────────────────────────────────────────────────────────────────
+
+\subsection{Global Use case diagram}
+the following Figure~\ref{fig:mescha-global-uc} dipects the global use case diagram of the MES system, illustrating the interactions between the various user roles and the system's functionalities.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth,keepaspectratio]{./media/MES_chapter-2-repport/global-useCase.png}
+	\caption{MES System Global Use Case Diagram}
+	\label{fig:mescha-global-uc}
+\end{figure}
+
+
 \section{Project Management with Scrum}
 
 \subsection{Backlog Features}
@@ -218,7 +230,7 @@ these non-functional requirements:
 	features appropriate to my role.
 	&
 	\begin{itemize}[nosep, leftmargin=*]
-	\item User can enter username and password.
+	\item User can enter Auth-ID and password.
 	\item System validates credentials against the \techname{MES}.
 	\item Session token is created upon successful authentication.
 	\item User is redirected to the appropriate dashboard based on role.
@@ -239,7 +251,7 @@ these non-functional requirements:
 	As an \userrole{Administrator}, I need to see a list of all
 	users with their details so that I can manage their accounts.
 	& \begin{itemize}[nosep, leftmargin=*]
-	\item The user list displays each account's full information.
+	\item The user list displays each account's information.
 	\item The list refreshes automatically after a new user is created.
 	\end{itemize} & High \\ & &
 	\begin{itemize}[nosep, leftmargin=*]
@@ -251,7 +263,7 @@ these non-functional requirements:
 	passwords to users so that they can log in for the first time.
 	& \begin{itemize}[nosep, leftmargin=*]
 	\item Admin can generate a random secure password for any user.
-	\item The generated password is sent to the \techname{ERP} via \texttt{AdminSetPassword}.
+	\item The generated password is sent to the \techname{MES} via \techname{AdminSetPassword}.
 	\item The target account is flagged \domainterm{Need To Change Password} after the password is set.
 	\item Success or failure is reported to the admin with a clear message.
 	\end{itemize} & High \\ \midrule
@@ -287,13 +299,13 @@ these non-functional requirements:
 	that my identity is verified.
 	&
 	\begin{itemize}[nosep, leftmargin=*]
-	\item \domainterm{2FA} prompt appears only when \domainterm{TwoFA Enabled} is active in \techname{MES Settings}.
+	\item \domainterm{2FA} prompt appears only when \domainterm{TwoFA Enabled}.
 	\item Camera opens and scans a QR badge code.
-	\end{itemize} & High \\ & &
-	\begin{itemize}[nosep, leftmargin=*]
 	\item Manual entry field available as a fallback.
 	\item Session token is persisted only after successful badge verification.
 	\item Failed scan shows an error; scanner reactivates.
+	\end{itemize} & High \\ & &
+	\begin{itemize}[nosep, leftmargin=*]
 	\item User can cancel and return to the login page.
 	\end{itemize}
 	& \\ \midrule
@@ -409,11 +421,13 @@ these non-functional requirements:
 	& \begin{itemize}[nosep, leftmargin=*]
 	\item Only \domainterm{operation} from \domainterm{Released} orders may be started.
 	\item A machine cannot run two operations simultaneously.
-	\item A new MES Operation State record is created with status change so it can be tracked.
 	\item The previous operation in the same production order (if any) must be
-	\domainterm{Finished}, \domainterm{Interrupted}, or currently \domainterm{Running}
+	\domainterm{Finished}, \domainterm{Cancelled}, \domainterm{Interrupted}, or currently \domainterm{Running}
 	with enough send-ahead quantity.
-	\end{itemize} & High\\ \midrule
+	\end{itemize} & High \\ & & 
+	\begin{itemize}[nosep, leftmargin=*]
+	\item A new MES Operation State record is created with status change so it can be tracked.
+	\end{itemize} & \\ \midrule
 
 	\textbf{US-2.4} &
 	As a \userrole{Supervisor} or \userrole{Operator}, I need to monitor the
@@ -570,7 +584,6 @@ these non-functional requirements:
 	scrapped units with a reason code so that waste is accurately tracked.
 	&
 	\begin{itemize}[nosep, leftmargin=*]
-	\item Scrap can only be declared when the operation is Running.
 	\item A reason code must be selected before submission.
 	\item Need to select either input material or output scrap.
 	\item the quantity of scrapped units cannot exceed the quantity 
@@ -592,15 +605,17 @@ these non-functional requirements:
 
 	\textbf{US-3.10} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to scan
-	components into an operation so that consumption is recorded against the BOM.
+	components into an operation so that consumption is recorded.
 	&
 	\begin{itemize}[nosep, leftmargin=*]
 	\item any camera connected to the device reads  barcodes.
 	\item Duplicate scan increments quantity on the existing row.
 	\item Confirming scans inserts consumption records and refreshes the BOM.
+	\end{itemize} & High \\ & & 
+	\begin{itemize}[nosep, leftmargin=*]
 	\item After confirmation, the inventory in the ERP is updated to reflect the consumed quantity.
 	\end{itemize}
-	& High \\ \midrule
+	& \\ \midrule
 
 	\textbf{US-3.11} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need to print a label
@@ -729,8 +744,7 @@ these non-functional requirements:
 
 	\textbf{US-5.1} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need a natural-language
-	chat assistant so that I can query machine status, production progress, and
-	operational data without navigating the full UI.
+	chat assistant so that I can query shop floor status without navigating the full UI.
 	&
 	\begin{itemize}[nosep, leftmargin=*]
 	\item Chat panel opens as a side overlay on wide screens and as a dialog on mobile.
@@ -738,9 +752,11 @@ these non-functional requirements:
 	history, and scrap.
 	\item Responses are scoped to the user's own work centres (access control enforced).
 	\item Multi-turn conversation history is maintained within the session.
+	\end{itemize} \\ & &
+  	\begin{itemize}[nosep, leftmargin=*]
 	\item Conversation can be cleared by the user.
 	\end{itemize}
-	& Medium \\ \midrule
+	&  \\ \midrule
 
 	\textbf{US-5.2} &
 	As an \userrole{Operator} or \userrole{Supervisor}, I need the assistant to
@@ -839,15 +855,6 @@ functional increment verified by a sprint review with the professional superviso
 \end{longtable}
 
 \section{Global Application Architecture}
-\subsection{Global Use case diagram}
-the following Figure~\ref{fig:mescha-global-uc} dipects the global use case diagram of the MES system, illustrating the interactions between the various user roles and the system's functionalities.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth,keepaspectratio]{./media/MES_chapter-2-repport/global-useCase.png}
-	\caption{MES System Global Use Case Diagram}
-	\label{fig:mescha-global-uc}
-\end{figure}
 
 \subsection{Physical Architecture}
 
@@ -858,18 +865,18 @@ The physical architecture of the MES system rests on three main nodes:
 	    that exposes OData V4 endpoints and the business REST APIs. In on-premises mode, the
 	    server runs on a BC210 instance accessible on port 7048. In SaaS mode, the base URLs
 	    follow the schema
-	    \texttt{api.businesscentral.dynamics.com/v2.0/<tenantId>/<environment>/ODataV4/}.
+	    \techname{api.businesscentral.dynamics.com/v2.0/<tenantId>/<environment>/ODataV4/}.
 
-	    \item \textbf{Node.js Middleware}: a reverse-proxy layer running between the Flutter
+	    \item \textbf{Node.js Middleware}~\cite{nodejs,express}: a reverse-proxy layer running between the Flutter
 	    client and Business Central. It handles SSPI/Windows authentication toward BC,
 	    exposes a unified REST API consumed by Flutter, and routes AI chat requests to the Python
 	    AI agent.
 
-	    \item \textbf{Flutter Client (mobile / web / desktop)}: application compiled for
+	    \item \textbf{Flutter Client (mobile / web / desktop)}~\cite{flutter}: application compiled for
 	    Android, Web or desktop, communicating with the Node.js middleware via HTTP
 	    requests. The middleware proxies these to the BC OData V4 endpoints.
 		
-		\item \textbf{A Python AI agent (Server)}: a module that acts as an interface between
+		\item \textbf{A Python AI agent (Server)}~\cite{fastapi,python}: a module that acts as an interface between
 		the application and the llm model chosen,includes intent classification tool calls.
 	\end{itemize}
 
@@ -907,7 +914,7 @@ The back-end is structured in five layers:
 	MES Authentification (user authentication), and the \domainterm{Mes Web Service}
 	(wrappers exposed as web services).
 	\item \textbf{API Pages (4-API)}: expose data for reading/writing via the BC REST 
-	API; employees, work centres.
+	API; scrap codes, work centres.
 	\item \textbf{Pages (5-Pages)}: administration and debugging interfaces 
 	in the BC client (lists, cards, API debug page, etc...).
 \end{itemize}
@@ -917,7 +924,7 @@ The back-end is structured in five layers:
 	The Node.js middleware is the network bridge between the Flutter client and
 	Business Central. It handles SSPI/Windows authentication for BC OData V4
 	requests, exposes a unified REST API to the Flutter application, and routes
-	AI chat requests (\texttt{POST /api/ai/chat}) to the Python AI agent.
+	AI chat requests (\techname{POST /api/ai/chat}) to the Python AI agent.
 
 \subsubsection*{Python AI Agent}
 
@@ -933,13 +940,13 @@ The Flutter front-end follows a three-layer architecture:
 
 \begin{itemize}
 	\item \textbf{Data}: contains data models (models) and HTTP services (services) that
-	      communicate with BC endpoints via the \texttt{http} library.
+	      communicate with BC endpoints via the \techname{http} library.
 	\item \textbf{Domain}: contains the providers (Provider pattern) that expose the
 	      application state to widgets --- AuthProvider, MesUserProvider,
 	      MesMachinesProvider, MachineordersProvider, etc.
 	\item \textbf{Presentation}: contains the pages and widgets of the user interface,
-	      organised by functional domain (auth, admin, machine) with dedicated responsive
-	      layouts (mobile, tablet, PC).
+	      organised by functional domain (auth, admin, machine, etc) with dedicated responsive
+	      layouts.
 \end{itemize}
 
 % ── 2.5 ─────────────────────────────────────────────────────────────────────
@@ -970,7 +977,7 @@ this project.
 
 	% IMAGE PLACEHOLDER - insert logos in the left column
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/Microsoft-Business-Central-Logo.png}&
-	Microsoft Dynamics 365 Business Central &
+	Microsoft Dynamics 365 Business Central~\cite{businesscentral} &
 	ERP platform hosting the AL back-end and business data \\[6pt]
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/AL-language-logo.png}&
@@ -978,7 +985,7 @@ this project.
 	Development of the BC extension (tables, codeunits, API pages) \\[6pt]
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/flutter-dart-logo.png}&
-	Flutter (Dart)&
+	Flutter (Dart)~\cite{flutter,dart_lang}&
 	Development of the cross-platform mobile/web application \\[6pt]
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/VSCode-logo.png}&
@@ -990,7 +997,7 @@ this project.
 	Version control and collaboration \\[6pt]
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/postman-logo.png}&
-	Postman&
+	Postman~\cite{postman}&
 	Testing and validation of OData V4 endpoints \\[6pt]
 	\midrule
 	\includegraphics[width=\linewidth]{./media/MES_chapter-2-repport/python.png}&
