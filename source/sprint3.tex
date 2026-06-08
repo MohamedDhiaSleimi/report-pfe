@@ -453,17 +453,10 @@ alongside the main operation detail view. Both are polling streams that
 re-emit on demand or when a state-change trigger is received from the
 \techname{Flutter} client.
  
-% Figure~\ref{fig:s3-seq-fetch-bom} describes the bill-of-materials retrieval
-% flow. The \techname{AL} layer resolves the routing link code from the active
-% \domainterm{ProdOrderRoutingLine}, filters the production order components
-% by that link, aggregates the quantity already scanned per item, and resolves
-% per-unit quantities from the \domainterm{ItemUnitOfMeasure} table before
-% returning the assembled BOM rows to the \techname{Flutter} client.
-
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/fetch-BOM.png}
-  \caption{SD-21: Fetch Bill of Materials.}
+  \includegraphics[width=0.9\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/MES_Sprint-3-Repport/diagrams/sequence/fetch-BOM.png}
+  \caption{SD-21: Required components list.}
   \label{fig:s3-seq-fetch-bom}
 \end{figure}
 
@@ -502,15 +495,11 @@ re-emit on demand or when a state-change trigger is received from the
 %       end
 %====================================================================
 
-% Figure~\ref{fig:s3-seq-fetch-production-cycle} illustrates the production-cycle
-% retrieval flow. The \techname{AL} layer fetches the full progression history
-% for the operation, enriches each entry with the name of the user who declared
-% it, and returns the assembled cycle list to the \techname{Flutter} client.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/diagrams/sequence/fetch-production-cycle.png}
-  \caption{SD-22: Fetch Production Cycles.}
+  \includegraphics[width=0.9\linewidth,height=0.82\textheight,keepaspectratio]{./media/MES_Sprint-3-Repport/MES_Sprint-3-Repport/diagrams/sequence/fetch-production-cycle.png}
+  \caption{SD-22: Declaration history.}
   \label{fig:s3-seq-fetch-production-cycle}
 \end{figure}
 
