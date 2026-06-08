@@ -791,16 +791,16 @@ the following Figure~\ref{fig:mescha-global-uc} dipects the global use case diag
 The project was organised into five two-week sprints, each delivering a
 functional increment verified by a sprint review with the professional supervisor.
 
-\begin{longtable}{@{} P{0.10\linewidth} P{0.30\linewidth} P{0.55\linewidth} @{}}
+\begin{longtable}{@{} P{0.10\linewidth} P{0.25\linewidth} P{0.45\linewidth} P{0.15\linewidth} @{}}
 	\caption{MES project sprint plan}
 	\label{tab:mescha-sprint_plan} \\
 	\toprule
-	\textbf{Sprint} & \textbf{Domain}                                   & \textbf{Scope} \\
+	\textbf{Sprint} & \textbf{Domain} & \textbf{Scope} & \textbf{period} \\
 	\midrule
 	\endfirsthead
 
 	\toprule
-	\textbf{Sprint} & \textbf{Domain}                                   & \textbf{Scope} \\
+	\textbf{Sprint} & \textbf{Domain} & \textbf{Scope} & \textbf{period} \\
 	\midrule
 	\endhead
 
@@ -812,29 +812,34 @@ functional increment verified by a sprint review with the professional superviso
 	and session token management, role-based access control, administrator user
 	creation, password generation and reset, role and work-centre change, account
 	activation/deactivation, badge management (view, print, regenerate), password
-	expiry	policy configuration, export users and first-launch host pairing. \\ \midrule
+	expiry	policy configuration, export users and first-launch host pairing.
+	& 3.5 weeks \\ \midrule
 
 	Sprint~2        & Machine Monitoring \& Production Order Management &
 	Real-time machine status tracking, production order list per machine,
 	operation start, tabbed machine view with Orders / Progress / History tabs,
-	order filtering and sorting. \\ \midrule
+	order filtering and sorting. 
+	& 2 weeks \\ \midrule
 
 	Sprint~3        & Production Execution \& Traceability              &
 	Production cycle declarations, pause/resume/finish/cancel/interupt operations,
 	operation detail page with up-to-date data, production chart, Bill of Materials
 	visibility, component barcode scanning, scrap declaration,
-	supervisor proxy declaration, and label printing. \\ \midrule
+	supervisor proxy declaration, and label printing. 
+	& 5 weeks \\ \midrule
 
 	Sprint~4        & Administration and System Monitoring \& Configuration              &
-	Monitoring dashboard and Administrator activity log, barcode view and printing, multi-language support (EN/FR/AR) and RTL layout, in-app onboarding tutorials. \\ \midrule
+	Monitoring dashboard and Administrator activity log, barcode view and printing, 
+	multi-language support (EN/FR/AR) and RTL layout, in-app onboarding tutorials. 
+	& 2 weeks \\ \midrule
 
 	Sprint~5        & AI Assistant \& Analytical Intelligence           &
 	Natural-language chat assistant, \techname{Node.js} reverse proxy middleware,
 	\techname{Python} AI agent with intent classification, multi-provider LLM support,
 	fuzzy machine resolution, composite fan-out queries, data enrichment,
 	anomaly detection (scrap spikes, overdue orders), and contextual
-	redirect actions. \\
-	\midrule
+	redirect actions. 
+	& 3 weeks\\ \midrule
 \end{longtable}
 
 \section{Global Application Architecture}
