@@ -85,6 +85,15 @@
 \usepackage{longtable,booktabs,array}
 \usepackage{calc}
 \usepackage{etoolbox}
+
+% Suppress inter-chapter gaps in LoT and LoF
+\makeatletter
+\patchcmd{\@chapter}%
+  {\addtocontents{lot}{\protect\addvspace{10\p@}}}%
+  {}{}{}
+\makeatother
+
+
 \usepackage{ragged2e}
 
 % --- page de guarde injection ----

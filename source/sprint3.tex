@@ -885,6 +885,42 @@ model.
 	\midrule
 \end{longtable}
 
+\begin{longtable}{@{} P{0.21\linewidth} P{0.17\linewidth} P{0.57\linewidth} @{}}
+    \caption{MES Operation Scrap (Table 50112) --- Field Dictionary}
+    \label{tab:s3-table-scrap} \\
+    \toprule
+    \textbf{Name} & \textbf{Type} & \textbf{Description} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{Name} & \textbf{Type} & \textbf{Description} \\
+    \midrule
+    \endhead
+    \multicolumn{3}{r}{\small Continued on next page} \\
+    \endfoot
+    \endlastfoot
+
+    Id & Code[50] & GUID-based primary key; auto-generated on insert. \\
+    \midrule
+    Execution Id & Code[50] & Foreign key to \domainterm{MES User Execution Interaction}; identifies the operation to which this scrap record belongs. \\
+    \midrule
+    Scrap Quantity & Decimal & Number of units scrapped. \\
+    \midrule
+    Scrap Code & Code[10] & Scrap reason code sourced from the \techname{Business Central} \domainterm{Scrap} table. \\
+    \midrule
+    Scrap Description & Text[100] & Description of scrap code. \\
+    \midrule
+    Scrap Notes & Text[256] & Optional free-text remarks supplied by the operator to further qualify the scrap event. \\
+    \midrule
+    Operator Id & Code[50] & BC session \domainterm{UserId} of the operator who declared the scrap. \\
+    \midrule
+    Material Id & Code[20] & Identifies whether the scrapped material is an input or output component of the operation. \\
+    \midrule
+    Declared At & DateTime & Set by \techname{OnInsert} trigger to \techname{CurrentDateTime()}. \\
+    \midrule
+    Declared By & Code[50] & BC session \domainterm{UserId} of the user who declared the production cycle. \\
+    \midrule
+\end{longtable}
 
 \subsubsection*{REST API and Web Services Implementation}
 
